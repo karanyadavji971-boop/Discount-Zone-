@@ -10,18 +10,40 @@
         .header{background:#2874f0;padding:15px 20px;position:sticky;top:0;z-index:100;}
         .header h1{color:white;font-size:24px;text-align:center;}
         .header p{color:#ffe500;font-size:12px;text-align:center;margin-top:4px;}
-        .cart-icon{position:fixed;bottom:20px;right:20px;background:#ff6b35;color:white;width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-        .cart-count{position:absolute;top:-5px;right:-5px;background:red;color:white;font-size:11px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+        
+        /* Cart Icon - अब साफ दिखेगा */
+        .cart-icon{position:fixed;bottom:20px;right:20px;background:#ff6b35;color:white;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;z-index:200;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:transform 0.2s;}
+        .cart-icon:hover{transform:scale(1.05);background:#ff8c5a;}
+        .cart-count{position:absolute;top:-5px;right:-5px;background:#e74c3c;color:white;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;}
+        
         .container{max-width:1200px;margin:0 auto;padding:20px;}
         .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;}
         @media (min-width:768px){.products-grid{grid-template-columns:repeat(4,1fr);}}
-        .product-card{background:white;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        
+        /* Product Card */
+        .product-card{background:white;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;transition:transform 0.2s;}
+        .product-card:hover{transform:translateY(-5px);box-shadow:0 4px 15px rgba(0,0,0,0.15);}
         .product-img{width:100%;height:150px;object-fit:contain;}
         .product-name{font-size:14px;font-weight:500;margin:10px 0 5px;}
         .product-price{color:#2874f0;font-size:18px;font-weight:bold;}
         .product-old-price{text-decoration:line-through;color:#999;font-size:12px;margin-left:5px;}
         .product-discount-badge{background:#2e7d32;color:white;font-size:10px;padding:2px 6px;border-radius:10px;display:inline-block;margin-top:4px;}
         .add-to-cart{background:#ff9f00;color:white;border:none;padding:8px 12px;border-radius:5px;cursor:pointer;width:100%;margin-top:10px;font-weight:500;}
+        .add-to-cart:hover{background:#fb641b;}
+        
+        /* Product Detail Modal */
+        .detail-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;justify-content:center;align-items:center;z-index:1000;}
+        .detail-content{background:white;border-radius:20px;width:90%;max-width:500px;padding:20px;max-height:85vh;overflow-y:auto;position:relative;}
+        .detail-img{width:100%;max-height:250px;object-fit:contain;border-radius:10px;}
+        .detail-name{font-size:22px;font-weight:bold;margin:15px 0 10px;}
+        .detail-price{font-size:28px;color:#2874f0;font-weight:bold;}
+        .detail-old-price{text-decoration:line-through;color:#999;font-size:16px;margin-left:10px;}
+        .detail-discount{color:#2e7d32;font-size:14px;margin-top:5px;}
+        .detail-desc{color:#666;margin:15px 0;line-height:1.5;}
+        .close-detail{position:absolute;top:10px;right:15px;font-size:28px;cursor:pointer;}
+        .detail-add-btn{background:#ff9f00;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;margin-top:10px;}
+        
+        /* Checkout Modal */
         .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:1000;}
         .modal-content{background:white;border-radius:20px;width:90%;max-width:450px;padding:25px;max-height:85vh;overflow-y:auto;}
         .modal h3{margin-bottom:20px;color:#2874f0;text-align:center;}
@@ -33,24 +55,22 @@
         .cart-item-img{width:50px;height:50px;object-fit:contain;border-radius:8px;}
         .cart-item-details{flex:1;}
         .cart-item-name{font-size:13px;font-weight:500;}
-        .cart-item-price{font-size:12px;color:#666;margin-top:4px;}
-        .cart-item-price span.original{text-decoration:line-through;color:#999;font-size:11px;}
-        .cart-item-price span.discounted{color:#2874f0;font-weight:bold;}
+        .cart-item-price{font-size:12px;color:#666;}
         .cart-item-quantity{display:flex;align-items:center;gap:5px;margin-top:5px;}
-        .cart-item-quantity button{background:#f0f2f5;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;}
-        .remove-item-btn{background:#ff4444;color:white;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;}
-        .remove-item-btn:hover{background:#cc0000;}
+        .cart-item-quantity button{background:#f0f2f5;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;}
+        .remove-item-btn{background:#ff4444;color:white;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;}
         .payment-options{display:flex;flex-direction:column;gap:10px;margin:15px 0;}
         .payment-btn{background:#f0f2f5;border:2px solid #ddd;padding:12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:16px;transition:all 0.2s;}
         .payment-btn.selected{background:#2874f0;color:white;border-color:#2874f0;}
-        .payment-detail{font-size:12px;margin-left:auto;color:#666;}
         .confirm-btn{background:#fb641b;color:white;border:none;padding:14px;border-radius:10px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;margin-top:15px;}
         .close-modal{float:right;font-size:24px;cursor:pointer;}
         .toast{position:fixed;bottom:100px;left:20px;right:20px;background:#1a1a2e;color:white;padding:12px;border-radius:10px;text-align:center;display:none;z-index:1100;}
         .discount-box{background:#e8f5e9;padding:8px;border-radius:8px;margin:10px 0;text-align:center;color:#2e7d32;font-size:13px;}
         footer{text-align:center;padding:20px;color:#666;font-size:12px;}
         .clear-cart-btn{background:#ff4444;color:white;border:none;padding:8px;border-radius:8px;cursor:pointer;margin-top:10px;width:100%;font-size:12px;}
-        .cart-total-section{margin-top:10px;padding-top:10px;border-top:2px solid #ddd;}
+        .payment-type-badge{display:inline-block;padding:4px 8px;border-radius:5px;font-size:11px;margin-left:10px;}
+        .payment-type-cod{background:#ff9800;color:white;}
+        .payment-type-online{background:#4caf50;color:white;}
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -74,6 +94,23 @@
     <span class="cart-count" id="cartCount">0</span>
 </div>
 
+<!-- Product Detail Modal -->
+<div id="detailModal" class="detail-modal">
+    <div class="detail-content">
+        <span class="close-detail" onclick="closeDetailModal()">&times;</span>
+        <img id="detailImg" class="detail-img" src="">
+        <div id="detailName" class="detail-name"></div>
+        <div>
+            <span id="detailPrice" class="detail-price"></span>
+            <span id="detailOldPrice" class="detail-old-price"></span>
+        </div>
+        <div id="detailDiscount" class="detail-discount"></div>
+        <div id="detailDesc" class="detail-desc"></div>
+        <button id="detailAddBtn" class="detail-add-btn">🛒 Add to Cart</button>
+    </div>
+</div>
+
+<!-- Checkout Modal -->
 <div id="checkoutModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -125,36 +162,26 @@
 
 <script>
     const products = [
-        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg" },
-        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg" },
-        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg" },
-        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg" },
-        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg" },
-        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg" },
-        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg" },
-        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg" },
-        { id: 9, name: "Protein Powder", price: 899, image: "https://i.ibb.co/PG9tSjFw/image.jpg" },
-        { id: 10, name: "Dry Fruits Combo", price: 649, image: "https://i.ibb.co/yFr0P33p/image.jpg" }
+        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples. Rich in fiber and antioxidants. Perfect for daily health." },
+        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain premium basmati rice. Aromatic and fluffy. Ideal for biryani and pulao." },
+        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure and natural honey. No additives. Boosts immunity and energy." },
+        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables pack. Includes tomato, onion, potato, and more." },
+        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices. Turmeric, cumin, coriander, red chili, garam masala." },
+        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds. Rich in Vitamin E and healthy fats." },
+        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Premium Assam tea leaves. Strong and refreshing taste." },
+        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed groundnut oil. Chemical-free and healthy." },
+        { id: 9, name: "Protein Powder", price: 899, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Whey protein powder. Builds muscle and boosts recovery." },
+        { id: 10, name: "Dry Fruits Combo", price: 649, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed dry fruits - cashews, almonds, raisins, walnuts." }
     ];
 
     let cart = [];
     let selectedPayment = null;
+    let currentProduct = null;
 
-    // 10% discount on each product
-    function getDiscountedPrice(price) {
-        return Math.round(price * 0.9); // 10% off
-    }
+    function getDiscountedPrice(price) { return Math.round(price * 0.9); }
+    function getDiscountAmount(price) { return price - getDiscountedPrice(price); }
 
-    function getDiscountAmount(price) {
-        return price - getDiscountedPrice(price);
-    }
-
-    const UPI_IDS = {
-        gpay: "karanyadavji971@okhdfcbank",
-        paytm: "kara971@ptaxis",
-        phonepe: "9267982460@ybl"
-    };
-
+    const UPI_IDS = { gpay: "karanyadavji971@okhdfcbank", paytm: "kara971@ptaxis", phonepe: "9267982460@ybl" };
     const EMAILJS_PUBLIC_KEY = "EE236Vmj4RMCjX1Dq";
     const EMAILJS_SERVICE_ID = "service_gbou2dl";
     const EMAILJS_TEMPLATE_ID = "template_lp2zf4b";
@@ -169,15 +196,8 @@
         renderProducts();
     }
 
-    function saveCart() {
-        localStorage.setItem('discountZoneCart', JSON.stringify(cart));
-        updateCartCount();
-    }
-
-    function updateCartCount() {
-        const count = cart.reduce((s, i) => s + i.quantity, 0);
-        document.getElementById('cartCount').innerText = count;
-    }
+    function saveCart() { localStorage.setItem('discountZoneCart', JSON.stringify(cart)); updateCartCount(); }
+    function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.quantity, 0); }
 
     function addToCart(productId) {
         const product = products.find(p => p.id === productId);
@@ -185,52 +205,36 @@
         if (existing) existing.quantity++;
         else cart.push({ ...product, quantity: 1, discountedPrice: getDiscountedPrice(product.price) });
         saveCart();
-        showToast(`✅ ${product.name} added to cart! (10% off applied)`);
+        showToast(`✅ ${product.name} added to cart! (10% off)`);
     }
 
     function updateQuantity(productId, change) {
         const item = cart.find(i => i.id === productId);
         if (item) {
             item.quantity += change;
-            if (item.quantity <= 0) {
-                cart = cart.filter(i => i.id !== productId);
-            }
+            if (item.quantity <= 0) cart = cart.filter(i => i.id !== productId);
             saveCart();
-            if (document.getElementById('checkoutModal').style.display === 'flex') {
-                showCartModal();
-            }
+            if (document.getElementById('checkoutModal').style.display === 'flex') showCartModal();
         }
     }
 
     function removeFromCart(productId) {
         cart = cart.filter(item => item.id !== productId);
         saveCart();
-        if (document.getElementById('checkoutModal').style.display === 'flex') {
-            showCartModal();
-        }
-        showToast(`🗑️ Item removed from cart`);
+        if (document.getElementById('checkoutModal').style.display === 'flex') showCartModal();
+        showToast(`🗑️ Item removed`);
     }
 
     function clearCart() {
-        if (cart.length === 0) {
-            showToast("Cart is already empty!");
-            return;
-        }
+        if (cart.length === 0) { showToast("Cart is empty!"); return; }
         cart = [];
         saveCart();
-        if (document.getElementById('checkoutModal').style.display === 'flex') {
-            showCartModal();
-        }
-        showToast(`🗑️ All items removed from cart`);
+        if (document.getElementById('checkoutModal').style.display === 'flex') showCartModal();
+        showToast(`🗑️ All items cleared`);
     }
 
-    function getTotal() {
-        return cart.reduce((sum, item) => sum + (item.discountedPrice * item.quantity), 0);
-    }
-
-    function getOriginalTotal() {
-        return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    }
+    function getTotal() { return cart.reduce((sum, item) => sum + (item.discountedPrice * item.quantity), 0); }
+    function getOriginalTotal() { return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); }
 
     function renderProducts() {
         const container = document.getElementById('productsGrid');
@@ -238,7 +242,7 @@
             const discounted = getDiscountedPrice(p.price);
             const discountAmount = p.price - discounted;
             return `
-            <div class="product-card">
+            <div class="product-card" onclick="showProductDetail(${p.id})">
                 <img class="product-img" src="${p.image}" onerror="this.src='https://via.placeholder.com/150'">
                 <div class="product-name">${p.name}</div>
                 <div>
@@ -246,76 +250,62 @@
                     <span class="product-old-price">₹${p.price}</span>
                 </div>
                 <div class="product-discount-badge">🔥 ${discountAmount} off</div>
-                <button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>
+                <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart</button>
             </div>
         `}).join('');
     }
 
+    function showProductDetail(productId) {
+        currentProduct = products.find(p => p.id === productId);
+        const discounted = getDiscountedPrice(currentProduct.price);
+        document.getElementById('detailImg').src = currentProduct.image;
+        document.getElementById('detailName').innerHTML = currentProduct.name;
+        document.getElementById('detailPrice').innerHTML = `₹${discounted}`;
+        document.getElementById('detailOldPrice').innerHTML = `₹${currentProduct.price}`;
+        document.getElementById('detailDiscount').innerHTML = `🔥 You save ₹${currentProduct.price - discounted} (10% OFF)`;
+        document.getElementById('detailDesc').innerHTML = currentProduct.desc;
+        document.getElementById('detailAddBtn').onclick = () => { addToCart(productId); closeDetailModal(); };
+        document.getElementById('detailModal').style.display = 'flex';
+    }
+
+    function closeDetailModal() { document.getElementById('detailModal').style.display = 'none'; }
+
     function showCartModal() {
-        if (cart.length === 0) {
-            showToast("🛒 Your cart is empty!");
-            document.getElementById('checkoutModal').style.display = 'none';
-            return;
-        }
+        if (cart.length === 0) { showToast("Cart is empty!"); document.getElementById('checkoutModal').style.display = 'none'; return; }
         
         const summaryDiv = document.getElementById('orderSummary');
         let itemsHtml = "";
         cart.forEach(item => {
             const itemTotal = item.discountedPrice * item.quantity;
             const originalTotal = item.price * item.quantity;
-            const savedOnItem = originalTotal - itemTotal;
             itemsHtml += `
                 <div class="cart-item-row">
                     <img class="cart-item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/50'">
                     <div class="cart-item-details">
                         <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">
-                            <span class="original">₹${item.price}</span>
-                            <span class="discounted"> ₹${item.discountedPrice}</span>
-                        </div>
+                        <div class="cart-item-price">₹${item.discountedPrice} <span style="text-decoration:line-through;color:#999;">₹${item.price}</span></div>
                         <div class="cart-item-quantity">
                             <button onclick="updateQuantity(${item.id}, -1)">-</button>
-                            <span style="width:25px;text-align:center;">${item.quantity}</span>
+                            <span>${item.quantity}</span>
                             <button onclick="updateQuantity(${item.id}, 1)">+</button>
                         </div>
                     </div>
-                    <div style="text-align:right;">
-                        <div style="font-weight:bold;">₹${itemTotal}</div>
-                        <div style="font-size:10px;color:#2e7d32;">Saved ₹${savedOnItem}</div>
-                        <button class="remove-item-btn" onclick="removeFromCart(${item.id})">✕</button>
-                    </div>
+                    <button class="remove-item-btn" onclick="removeFromCart(${item.id})">✕</button>
                 </div>
             `;
         });
         
         const originalTotal = getOriginalTotal();
         const finalTotal = getTotal();
-        const totalDiscount = originalTotal - finalTotal;
-        
-        itemsHtml += `<div class="cart-total-section">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                <span>Original Total</span>
-                <span>₹${originalTotal}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; color:#2e7d32; margin-bottom:5px;">
-                <span>🎉 Total Discount (10% off)</span>
-                <span>- ₹${totalDiscount}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-top:8px; padding-top:8px; border-top:2px solid #ddd;">
-                <span>Total to Pay</span>
-                <span style="color:#2874f0;">₹${finalTotal}</span>
-            </div>
+        itemsHtml += `<div style="border-top:2px solid #ddd; padding-top:10px; margin-top:5px;">
+            <div style="display:flex; justify-content:space-between;"><span>Original Total</span><span>₹${originalTotal}</span></div>
+            <div style="display:flex; justify-content:space-between; color:#2e7d32;"><span>Discount (10%)</span><span>- ₹${originalTotal - finalTotal}</span></div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-top:10px;"><span>Total to Pay</span><span style="color:#2874f0;">₹${finalTotal}</span></div>
         </div>`;
-        
         summaryDiv.innerHTML = itemsHtml;
         
-        const discountBox = document.getElementById('discountBox');
-        if (totalDiscount > 0) {
-            discountBox.innerHTML = `🎉 You saved ₹${totalDiscount} with 10% discount on all items!`;
-            discountBox.style.display = "block";
-        } else {
-            discountBox.style.display = "none";
-        }
+        document.getElementById('discountBox').innerHTML = `🎉 You saved ₹${originalTotal - finalTotal} with 10% discount!`;
+        document.getElementById('discountBox').style.display = "block";
         
         selectedPayment = null;
         document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('selected'));
@@ -326,9 +316,7 @@
         selectedPayment = method;
         document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('selected'));
         btnElement.classList.add('selected');
-        
-        const names = { cod: "Cash on Delivery", phonepe: "PhonePe", gpay: "Google Pay", paytm: "Paytm" };
-        showToast(`✅ Selected: ${names[method]}`);
+        showToast(`✅ Selected: ${method === 'cod' ? 'Cash on Delivery' : method}`);
     }
 
     async function confirmOrder() {
@@ -336,29 +324,23 @@
         const customerPhone = document.getElementById('custPhone').value.trim();
         const customerAddress = document.getElementById('custAddress').value.trim();
         
-        if (!customerName) { showToast("❌ Enter your name"); return; }
-        if (!customerPhone || customerPhone.length < 10) { showToast("❌ Enter valid phone number"); return; }
-        if (!selectedPayment) { showToast("❌ Select payment method"); return; }
+        if (!customerName) { showToast("Enter your name"); return; }
+        if (!customerPhone || customerPhone.length < 10) { showToast("Enter valid phone number"); return; }
+        if (!selectedPayment) { showToast("Select payment method"); return; }
+        if (cart.length === 0) { showToast("Cart is empty!"); return; }
         
         const originalTotal = getOriginalTotal();
         const finalTotal = getTotal();
-        const totalDiscount = originalTotal - finalTotal;
         const paymentNames = { cod: "Cash on Delivery", phonepe: "PhonePe", gpay: "Google Pay", paytm: "Paytm" };
+        const paymentType = selectedPayment === 'cod' ? "💰 CASH ON DELIVERY" : "💳 ONLINE PAYMENT";
         
         let itemsList = "";
         cart.forEach(item => {
-            const itemOriginal = item.price * item.quantity;
-            const itemDiscounted = item.discountedPrice * item.quantity;
-            itemsList += `- ${item.name}: ₹${item.price} x ${item.quantity} = ₹${itemOriginal} → After 10% OFF: ₹${itemDiscounted} (Saved ₹${itemOriginal - itemDiscounted})\n`;
+            itemsList += `- ${item.name}: ₹${item.price} x ${item.quantity} = ₹${item.price * item.quantity} → After 10% OFF: ₹${item.discountedPrice * item.quantity}\n`;
         });
-        
-        itemsList += `\n📊 ORDER SUMMARY:\n`;
-        itemsList += `Original Total: ₹${originalTotal}\n`;
-        itemsList += `Total Discount (10%): -₹${totalDiscount}\n`;
-        itemsList += `💰 Final Amount: ₹${finalTotal}\n`;
+        itemsList += `\n📊 ORDER SUMMARY:\nOriginal Total: ₹${originalTotal}\nDiscount (10%): -₹${originalTotal - finalTotal}\n💰 Final Amount: ₹${finalTotal}\n💳 Payment Type: ${paymentType} (${paymentNames[selectedPayment]})`;
         
         let paymentMessage = "";
-        
         if (selectedPayment === 'cod') {
             paymentMessage = `💰 Cash on Delivery: ₹${finalTotal} to pay on delivery`;
         } else {
@@ -367,9 +349,8 @@
             if (selectedPayment === 'phonepe') upiUrl = `phonepe://pay?pa=${upiId}&pn=Discount%20Zone&am=${finalTotal}&cu=INR`;
             else if (selectedPayment === 'gpay') upiUrl = `tez://upi/pay?pa=${upiId}&pn=Discount%20Zone&am=${finalTotal}&cu=INR`;
             else if (selectedPayment === 'paytm') upiUrl = `paytmmp://pay?pa=${upiId}&pn=Discount%20Zone&am=${finalTotal}&cu=INR`;
-            
             window.location.href = upiUrl;
-            paymentMessage = `${paymentNames[selectedPayment]} payment of ₹${finalTotal} - Complete payment in the app`;
+            paymentMessage = `${paymentNames[selectedPayment]} payment of ₹${finalTotal} - Complete in app`;
         }
         
         const templateParams = {
@@ -379,34 +360,27 @@
             customer_address: customerAddress || "Not provided",
             order_items: itemsList,
             original_total: `₹${originalTotal}`,
-            discount: `₹${totalDiscount}`,
+            discount: `₹${originalTotal - finalTotal}`,
             order_total: `₹${finalTotal}`,
             payment_method: paymentNames[selectedPayment],
-            payment_type: selectedPayment === 'cod' ? "Cash" : "Online Payment",
+            payment_type: selectedPayment === 'cod' ? "CASH ON DELIVERY" : "ONLINE PAYMENT",
             order_date: new Date().toLocaleString()
         };
         
-        try {
-            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-        } catch(e) {}
+        try { await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams); } catch(e) { console.log("Email error"); }
         
-        alert(`🎉 ORDER CONFIRMED! 🎉\n\nCustomer: ${customerName}\nPhone: ${customerPhone}\nOriginal: ₹${originalTotal}\nDiscount (10%): ₹${totalDiscount}\nTotal: ₹${finalTotal}\nPayment: ${paymentNames[selectedPayment]}\n\n${paymentMessage}\n\nWe will contact you shortly.`);
+        alert(`🎉 ORDER CONFIRMED!\n\nCustomer: ${customerName}\nPhone: ${customerPhone}\nOriginal: ₹${originalTotal}\nDiscount: ₹${originalTotal - finalTotal}\nTotal: ₹${finalTotal}\n\n💳 PAYMENT TYPE: ${paymentType}\nMethod: ${paymentNames[selectedPayment]}\n\n${paymentMessage}\n\nWe will contact you shortly.`);
         
-        cart = [];
-        saveCart();
-        updateCartCount();
+        cart = []; saveCart(); updateCartCount();
         document.getElementById('custName').value = '';
         document.getElementById('custPhone').value = '';
         document.getElementById('custAddress').value = '';
         selectedPayment = null;
         closeModal();
-        showToast("✅ Order placed successfully!");
+        showToast("Order placed! Check email for details.");
     }
 
-    function closeModal() {
-        document.getElementById('checkoutModal').style.display = 'none';
-    }
-
+    function closeModal() { document.getElementById('checkoutModal').style.display = 'none'; }
     function showToast(msg) {
         const toast = document.getElementById('toast');
         toast.innerText = msg;
