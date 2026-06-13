@@ -11,66 +11,54 @@
         .header h1{color:white;font-size:24px;text-align:center;}
         .header p{color:#ffe500;font-size:12px;text-align:center;margin-top:4px;}
         
-        /* Cart Icon - अब साफ दिखेगा */
-        .cart-icon{position:fixed;bottom:20px;right:20px;background:#ff6b35;color:white;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;z-index:200;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:transform 0.2s;}
-        .cart-icon:hover{transform:scale(1.05);background:#ff8c5a;}
+        .cart-icon{position:fixed;bottom:20px;right:20px;background:#ff6b35;color:white;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;z-index:200;box-shadow:0 4px 15px rgba(0,0,0,0.3);}
+        .cart-icon:hover{transform:scale(1.05);}
         .cart-count{position:absolute;top:-5px;right:-5px;background:#e74c3c;color:white;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;}
         
         .container{max-width:1200px;margin:0 auto;padding:20px;}
         .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;}
         @media (min-width:768px){.products-grid{grid-template-columns:repeat(4,1fr);}}
         
-        /* Product Card */
         .product-card{background:white;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;transition:transform 0.2s;}
-        .product-card:hover{transform:translateY(-5px);box-shadow:0 4px 15px rgba(0,0,0,0.15);}
+        .product-card:hover{transform:translateY(-5px);}
         .product-img{width:100%;height:150px;object-fit:contain;}
         .product-name{font-size:14px;font-weight:500;margin:10px 0 5px;}
         .product-price{color:#2874f0;font-size:18px;font-weight:bold;}
         .product-old-price{text-decoration:line-through;color:#999;font-size:12px;margin-left:5px;}
         .product-discount-badge{background:#2e7d32;color:white;font-size:10px;padding:2px 6px;border-radius:10px;display:inline-block;margin-top:4px;}
         .add-to-cart{background:#ff9f00;color:white;border:none;padding:8px 12px;border-radius:5px;cursor:pointer;width:100%;margin-top:10px;font-weight:500;}
-        .add-to-cart:hover{background:#fb641b;}
         
-        /* Product Detail Modal */
+        /* Loading Popup */
+        .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center;z-index:2000;}
+        .loading-popup{background:white;border-radius:20px;padding:30px;text-align:center;min-width:280px;}
+        .loading-spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid #2874f0;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px;}
+        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+        
         .detail-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;justify-content:center;align-items:center;z-index:1000;}
         .detail-content{background:white;border-radius:20px;width:90%;max-width:500px;padding:20px;max-height:85vh;overflow-y:auto;position:relative;}
-        .detail-img{width:100%;max-height:250px;object-fit:contain;border-radius:10px;}
-        .detail-name{font-size:22px;font-weight:bold;margin:15px 0 10px;}
-        .detail-price{font-size:28px;color:#2874f0;font-weight:bold;}
-        .detail-old-price{text-decoration:line-through;color:#999;font-size:16px;margin-left:10px;}
-        .detail-discount{color:#2e7d32;font-size:14px;margin-top:5px;}
-        .detail-desc{color:#666;margin:15px 0;line-height:1.5;}
+        .detail-img{width:100%;max-height:250px;object-fit:contain;}
+        .detail-name{font-size:22px;font-weight:bold;margin:15px 0;}
         .close-detail{position:absolute;top:10px;right:15px;font-size:28px;cursor:pointer;}
-        .detail-add-btn{background:#ff9f00;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;margin-top:10px;}
         
-        /* Checkout Modal */
         .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:1000;}
         .modal-content{background:white;border-radius:20px;width:90%;max-width:450px;padding:25px;max-height:85vh;overflow-y:auto;}
         .modal h3{margin-bottom:20px;color:#2874f0;text-align:center;}
         .form-group{margin-bottom:15px;}
         .form-group input,.form-group textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;}
-        .form-group textarea{height:70px;resize:vertical;}
-        .order-summary{background:#f0f2f5;padding:12px;border-radius:10px;margin:15px 0;max-height:350px;overflow-y:auto;}
+        .order-summary{background:#f0f2f5;padding:12px;border-radius:10px;margin:15px 0;max-height:300px;overflow-y:auto;}
         .cart-item-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px;background:white;border-radius:10px;}
-        .cart-item-img{width:50px;height:50px;object-fit:contain;border-radius:8px;}
+        .cart-item-img{width:50px;height:50px;object-fit:contain;}
         .cart-item-details{flex:1;}
-        .cart-item-name{font-size:13px;font-weight:500;}
-        .cart-item-price{font-size:12px;color:#666;}
-        .cart-item-quantity{display:flex;align-items:center;gap:5px;margin-top:5px;}
-        .cart-item-quantity button{background:#f0f2f5;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;}
         .remove-item-btn{background:#ff4444;color:white;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;}
         .payment-options{display:flex;flex-direction:column;gap:10px;margin:15px 0;}
-        .payment-btn{background:#f0f2f5;border:2px solid #ddd;padding:12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:16px;transition:all 0.2s;}
-        .payment-btn.selected{background:#2874f0;color:white;border-color:#2874f0;}
+        .payment-btn{background:#f0f2f5;border:2px solid #ddd;padding:12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:16px;}
+        .payment-btn.selected{background:#2874f0;color:white;}
         .confirm-btn{background:#fb641b;color:white;border:none;padding:14px;border-radius:10px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;margin-top:15px;}
         .close-modal{float:right;font-size:24px;cursor:pointer;}
         .toast{position:fixed;bottom:100px;left:20px;right:20px;background:#1a1a2e;color:white;padding:12px;border-radius:10px;text-align:center;display:none;z-index:1100;}
-        .discount-box{background:#e8f5e9;padding:8px;border-radius:8px;margin:10px 0;text-align:center;color:#2e7d32;font-size:13px;}
-        footer{text-align:center;padding:20px;color:#666;font-size:12px;}
-        .clear-cart-btn{background:#ff4444;color:white;border:none;padding:8px;border-radius:8px;cursor:pointer;margin-top:10px;width:100%;font-size:12px;}
-        .payment-type-badge{display:inline-block;padding:4px 8px;border-radius:5px;font-size:11px;margin-left:10px;}
-        .payment-type-cod{background:#ff9800;color:white;}
-        .payment-type-online{background:#4caf50;color:white;}
+        .utr-section{display:none;margin-top:15px;padding:15px;background:#f0f2f5;border-radius:10px;}
+        .utr-section input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;margin-top:8px;}
+        .payment-status{font-size:13px;margin-top:10px;color:#2e7d32;}
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -94,37 +82,33 @@
     <span class="cart-count" id="cartCount">0</span>
 </div>
 
-<!-- Product Detail Modal -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-popup">
+        <div class="loading-spinner"></div>
+        <h3>Processing Order...</h3>
+        <p>Please wait while we confirm your order</p>
+    </div>
+</div>
+
 <div id="detailModal" class="detail-modal">
     <div class="detail-content">
         <span class="close-detail" onclick="closeDetailModal()">&times;</span>
         <img id="detailImg" class="detail-img" src="">
         <div id="detailName" class="detail-name"></div>
-        <div>
-            <span id="detailPrice" class="detail-price"></span>
-            <span id="detailOldPrice" class="detail-old-price"></span>
-        </div>
-        <div id="detailDiscount" class="detail-discount"></div>
-        <div id="detailDesc" class="detail-desc"></div>
-        <button id="detailAddBtn" class="detail-add-btn">🛒 Add to Cart</button>
+        <div><span id="detailPrice" class="product-price"></span><span id="detailOldPrice" class="product-old-price"></span></div>
+        <div id="detailDiscount" class="product-discount-badge" style="margin:10px 0;"></div>
+        <div id="detailDesc" style="color:#666;margin:10px 0;"></div>
+        <button class="add-to-cart" onclick="addToCartFromDetail()">🛒 Add to Cart</button>
     </div>
 </div>
 
-<!-- Checkout Modal -->
 <div id="checkoutModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()">&times;</span>
         <h3>🛒 Your Cart</h3>
-        
         <div class="order-summary" id="orderSummary"></div>
         
-        <div style="margin-top:10px;">
-            <button class="clear-cart-btn" onclick="clearCart()">🗑️ Clear All Items</button>
-        </div>
-        
-        <div class="discount-box" id="discountBox" style="display:none;"></div>
-        
-        <div class="form-group" style="margin-top:15px;">
+        <div class="form-group">
             <input type="text" id="custName" placeholder="Full Name *">
         </div>
         <div class="form-group">
@@ -136,25 +120,21 @@
         
         <h3>💳 Select Payment Method</h3>
         <div class="payment-options">
-            <div class="payment-btn" onclick="selectPayment('cod', this)">
-                💵 Cash on Delivery
-                <span class="payment-detail">Pay on delivery</span>
-            </div>
-            <div class="payment-btn" onclick="selectPayment('phonepe', this)">
-                📱 PhonePe
-                <span class="payment-detail">Instant UPI</span>
-            </div>
-            <div class="payment-btn" onclick="selectPayment('gpay', this)">
-                🔵 Google Pay
-                <span class="payment-detail">Instant UPI</span>
-            </div>
-            <div class="payment-btn" onclick="selectPayment('paytm', this)">
-                🟦 Paytm
-                <span class="payment-detail">Instant UPI</span>
-            </div>
+            <div class="payment-btn" onclick="selectPayment('cod', this)">💵 Cash on Delivery</div>
+            <div class="payment-btn" onclick="selectPayment('phonepe', this)">📱 PhonePe</div>
+            <div class="payment-btn" onclick="selectPayment('gpay', this)">🔵 Google Pay</div>
+            <div class="payment-btn" onclick="selectPayment('paytm', this)">🟦 Paytm</div>
         </div>
         
-        <button class="confirm-btn" onclick="confirmOrder()">✅ Confirm Order</button>
+        <!-- UTR Section - Online Payment के बाद दिखेगा -->
+        <div id="utrSection" class="utr-section">
+            <div style="font-weight:bold;">🔢 Enter Payment UTR Number</div>
+            <div style="font-size:12px; color:#666;">Payment करने के बाद मिलने वाला UTR/Transaction ID डालें</div>
+            <input type="text" id="utrNumber" placeholder="e.g., 123456789012">
+            <div id="paymentStatus" class="payment-status"></div>
+        </div>
+        
+        <button class="confirm-btn" id="confirmBtn" onclick="finalConfirmOrder()">✅ Confirm Order</button>
     </div>
 </div>
 
@@ -162,24 +142,22 @@
 
 <script>
     const products = [
-        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples. Rich in fiber and antioxidants. Perfect for daily health." },
-        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain premium basmati rice. Aromatic and fluffy. Ideal for biryani and pulao." },
-        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure and natural honey. No additives. Boosts immunity and energy." },
-        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables pack. Includes tomato, onion, potato, and more." },
-        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices. Turmeric, cumin, coriander, red chili, garam masala." },
-        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds. Rich in Vitamin E and healthy fats." },
-        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Premium Assam tea leaves. Strong and refreshing taste." },
-        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed groundnut oil. Chemical-free and healthy." },
-        { id: 9, name: "Protein Powder", price: 899, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Whey protein powder. Builds muscle and boosts recovery." },
-        { id: 10, name: "Dry Fruits Combo", price: 649, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed dry fruits - cashews, almonds, raisins, walnuts." }
+        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples. Rich in fiber and antioxidants." },
+        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain premium basmati rice." },
+        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure and natural honey." },
+        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables pack." },
+        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices." },
+        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds." },
+        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Premium Assam tea leaves." },
+        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed groundnut oil." }
     ];
 
     let cart = [];
     let selectedPayment = null;
     let currentProduct = null;
+    let paymentInitiated = false;
 
     function getDiscountedPrice(price) { return Math.round(price * 0.9); }
-    function getDiscountAmount(price) { return price - getDiscountedPrice(price); }
 
     const UPI_IDS = { gpay: "karanyadavji971@okhdfcbank", paytm: "kara971@ptaxis", phonepe: "9267982460@ybl" };
     const EMAILJS_PUBLIC_KEY = "EE236Vmj4RMCjX1Dq";
@@ -205,8 +183,10 @@
         if (existing) existing.quantity++;
         else cart.push({ ...product, quantity: 1, discountedPrice: getDiscountedPrice(product.price) });
         saveCart();
-        showToast(`✅ ${product.name} added to cart! (10% off)`);
+        showToast(`✅ ${product.name} added!`);
     }
+
+    function addToCartFromDetail() { addToCart(currentProduct.id); closeDetailModal(); }
 
     function updateQuantity(productId, change) {
         const item = cart.find(i => i.id === productId);
@@ -225,14 +205,6 @@
         showToast(`🗑️ Item removed`);
     }
 
-    function clearCart() {
-        if (cart.length === 0) { showToast("Cart is empty!"); return; }
-        cart = [];
-        saveCart();
-        if (document.getElementById('checkoutModal').style.display === 'flex') showCartModal();
-        showToast(`🗑️ All items cleared`);
-    }
-
     function getTotal() { return cart.reduce((sum, item) => sum + (item.discountedPrice * item.quantity), 0); }
     function getOriginalTotal() { return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); }
 
@@ -240,16 +212,12 @@
         const container = document.getElementById('productsGrid');
         container.innerHTML = products.map(p => {
             const discounted = getDiscountedPrice(p.price);
-            const discountAmount = p.price - discounted;
             return `
             <div class="product-card" onclick="showProductDetail(${p.id})">
                 <img class="product-img" src="${p.image}" onerror="this.src='https://via.placeholder.com/150'">
                 <div class="product-name">${p.name}</div>
-                <div>
-                    <span class="product-price">₹${discounted}</span>
-                    <span class="product-old-price">₹${p.price}</span>
-                </div>
-                <div class="product-discount-badge">🔥 ${discountAmount} off</div>
+                <div><span class="product-price">₹${discounted}</span><span class="product-old-price">₹${p.price}</span></div>
+                <div class="product-discount-badge">🔥 ${p.price - discounted} off</div>
                 <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart</button>
             </div>
         `}).join('');
@@ -262,52 +230,38 @@
         document.getElementById('detailName').innerHTML = currentProduct.name;
         document.getElementById('detailPrice').innerHTML = `₹${discounted}`;
         document.getElementById('detailOldPrice').innerHTML = `₹${currentProduct.price}`;
-        document.getElementById('detailDiscount').innerHTML = `🔥 You save ₹${currentProduct.price - discounted} (10% OFF)`;
+        document.getElementById('detailDiscount').innerHTML = `🔥 You save ₹${currentProduct.price - discounted}`;
         document.getElementById('detailDesc').innerHTML = currentProduct.desc;
-        document.getElementById('detailAddBtn').onclick = () => { addToCart(productId); closeDetailModal(); };
         document.getElementById('detailModal').style.display = 'flex';
     }
 
     function closeDetailModal() { document.getElementById('detailModal').style.display = 'none'; }
 
     function showCartModal() {
-        if (cart.length === 0) { showToast("Cart is empty!"); document.getElementById('checkoutModal').style.display = 'none'; return; }
+        if (cart.length === 0) { showToast("Cart is empty!"); return; }
         
         const summaryDiv = document.getElementById('orderSummary');
         let itemsHtml = "";
         cart.forEach(item => {
-            const itemTotal = item.discountedPrice * item.quantity;
-            const originalTotal = item.price * item.quantity;
             itemsHtml += `
                 <div class="cart-item-row">
-                    <img class="cart-item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/50'">
+                    <img class="cart-item-img" src="${item.image}">
                     <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">₹${item.discountedPrice} <span style="text-decoration:line-through;color:#999;">₹${item.price}</span></div>
-                        <div class="cart-item-quantity">
-                            <button onclick="updateQuantity(${item.id}, -1)">-</button>
-                            <span>${item.quantity}</span>
-                            <button onclick="updateQuantity(${item.id}, 1)">+</button>
-                        </div>
+                        <div>${item.name} x ${item.quantity}</div>
+                        <div>₹${item.discountedPrice} <span style="text-decoration:line-through;">₹${item.price}</span></div>
+                        <div><button onclick="updateQuantity(${item.id}, -1)">-</button> <button onclick="updateQuantity(${item.id}, 1)">+</button></div>
                     </div>
                     <button class="remove-item-btn" onclick="removeFromCart(${item.id})">✕</button>
                 </div>
             `;
         });
-        
-        const originalTotal = getOriginalTotal();
-        const finalTotal = getTotal();
-        itemsHtml += `<div style="border-top:2px solid #ddd; padding-top:10px; margin-top:5px;">
-            <div style="display:flex; justify-content:space-between;"><span>Original Total</span><span>₹${originalTotal}</span></div>
-            <div style="display:flex; justify-content:space-between; color:#2e7d32;"><span>Discount (10%)</span><span>- ₹${originalTotal - finalTotal}</span></div>
-            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-top:10px;"><span>Total to Pay</span><span style="color:#2874f0;">₹${finalTotal}</span></div>
-        </div>`;
+        itemsHtml += `<div style="border-top:2px solid #ddd; padding-top:10px;"><strong>Total: ₹${getTotal()}</strong> (Saved ₹${getOriginalTotal() - getTotal()})</div>`;
         summaryDiv.innerHTML = itemsHtml;
         
-        document.getElementById('discountBox').innerHTML = `🎉 You saved ₹${originalTotal - finalTotal} with 10% discount!`;
-        document.getElementById('discountBox').style.display = "block";
-        
         selectedPayment = null;
+        paymentInitiated = false;
+        document.getElementById('utrSection').style.display = 'none';
+        document.getElementById('utrNumber').value = '';
         document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('selected'));
         document.getElementById('checkoutModal').style.display = 'flex';
     }
@@ -316,42 +270,68 @@
         selectedPayment = method;
         document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('selected'));
         btnElement.classList.add('selected');
-        showToast(`✅ Selected: ${method === 'cod' ? 'Cash on Delivery' : method}`);
+        
+        if (method !== 'cod') {
+            // Online Payment: पहले payment करनी होगी
+            const total = getTotal();
+            const upiId = UPI_IDS[method];
+            let upiUrl = "";
+            if (method === 'phonepe') upiUrl = `phonepe://pay?pa=${upiId}&pn=Discount%20Zone&am=${total}&cu=INR`;
+            else if (method === 'gpay') upiUrl = `tez://upi/pay?pa=${upiId}&pn=Discount%20Zone&am=${total}&cu=INR`;
+            else if (method === 'paytm') upiUrl = `paytmmp://pay?pa=${upiId}&pn=Discount%20Zone&am=${total}&cu=INR`;
+            
+            // Payment App खोलें
+            window.location.href = upiUrl;
+            
+            // Payment के बाद वापस आने पर UTR दिखाएं
+            setTimeout(() => {
+                document.getElementById('utrSection').style.display = 'block';
+                document.getElementById('paymentStatus').innerHTML = "✅ Payment initiated. Please enter the UTR number after completing payment.";
+                paymentInitiated = true;
+                showToast("📱 Payment app opened. Complete payment and come back to enter UTR.");
+            }, 1000);
+        } else {
+            // COD: सीधा UTR नहीं चाहिए
+            document.getElementById('utrSection').style.display = 'none';
+            paymentInitiated = true;
+        }
     }
 
-    async function confirmOrder() {
+    function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+    function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
+
+    async function finalConfirmOrder() {
         const customerName = document.getElementById('custName').value.trim();
         const customerPhone = document.getElementById('custPhone').value.trim();
         const customerAddress = document.getElementById('custAddress').value.trim();
+        const utrNumber = document.getElementById('utrNumber').value.trim();
         
         if (!customerName) { showToast("Enter your name"); return; }
         if (!customerPhone || customerPhone.length < 10) { showToast("Enter valid phone number"); return; }
         if (!selectedPayment) { showToast("Select payment method"); return; }
+        
+        // Online Payment के लिए UTR चाहिए
+        if (selectedPayment !== 'cod' && !utrNumber) {
+            showToast("❌ Please complete payment first and enter UTR/Transaction ID");
+            return;
+        }
+        
         if (cart.length === 0) { showToast("Cart is empty!"); return; }
+        
+        showLoading();
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
         const originalTotal = getOriginalTotal();
         const finalTotal = getTotal();
         const paymentNames = { cod: "Cash on Delivery", phonepe: "PhonePe", gpay: "Google Pay", paytm: "Paytm" };
-        const paymentType = selectedPayment === 'cod' ? "💰 CASH ON DELIVERY" : "💳 ONLINE PAYMENT";
+        const paymentType = selectedPayment === 'cod' ? "CASH ON DELIVERY" : "ONLINE PAYMENT";
         
         let itemsList = "";
         cart.forEach(item => {
             itemsList += `- ${item.name}: ₹${item.price} x ${item.quantity} = ₹${item.price * item.quantity} → After 10% OFF: ₹${item.discountedPrice * item.quantity}\n`;
         });
         itemsList += `\n📊 ORDER SUMMARY:\nOriginal Total: ₹${originalTotal}\nDiscount (10%): -₹${originalTotal - finalTotal}\n💰 Final Amount: ₹${finalTotal}\n💳 Payment Type: ${paymentType} (${paymentNames[selectedPayment]})`;
-        
-        let paymentMessage = "";
-        if (selectedPayment === 'cod') {
-            paymentMessage = `💰 Cash on Delivery: ₹${finalTotal} to pay on delivery`;
-        } else {
-            const upiId = UPI_IDS[selectedPayment];
-            let upiUrl = "";
-            if (selectedPayment === 'phonepe') upiUrl = `phonepe://pay?pa=${upiId}&pn=Discount%20Zone&am=${finalTotal}&cu=INR`;
-            else if (selectedPayment === 'gpay') upiUrl = `tez://upi/pay?pa=${upiId}&pn=Discount%20Zone&am=${finalTotal}&cu=INR`;
-            else if (selectedPayment === 'paytm') upiUrl = `paytmmp://pay?pa=${upiId}&pn=Discount%20Zone&am=${finalTotal}&cu=INR`;
-            window.location.href = upiUrl;
-            paymentMessage = `${paymentNames[selectedPayment]} payment of ₹${finalTotal} - Complete in app`;
-        }
+        if (utrNumber) itemsList += `\n🔢 UTR/Transaction ID: ${utrNumber}`;
         
         const templateParams = {
             to_email: OWNER_EMAIL,
@@ -363,21 +343,29 @@
             discount: `₹${originalTotal - finalTotal}`,
             order_total: `₹${finalTotal}`,
             payment_method: paymentNames[selectedPayment],
-            payment_type: selectedPayment === 'cod' ? "CASH ON DELIVERY" : "ONLINE PAYMENT",
+            payment_type: paymentType,
+            utr_number: utrNumber || "Not applicable (COD)",
             order_date: new Date().toLocaleString()
         };
         
         try { await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams); } catch(e) { console.log("Email error"); }
         
-        alert(`🎉 ORDER CONFIRMED!\n\nCustomer: ${customerName}\nPhone: ${customerPhone}\nOriginal: ₹${originalTotal}\nDiscount: ₹${originalTotal - finalTotal}\nTotal: ₹${finalTotal}\n\n💳 PAYMENT TYPE: ${paymentType}\nMethod: ${paymentNames[selectedPayment]}\n\n${paymentMessage}\n\nWe will contact you shortly.`);
+        hideLoading();
+        
+        if (selectedPayment !== 'cod') {
+            alert(`🎉 ORDER CONFIRMED!\n\nCustomer: ${customerName}\nPhone: ${customerPhone}\nTotal: ₹${finalTotal}\n\n💳 PAYMENT: ${paymentNames[selectedPayment]}\n🔢 UTR Number: ${utrNumber}\n\n✅ Your order has been placed. We will verify payment and contact you shortly.`);
+        } else {
+            alert(`🎉 ORDER CONFIRMED!\n\nCustomer: ${customerName}\nPhone: ${customerPhone}\nTotal: ₹${finalTotal}\n\n💳 PAYMENT: Cash on Delivery\n💰 Pay ₹${finalTotal} on delivery.\n\nWe will contact you shortly.`);
+        }
         
         cart = []; saveCart(); updateCartCount();
         document.getElementById('custName').value = '';
         document.getElementById('custPhone').value = '';
         document.getElementById('custAddress').value = '';
+        document.getElementById('utrNumber').value = '';
         selectedPayment = null;
         closeModal();
-        showToast("Order placed! Check email for details.");
+        showToast("✅ Order placed! Check email for details.");
     }
 
     function closeModal() { document.getElementById('checkoutModal').style.display = 'none'; }
@@ -385,7 +373,7 @@
         const toast = document.getElementById('toast');
         toast.innerText = msg;
         toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 2500);
+        setTimeout(() => toast.style.display = 'none', 3000);
     }
 
     loadCart();
