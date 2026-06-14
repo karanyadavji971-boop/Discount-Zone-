@@ -22,6 +22,7 @@
         .logout-btn{background:#ff6b35;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
         .order-history-btn{background:#ff9800;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
         .support-header-btn{background:#25D366;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:5px;}
+        .admin-link{background:#1a1a2e;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;text-decoration:none;}
         
         .cart-icon{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
         .cart-icon:hover{background:#1b5e20;}
@@ -64,7 +65,6 @@
         .login-modal{text-align:center;}
         .login-modal input{width:100%;padding:10px;margin:10px 0;border:1px solid #ddd;border-radius:8px;}
         
-        /* Product Detail Styles */
         .detail-modal-content{max-width:500px;}
         .detail-img{width:100%;max-height:250px;object-fit:contain;border-radius:10px;}
         .detail-name{font-size:22px;font-weight:bold;margin:15px 0 5px;}
@@ -105,7 +105,7 @@
 <div class="cart-icon" onclick="showCartModal()">🛒<span class="cart-count" id="cartCount">0</span></div>
 
 <div id="loadingOverlay" class="loading-overlay">
-    <div class="loading-popup"><div class="spinner"></div><h3>Processing Order...</h3><p>Please wait...</p></div>
+    <div class="loading-popup"><div class="spinner"></div><h3>Loading...</h3><p>Please wait</p></div>
 </div>
 
 <div id="loginModal" class="modal">
@@ -124,7 +124,7 @@
     <div class="modal-content">
         <span class="close-modal" onclick="closeHistoryModal()">&times;</span>
         <h3>📦 My Orders</h3>
-        <div id="orderHistoryList"></div>
+        <div id="orderHistoryList" style="max-height:60vh; overflow-y:auto;"></div>
     </div>
 </div>
 
@@ -180,7 +180,6 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    // EmailJS
     emailjs.init("EE236Vmj4RMCjX1Dq");
     const EMAILJS_SERVICE_ID = "service_gbou2dl";
     const EMAILJS_TEMPLATE_ID = "template_lp2zf4b";
@@ -192,14 +191,14 @@
     let currentProduct = null;
 
     const products = [
-        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples grown naturally without pesticides. Rich in fiber, vitamins, and antioxidants. Perfect for daily health and immunity.", features: ["100% Organic", "No Pesticides", "Rich in Fiber & Vitamin C", "Direct from Farm", "Crunchy & Sweet"] },
-        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain premium basmati rice known for its aromatic flavor and fluffy texture. Aged for perfect taste. Ideal for biryani, pulao, and daily meals.", features: ["Aged 1 Year", "Long Grains", "Aromatic", "Non-Sticky", "Perfect for Biryani"] },
-        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure and natural honey collected from wild forests. No added sugar, no preservatives. Boosts immunity, energy, and overall health.", features: ["100% Pure", "No Added Sugar", "Natural Sweetener", "Rich in Antioxidants", "Ayurvedic Benefits"] },
-        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables pack including seasonal veggies. Harvested fresh daily. Perfect for family meals and healthy cooking.", features: ["Daily Fresh", "Seasonal Mix", "Farm Direct", "Washed & Packed", "5-6 Varieties"] },
-        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices - Turmeric, Cumin, Coriander, Red Chili, Garam Masala. Chemical-free and naturally grown. Authentic Indian taste.", features: ["100% Organic", "No Preservatives", "Authentic Taste", "Chemical Free", "5 Spices Set"] },
-        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds rich in Vitamin E, healthy fats, and antioxidants. Good for brain health, skin, and immunity.", features: ["Premium Quality", "Rich in Vitamin E", "Heart Healthy", "Good for Brain", "Natural & Raw"] },
-        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Premium Assam tea leaves with strong, malty flavor. Perfect for morning tea and evening refreshment. Rich in antioxidants.", features: ["Assam CTC", "Strong Flavor", "Rich Aroma", "250g Pack", "Refreshing"] },
-        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed groundnut oil extracted using traditional wooden churner method. Chemical-free, retains natural nutrients and flavor.", features: ["Cold Pressed", "No Chemicals", "Wood Churned", "Rich in Nutrients", "1 Liter"] }
+        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples grown naturally without pesticides.", features: ["100% Organic", "No Pesticides", "Rich in Fiber & Vitamin C"] },
+        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain premium basmati rice, aromatic and fluffy.", features: ["Aged 1 Year", "Long Grains", "Perfect for Biryani"] },
+        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure natural honey. No added sugar.", features: ["100% Pure", "No Added Sugar", "Rich in Antioxidants"] },
+        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables pack.", features: ["Daily Fresh", "Farm Direct", "5-6 Varieties"] },
+        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices.", features: ["100% Organic", "No Preservatives", "Authentic Taste"] },
+        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds.", features: ["Premium Quality", "Rich in Vitamin E", "Heart Healthy"] },
+        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Premium Assam tea leaves.", features: ["Assam CTC", "Strong Flavor", "250g Pack"] },
+        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed groundnut oil.", features: ["Cold Pressed", "No Chemicals", "Wood Churned"] }
     ];
 
     const UPI_IDS = { gpay: "karanyadavji971@okhdfcbank", paytm: "kara971@ptaxis", phonepe: "9267982460@ybl" };
@@ -239,12 +238,10 @@
         document.getElementById('detailOldPrice').innerHTML = `₹${currentProduct.price}`;
         document.getElementById('detailDiscount').innerHTML = `🔥 You save ₹${currentProduct.price - discounted} (10% OFF)`;
         document.getElementById('detailDesc').innerHTML = currentProduct.desc;
-        
         let featuresHtml = `<h4>✨ Product Features:</h4><ul>`;
         currentProduct.features.forEach(f => { featuresHtml += `<li>✅ ${f}</li>`; });
         featuresHtml += `</ul>`;
         document.getElementById('detailFeatures').innerHTML = featuresHtml;
-        
         document.getElementById('detailModal').style.display = 'flex';
     }
 
@@ -375,6 +372,7 @@
     }
 
     auth.onAuthStateChanged((user) => { currentUser = user; updateUI(); });
+    
     function updateUI() {
         if(currentUser){
             let displayName = currentUser.displayName;
@@ -384,6 +382,7 @@
                 <span class="user-name">👤 ${displayName}</span>
                 <button class="order-history-btn" onclick="showOrderHistory()">📋 Orders</button>
                 <button class="support-header-btn" onclick="openWhatsApp()">💬 Support</button>
+                <a href="admin.html" class="admin-link" target="_blank">👑 Admin</a>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>`;
         } else {
@@ -415,21 +414,35 @@
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
         showLoading(true);
-        const snapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).orderBy("date","desc").get();
-        let html = "";
-        snapshot.forEach(doc => {
-            const o = doc.data();
-            html += `<div style="background:#f0f4f0; padding:10px; border-radius:8px; margin-bottom:10px;">
-                <strong>${o.orderId}</strong> | ${new Date(o.date).toLocaleString()}<br>
-                ${o.items.replace(/\n/g,'<br>')}<br>
-                Subtotal: ₹${o.subtotal} | Delivery: ${o.deliveryCharge===0?'FREE':'₹'+o.deliveryCharge}<br>
-                <strong>Total: ₹${o.total}</strong> | Status: <strong style="color:#2e7d32;">${o.status}</strong><br>
-                🔑 Delivery OTP: <strong>${o.deliveryOtp}</strong>
-            </div>`;
-        });
-        showLoading(false);
-        document.getElementById('orderHistoryList').innerHTML = html || "<p>No orders yet</p>";
-        document.getElementById('historyModal').style.display = 'flex';
+        try {
+            const snapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).orderBy("date","desc").get();
+            let html = "";
+            if(snapshot.empty) {
+                html = "<p style='text-align:center; padding:20px;'>No orders yet</p>";
+            } else {
+                snapshot.forEach(doc => {
+                    const o = doc.data();
+                    html += `<div style="background:#f0f4f0; padding:12px; border-radius:10px; margin-bottom:12px; border-left:4px solid #2e7d32;">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
+                            <strong style="color:#2e7d32;">${o.orderId}</strong>
+                            <span style="font-size:12px; color:#666;">${new Date(o.date).toLocaleString()}</span>
+                        </div>
+                        <div style="font-size:13px; margin:8px 0;">${o.items.replace(/\n/g,'<br>')}</div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px solid #ddd;">
+                            <span>💰 Total: <strong>₹${o.total}</strong></span>
+                            <span>📦 Status: <strong style="color:#2e7d32;">${o.status}</strong></span>
+                            <span>🔑 OTP: <strong>${o.deliveryOtp}</strong></span>
+                        </div>
+                    </div>`;
+                });
+            }
+            document.getElementById('orderHistoryList').innerHTML = html;
+            showLoading(false);
+            document.getElementById('historyModal').style.display = 'flex';
+        } catch(e) {
+            showLoading(false);
+            showToast("Error loading orders: " + e.message);
+        }
     }
     
     function closeModal() { document.getElementById('checkoutModal').style.display = 'none'; }
