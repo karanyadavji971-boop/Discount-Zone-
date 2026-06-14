@@ -7,11 +7,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f0;color:#1a1a1a;}
         
-        /* Eye-Friendly Theme - Soft Green */
         .header{background:#2e7d32;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
         .header h1{color:white;font-size:22px;}
         .header p{color:#c8e6c9;font-size:11px;margin-top:4px;}
@@ -21,6 +21,7 @@
         .user-name{background:#1b5e20;padding:5px 12px;border-radius:25px;font-size:13px;font-weight:500;}
         .logout-btn{background:#ff6b35;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
         .order-history-btn{background:#ff9800;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
+        .support-header-btn{background:#25D366;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:5px;}
         
         .cart-icon{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
         .cart-icon:hover{background:#1b5e20;}
@@ -41,33 +42,46 @@
         .add-to-cart:hover{background:#fb641b;}
         
         .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:1000;}
-        .modal-content{background:white;border-radius:20px;width:90%;max-width:450px;padding:20px;max-height:85vh;overflow-y:auto;}
+        .modal-content{background:white;border-radius:20px;width:90%;max-width:500px;padding:20px;max-height:85vh;overflow-y:auto;}
         .modal h3{color:#2e7d32;margin-bottom:15px;}
         .close-modal{float:right;font-size:22px;cursor:pointer;color:#666;}
         .form-group{margin-bottom:12px;}
         .form-group input,.form-group textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;}
-        .order-summary{background:#f0f4f0;padding:10px;border-radius:8px;margin:10px 0;max-height:250px;overflow-y:auto;}
-        .cart-item{display:flex;justify-content:space-between;margin-bottom:8px;padding:5px;background:white;border-radius:6px;}
+        .order-summary{background:#f0f4f0;padding:10px;border-radius:8px;margin:10px 0;max-height:300px;overflow-y:auto;}
+        .cart-item{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px;background:white;border-radius:8px;}
+        .cart-item-img{width:50px;height:50px;object-fit:contain;border-radius:6px;}
+        .cart-item-details{flex:1;}
+        .cart-item-name{font-size:13px;font-weight:500;}
+        .cart-item-price{font-size:12px;color:#2e7d32;}
+        .cart-item-quantity{display:flex;align-items:center;gap:5px;margin-top:4px;}
+        .cart-item-quantity button{background:#f0f4f0;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;}
+        .remove-cart-item{background:#ff4444;color:white;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;font-size:12px;}
+        
         .payment-btn{background:#f0f4f0;padding:12px;border-radius:10px;cursor:pointer;margin-bottom:10px;text-align:center;border:2px solid #ddd;}
         .payment-btn.selected{background:#2e7d32;color:white;}
         .confirm-btn{background:#fb641b;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;}
         .toast{position:fixed;bottom:100px;left:20px;right:20px;background:#1a1a2e;color:white;padding:12px;border-radius:10px;text-align:center;display:none;z-index:1100;}
         .login-modal{text-align:center;}
         .login-modal input{width:100%;padding:10px;margin:10px 0;border:1px solid #ddd;border-radius:8px;}
+        
+        /* Product Detail Styles */
         .detail-modal-content{max-width:500px;}
-        .detail-img{width:100%;max-height:250px;object-fit:contain;}
-        .detail-name{font-size:22px;font-weight:bold;margin:10px 0;}
-        .detail-price{font-size:24px;color:#2e7d32;font-weight:bold;}
-        .detail-old-price{text-decoration:line-through;color:#999;margin-left:8px;}
-        .detail-desc{color:#555;margin:15px 0;line-height:1.5;}
-        .detail-features{background:#f0f4f0;padding:10px;border-radius:8px;margin:10px 0;}
-        .detail-features li{margin-left:20px;color:#555;}
+        .detail-img{width:100%;max-height:250px;object-fit:contain;border-radius:10px;}
+        .detail-name{font-size:22px;font-weight:bold;margin:15px 0 5px;}
+        .detail-price{font-size:28px;color:#2e7d32;font-weight:bold;}
+        .detail-old-price{text-decoration:line-through;color:#999;font-size:16px;margin-left:10px;}
+        .detail-discount-badge{background:#ff9800;color:white;font-size:12px;padding:4px 10px;border-radius:20px;display:inline-block;margin:10px 0;}
+        .detail-desc{color:#555;margin:15px 0;line-height:1.6;font-size:14px;}
+        .detail-features{background:#f0f4f0;padding:12px;border-radius:10px;margin:10px 0;}
+        .detail-features h4{color:#2e7d32;margin-bottom:8px;}
+        .detail-features ul{margin-left:20px;color:#555;}
+        .detail-features li{margin:5px 0;}
+        
         .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center;z-index:2000;}
         .loading-popup{background:white;border-radius:20px;padding:30px;text-align:center;}
         .spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid #2e7d32;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px;}
         @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
         footer{text-align:center;padding:20px;color:#666;font-size:12px;}
-        .welcome-text{font-size:12px;margin-top:4px;color:#c8e6c9;}
     </style>
 </head>
 <body>
@@ -90,16 +104,10 @@
 
 <div class="cart-icon" onclick="showCartModal()">🛒<span class="cart-count" id="cartCount">0</span></div>
 
-<!-- Loading Popup -->
 <div id="loadingOverlay" class="loading-overlay">
-    <div class="loading-popup">
-        <div class="spinner"></div>
-        <h3>Processing Order...</h3>
-        <p>Please wait while we confirm your order</p>
-    </div>
+    <div class="loading-popup"><div class="spinner"></div><h3>Processing Order...</h3><p>Please wait...</p></div>
 </div>
 
-<!-- Login Modal -->
 <div id="loginModal" class="modal">
     <div class="modal-content login-modal">
         <span class="close-modal" onclick="closeLoginModal()">&times;</span>
@@ -112,7 +120,6 @@
     </div>
 </div>
 
-<!-- Order History Modal -->
 <div id="historyModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeHistoryModal()">&times;</span>
@@ -121,21 +128,19 @@
     </div>
 </div>
 
-<!-- Product Detail Modal -->
 <div id="detailModal" class="modal">
     <div class="modal-content detail-modal-content">
         <span class="close-modal" onclick="closeDetailModal()">&times;</span>
         <img id="detailImg" class="detail-img" src="">
         <div id="detailName" class="detail-name"></div>
         <div><span id="detailPrice" class="detail-price"></span><span id="detailOldPrice" class="detail-old-price"></span></div>
-        <div id="detailDiscount" class="product-discount-badge" style="display:inline-block; margin:10px 0;"></div>
+        <div id="detailDiscount" class="detail-discount-badge"></div>
         <div id="detailDesc" class="detail-desc"></div>
         <div id="detailFeatures" class="detail-features"></div>
-        <button class="add-to-cart" onclick="addToCartFromDetail()">🛒 Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCartFromDetail()" style="margin-top:15px;">🛒 Add to Cart</button>
     </div>
 </div>
 
-<!-- Checkout Modal -->
 <div id="checkoutModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -144,6 +149,7 @@
         <div class="form-group"><input type="text" id="custName" placeholder="Full Name *"></div>
         <div class="form-group"><input type="tel" id="custPhone" placeholder="Phone Number *"></div>
         <div class="form-group"><textarea id="custAddress" placeholder="Delivery Address"></textarea></div>
+        <div id="deliveryChargeDisplay" style="background:#f0f4f0; padding:10px; border-radius:8px; margin:10px 0; text-align:center;"></div>
         <h4>Select Payment Method</h4>
         <div class="payment-options">
             <div class="payment-btn" onclick="selectPayment('cod', this)">💵 Cash on Delivery</div>
@@ -152,10 +158,7 @@
             <div class="payment-btn" onclick="selectPayment('paytm', this)">🟦 Paytm</div>
         </div>
         <div id="utrSection" style="display:none; margin-top:15px;">
-            <div class="form-group">
-                <input type="text" id="utrNumber" placeholder="Enter UTR/Transaction ID *">
-                <small style="color:#666;">Payment करने के बाद मिलने वाला UTR Number डालें</small>
-            </div>
+            <div class="form-group"><input type="text" id="utrNumber" placeholder="Enter UTR/Transaction ID *"></div>
         </div>
         <button class="confirm-btn" onclick="finalConfirmOrder()">✅ Place Order</button>
     </div>
@@ -176,6 +179,12 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    
+    // EmailJS
+    emailjs.init("EE236Vmj4RMCjX1Dq");
+    const EMAILJS_SERVICE_ID = "service_gbou2dl";
+    const EMAILJS_TEMPLATE_ID = "template_lp2zf4b";
+    const OWNER_EMAIL = "abhishekbainsla363@gmail.com";
 
     let currentUser = null;
     let cart = [];
@@ -183,21 +192,23 @@
     let currentProduct = null;
 
     const products = [
-        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples grown naturally without pesticides.", features: ["100% Organic", "No Pesticides", "Rich in Fiber"] },
-        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain premium basmati rice, aromatic and fluffy.", features: ["Aged 1 Year", "Long Grains", "Perfect for Biryani"] },
-        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure natural honey. No added sugar.", features: ["100% Pure", "No Added Sugar", "Rich in Antioxidants"] },
-        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables pack.", features: ["Daily Fresh", "Farm Direct", "5-6 Varieties"] },
-        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices.", features: ["100% Organic", "No Preservatives", "Authentic Taste"] },
-        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds.", features: ["Premium Quality", "Rich in Vitamin E", "Heart Healthy"] },
-        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Premium Assam tea leaves.", features: ["Assam CTC", "Strong Flavor", "250g Pack"] },
-        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed groundnut oil.", features: ["Cold Pressed", "No Chemicals", "Wood Churned"] }
+        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples grown naturally without pesticides. Rich in fiber, vitamins, and antioxidants. Perfect for daily health and immunity.", features: ["100% Organic", "No Pesticides", "Rich in Fiber & Vitamin C", "Direct from Farm", "Crunchy & Sweet"] },
+        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain premium basmati rice known for its aromatic flavor and fluffy texture. Aged for perfect taste. Ideal for biryani, pulao, and daily meals.", features: ["Aged 1 Year", "Long Grains", "Aromatic", "Non-Sticky", "Perfect for Biryani"] },
+        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure and natural honey collected from wild forests. No added sugar, no preservatives. Boosts immunity, energy, and overall health.", features: ["100% Pure", "No Added Sugar", "Natural Sweetener", "Rich in Antioxidants", "Ayurvedic Benefits"] },
+        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables pack including seasonal veggies. Harvested fresh daily. Perfect for family meals and healthy cooking.", features: ["Daily Fresh", "Seasonal Mix", "Farm Direct", "Washed & Packed", "5-6 Varieties"] },
+        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices - Turmeric, Cumin, Coriander, Red Chili, Garam Masala. Chemical-free and naturally grown. Authentic Indian taste.", features: ["100% Organic", "No Preservatives", "Authentic Taste", "Chemical Free", "5 Spices Set"] },
+        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds rich in Vitamin E, healthy fats, and antioxidants. Good for brain health, skin, and immunity.", features: ["Premium Quality", "Rich in Vitamin E", "Heart Healthy", "Good for Brain", "Natural & Raw"] },
+        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Premium Assam tea leaves with strong, malty flavor. Perfect for morning tea and evening refreshment. Rich in antioxidants.", features: ["Assam CTC", "Strong Flavor", "Rich Aroma", "250g Pack", "Refreshing"] },
+        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed groundnut oil extracted using traditional wooden churner method. Chemical-free, retains natural nutrients and flavor.", features: ["Cold Pressed", "No Chemicals", "Wood Churned", "Rich in Nutrients", "1 Liter"] }
     ];
 
     const UPI_IDS = { gpay: "karanyadavji971@okhdfcbank", paytm: "kara971@ptaxis", phonepe: "9267982460@ybl" };
 
     function getDiscountedPrice(price) { return Math.round(price * 0.9); }
-    function getTotal() { return cart.reduce((s,i)=>s+(i.discountedPrice*i.quantity),0); }
-    function getOriginalTotal() { return cart.reduce((s,i)=>s+(i.price*i.quantity),0); }
+    function getCartSubtotal() { return cart.reduce((s,i)=>s+(i.discountedPrice*i.quantity),0); }
+    function getDeliveryCharge() { return getCartSubtotal() >= 500 ? 0 : 25; }
+    function getTotal() { return getCartSubtotal() + getDeliveryCharge(); }
+    
     function loadCart() { const saved = localStorage.getItem('discountZoneCart'); if(saved) cart = JSON.parse(saved); updateCartCount(); renderProducts(); }
     function saveCart() { localStorage.setItem('discountZoneCart', JSON.stringify(cart)); updateCartCount(); }
     function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s,i)=>s+i.quantity,0); }
@@ -212,8 +223,12 @@
         saveCart();
         showToast(`✅ ${product.name} added!`);
     }
-
     function addToCartFromDetail() { addToCart(currentProduct.id); closeDetailModal(); }
+    function removeFromCart(productId) { cart = cart.filter(i=>i.id!==productId); saveCart(); if(document.getElementById('checkoutModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
+    function updateQuantity(productId, change) {
+        const item = cart.find(i=>i.id===productId);
+        if(item) { item.quantity += change; if(item.quantity<=0) cart = cart.filter(i=>i.id!==productId); saveCart(); if(document.getElementById('checkoutModal').style.display==='flex') updateCartModal(); }
+    }
 
     function showProductDetail(productId) {
         currentProduct = products.find(p=>p.id===productId);
@@ -224,10 +239,12 @@
         document.getElementById('detailOldPrice').innerHTML = `₹${currentProduct.price}`;
         document.getElementById('detailDiscount').innerHTML = `🔥 You save ₹${currentProduct.price - discounted} (10% OFF)`;
         document.getElementById('detailDesc').innerHTML = currentProduct.desc;
-        let featuresHtml = "<ul>";
-        currentProduct.features.forEach(f => featuresHtml += `<li>✅ ${f}</li>`);
-        featuresHtml += "</ul>";
+        
+        let featuresHtml = `<h4>✨ Product Features:</h4><ul>`;
+        currentProduct.features.forEach(f => { featuresHtml += `<li>✅ ${f}</li>`; });
+        featuresHtml += `</ul>`;
         document.getElementById('detailFeatures').innerHTML = featuresHtml;
+        
         document.getElementById('detailModal').style.display = 'flex';
     }
 
@@ -244,12 +261,38 @@
         }).join('');
     }
 
+    function updateCartModal() {
+        if(cart.length===0){ showToast("Cart is empty!"); closeModal(); return; }
+        let html = "";
+        cart.forEach(item => {
+            html += `<div class="cart-item">
+                <img class="cart-item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/50'">
+                <div class="cart-item-details">
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">₹${item.discountedPrice}</div>
+                    <div class="cart-item-quantity">
+                        <button onclick="updateQuantity(${item.id}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateQuantity(${item.id}, 1)">+</button>
+                    </div>
+                </div>
+                <button class="remove-cart-item" onclick="removeFromCart(${item.id})">✕</button>
+            </div>`;
+        });
+        const subtotal = getCartSubtotal();
+        const delivery = getDeliveryCharge();
+        html += `<div style="border-top:2px solid #ddd; padding-top:10px; margin-top:5px;">
+            <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><span>₹${subtotal}</span></div>
+            <div style="display:flex; justify-content:space-between; color:#2e7d32;"><span>Delivery Charges:</span><span>${delivery===0 ? 'FREE' : '₹'+delivery}</span></div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-top:8px;"><span>Total:</span><span style="color:#2e7d32;">₹${subtotal+delivery}</span></div>
+        </div>`;
+        document.getElementById('orderSummary').innerHTML = html;
+        document.getElementById('deliveryChargeDisplay').innerHTML = delivery===0 ? '🎉 FREE DELIVERY! (Order above ₹500)' : `🚚 Delivery Charges: ₹${delivery} (Free on orders above ₹500)`;
+    }
+
     function showCartModal() {
         if(cart.length===0){showToast("Cart is empty!"); return;}
-        let html = "";
-        cart.forEach(item => { html += `<div class="cart-item"><span>${item.name} x ${item.quantity}</span><span>₹${item.discountedPrice * item.quantity}</span></div>`; });
-        html += `<div style="border-top:2px solid #ddd; padding-top:8px;"><strong>Total: ₹${getTotal()}</strong> (Saved ₹${getOriginalTotal()-getTotal()})</div>`;
-        document.getElementById('orderSummary').innerHTML = html;
+        updateCartModal();
         selectedPayment = null;
         document.getElementById('utrSection').style.display = 'none';
         document.getElementById('utrNumber').value = '';
@@ -262,7 +305,6 @@
         document.querySelectorAll('.payment-btn').forEach(btn=>btn.classList.remove('selected'));
         btn.classList.add('selected');
         document.getElementById('utrSection').style.display = method !== 'cod' ? 'block' : 'none';
-        
         if(method !== 'cod') {
             const total = getTotal();
             const upiId = UPI_IDS[method];
@@ -275,12 +317,28 @@
         }
     }
 
+    async function sendEmail(customerName, customerPhone, customerAddress, itemsList, subtotal, deliveryCharge, total, paymentMethod, utr) {
+        const templateParams = {
+            to_email: OWNER_EMAIL,
+            customer_name: customerName,
+            customer_phone: customerPhone,
+            customer_address: customerAddress || "Not provided",
+            order_items: itemsList,
+            subtotal: `₹${subtotal}`,
+            delivery_charge: deliveryCharge === 0 ? "FREE" : `₹${deliveryCharge}`,
+            order_total: `₹${total}`,
+            payment_method: paymentMethod,
+            utr_number: utr || "COD",
+            order_date: new Date().toLocaleString()
+        };
+        try { await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams); } catch(e){ console.log("Email error:", e); }
+    }
+
     async function finalConfirmOrder() {
         const name = document.getElementById('custName').value.trim();
         const phone = document.getElementById('custPhone').value.trim();
         const address = document.getElementById('custAddress').value.trim();
         const utr = document.getElementById('utrNumber').value.trim();
-        
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
         if(!name || !phone){ showToast("Enter name and phone"); return; }
         if(!selectedPayment){ showToast("Select payment method"); return; }
@@ -290,50 +348,50 @@
         showLoading(true);
         
         const orderId = "ORD" + Date.now() + Math.floor(Math.random()*1000);
-        const items = cart.map(i=>`${i.name} x${i.quantity} (₹${i.discountedPrice*i.quantity})`).join(", ");
+        let itemsList = "";
+        cart.forEach(item => {
+            itemsList += `- ${item.name}: ₹${item.price} x ${item.quantity} = ₹${item.price * item.quantity} → After 10% OFF: ₹${item.discountedPrice * item.quantity}\n`;
+        });
+        const subtotal = getCartSubtotal();
+        const deliveryCharge = getDeliveryCharge();
+        const total = getTotal();
         const deliveryOtp = Math.floor(100000+Math.random()*900000);
         const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
         
         const orderData = {
             orderId, date: new Date().toISOString(), customerEmail: currentUser.email, customerName: name,
-            customerPhone: phone, customerAddress: address, items, total: getTotal(), paymentMethod: paymentNames[selectedPayment],
+            customerPhone: phone, customerAddress: address, items: itemsList, subtotal: subtotal, 
+            deliveryCharge: deliveryCharge, total: total, paymentMethod: paymentNames[selectedPayment],
             utr: utr || "COD", status: "Pending", deliveryOtp: deliveryOtp
         };
         
         try {
             await db.collection("orders").add(orderData);
+            await sendEmail(name, phone, address, itemsList, subtotal, deliveryCharge, total, paymentNames[selectedPayment], utr);
             showLoading(false);
-            alert(`🎉 ORDER CONFIRMED!\nOrder ID: ${orderId}\nDelivery OTP: ${deliveryOtp}\nTotal: ₹${getTotal()}\n\nShow this OTP to delivery person.`);
+            alert(`🎉 ORDER CONFIRMED!\nOrder ID: ${orderId}\nDelivery OTP: ${deliveryOtp}\nTotal: ₹${total}\n\nShow this OTP to delivery person.`);
             cart = []; saveCart(); closeModal();
         } catch(e){ showLoading(false); showToast("Error: " + e.message); }
     }
 
-    // ========== AUTHENTICATION WITH CUSTOMER NAME DISPLAY ==========
-    auth.onAuthStateChanged((user) => { 
-        currentUser = user; 
-        updateUI(); 
-    });
-    
+    auth.onAuthStateChanged((user) => { currentUser = user; updateUI(); });
     function updateUI() {
         if(currentUser){
-            // Get display name or email username
             let displayName = currentUser.displayName;
-            if(!displayName && currentUser.email){
-                displayName = currentUser.email.split('@')[0];
-            }
+            if(!displayName && currentUser.email) displayName = currentUser.email.split('@')[0];
             if(!displayName) displayName = "Customer";
-            
-            document.getElementById('authSection').innerHTML = `
-                <div class="user-info">
-                    <span class="user-name">👤 ${displayName}</span>
-                    <button class="order-history-btn" onclick="showOrderHistory()">📋 Orders</button>
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                </div>
-            `;
+            document.getElementById('authSection').innerHTML = `<div class="user-info">
+                <span class="user-name">👤 ${displayName}</span>
+                <button class="order-history-btn" onclick="showOrderHistory()">📋 Orders</button>
+                <button class="support-header-btn" onclick="openWhatsApp()">💬 Support</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>`;
         } else {
             document.getElementById('authSection').innerHTML = `<button class="login-btn" onclick="showLoginModal()">🔐 Login / Sign Up</button>`;
         }
     }
+    
+    function openWhatsApp() { window.open('https://wa.me/919458051202', '_blank'); }
     
     async function loginWithEmail() {
         const email = document.getElementById('loginEmail').value;
@@ -356,16 +414,20 @@
     
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
+        showLoading(true);
         const snapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).orderBy("date","desc").get();
         let html = "";
         snapshot.forEach(doc => {
             const o = doc.data();
             html += `<div style="background:#f0f4f0; padding:10px; border-radius:8px; margin-bottom:10px;">
                 <strong>${o.orderId}</strong> | ${new Date(o.date).toLocaleString()}<br>
-                Items: ${o.items}<br>Total: ₹${o.total} | Status: <strong style="color:#2e7d32;">${o.status}</strong><br>
+                ${o.items.replace(/\n/g,'<br>')}<br>
+                Subtotal: ₹${o.subtotal} | Delivery: ${o.deliveryCharge===0?'FREE':'₹'+o.deliveryCharge}<br>
+                <strong>Total: ₹${o.total}</strong> | Status: <strong style="color:#2e7d32;">${o.status}</strong><br>
                 🔑 Delivery OTP: <strong>${o.deliveryOtp}</strong>
             </div>`;
         });
+        showLoading(false);
         document.getElementById('orderHistoryList').innerHTML = html || "<p>No orders yet</p>";
         document.getElementById('historyModal').style.display = 'flex';
     }
