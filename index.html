@@ -123,7 +123,7 @@
         <div class="form-group"><input type="text" id="custName" placeholder="Full Name *"></div>
         <div class="form-group"><input type="tel" id="custPhone" placeholder="Phone Number *"></div>
         <div class="form-group"><textarea id="custAddress" placeholder="Delivery Address"></textarea></div>
-        <div id="deliveryChargeDisplay" style="background:#f0f4f0; padding:10px; border-radius:8px; margin:10px 0; text-align:center;"></div>
+        <div id="deliveryChargeDisplay" style="background:#f0f4f0; padding:10px; border-radius:8px; margin:10px 0; text-align:center; font-weight:bold;"></div>
         <h4>Select Payment Method</h4>
         <div class="payment-options">
             <div class="payment-btn" onclick="selectPayment('cod', this)">💵 Cash on Delivery</div>
@@ -153,7 +153,6 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    
     emailjs.init("EE236Vmj4RMCjX1Dq");
     
     let currentUser = null;
@@ -253,12 +252,18 @@
         const subtotal = getCartSubtotal();
         const delivery = getDeliveryCharge();
         html += `<div style="border-top:2px solid #ddd; padding-top:10px;">
-            <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><span>₹${subtotal}</span></div>
-            <div style="display:flex; justify-content:space-between; color:#2e7d32;"><span>Delivery:</span><span>${delivery===0 ? 'FREE' : '₹'+delivery}</span></div>
-            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-top:8px;"><span>Total:</span><span style="color:#2e7d32;">₹${subtotal+delivery}</span></div>
+            <div style="display:flex; justify-content:space-between;"><span>🛒 Subtotal:</span><span>₹${subtotal}</span></div>
+            <div style="display:flex; justify-content:space-between; color:#2e7d32;"><span>🚚 Delivery Charges:</span><span>${delivery===0 ? 'Free' : '₹'+delivery}</span></div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-top:8px;"><span>💰 Total Amount:</span><span style="color:#2e7d32;">₹${subtotal+delivery}</span></div>
         </div>`;
         document.getElementById('orderSummary').innerHTML = html;
-        document.getElementById('deliveryChargeDisplay').innerHTML = delivery===0 ? '🎉 FREE DELIVERY! (Above ₹500)' : `🚚 Delivery: ₹${delivery} (Free above ₹500)`;
+        
+        // Delivery info display
+        if(delivery === 0) {
+            document.getElementById('deliveryChargeDisplay').innerHTML = '🎉 FREE DELIVERY! (Free delivery on orders above ₹500)';
+        } else {
+            document.getElementById('deliveryChargeDisplay').innerHTML = `🚚 Delivery Charges: ₹${delivery} (Free delivery on orders above ₹500)`;
+        }
     }
 
     function showCartModal() {
@@ -330,7 +335,7 @@
             };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             showLoading(false);
-            alert(`🎉 ORDER CONFIRMED!\nOrder ID: ${orderId}\nDelivery OTP: ${deliveryOtp}\nTotal: ₹${total}`);
+            alert(`🎉 ORDER CONFIRMED!\nOrder ID: ${orderId}\nDelivery OTP: ${deliveryOtp}\nTotal Amount: ₹${total}`);
             cart = []; saveCart(); closeModal(); updateCartCount();
         } catch(e){ showLoading(false); showToast("Error: " + e.message); }
     }
@@ -385,12 +390,15 @@
             if(orders.length===0) html = "<p style='text-align:center; padding:20px;'>No orders yet</p>";
             else orders.forEach(o => {
                 html += `<div style="background:#f0f4f0; padding:12px; border-radius:10px; margin-bottom:12px; border-left:4px solid #2e7d32;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <strong>${o.orderId}</strong><span style="font-size:12px;">${new Date(o.date).toLocaleString()}</span>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap;">
+                        <strong>${o.orderId}</strong>
+                        <span style="font-size:12px;">${new Date(o.date).toLocaleString()}</span>
                     </div>
                     <div style="font-size:12px;">${o.items.replace(/\n/g,'<br>')}</div>
                     <div style="margin-top:8px; padding-top:8px; border-top:1px solid #ddd; display:flex; justify-content:space-between; flex-wrap:wrap;">
-                        <span>💰 ₹${o.total}</span><span>📦 ${o.status}</span><span>🔑 OTP: ${o.deliveryOtp}</span>
+                        <span>💰 ₹${o.total}</span>
+                        <span>📦 ${o.status}</span>
+                        <span>🔑 OTP: ${o.deliveryOtp}</span>
                     </div>
                 </div>`;
             });
