@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Discount Zone</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:system-ui;background:#f0f2f5;padding:20px;}
+        .container{max-width:1400px;margin:0 auto;}
+        h1{color:#2874f0;margin-bottom:20px;}
+        .order-card{background:white;border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+        .order-header{display:flex;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eee;}
+        .order-id{font-weight:bold;color:#2874f0;}
+        .status{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold;}
+        .status-Pending{background:#ff9800;color:white;}
+        .status-Confirmed{background:#2196f3;color:white;}
+        .status-Shipped{background:#9c27b0;color:white;}
+        .status-Delivered{background:#4caf50;color:white;}
+        .order-details{font-size:14px;color:#555;margin:10px 0;}
+        .order-items{background:#f8f9fa;padding:10px;border-radius:8px;margin:10px 0;font-size:13px;}
+        .update-status{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;}
+        select{padding:8px;border-radius:6px;border:1px solid #ddd;}
+        button{padding:8px 16px;background:#2874f0;color:white;border:none;border-radius:6px;cursor:pointer;}
+        .delete-btn{background:#dc3545;}
+        .login-section{text-align:center;padding:50px;}
+        .login-btn{background:#2874f0;padding:12px 30px;border-radius:30px;font-size:16px;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🛍️ Discount Zone - Admin Panel</h1>
+    <div id="ordersList"></div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBUqsrDawGJbX-wgcBFRU4vuaasjt5ZnKQ",
+        authDomain: "discountzone-da33a.firebaseapp.com",
+        projectId: "discountzone-da33a",
+        storageBucket: "discountzone-da33a.firebasestorage.app",
+        messagingSenderId: "171693927426",
+        appId: "1:171693927426:web:02e912a0a8ce86bfb70b1b"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const ALLOWED_EMAIL = "abhishekbainsla363@gmail.com";
+    
+    auth.onAuthStateChanged(async (user) => {
+        if(user && user.email === ALLOWED_EMAIL) { loadOrders(); }
+        else if(user && user.email !== ALLOWED_EMAIL) { alert("Access denied."); auth.signOut(); showLogin(); }
+        else { showLogin(); }
+    });
+    
+    function showLogin() {
+        document.getElementById('ordersList').innerHTML = `<div class="login-section"><h3>🔐 Admin Login Required</h3><button class="login-btn" onclick="login()">Login with Google</button></div>`;
+    }
+    
+    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    
+    async function loadOrders() {
+        document.getElementById('ordersList').innerHTML = '<div class="loading">Loading...</div>';
+        const snapshot = await db.collection("orders").orderBy("date", "desc").get();
+        let orders = [];
+        snapshot.forEach(doc => orders.push({id: doc.id, ...doc.data()}));
+        renderOrders(orders);
+    }
+    
+    function renderOrders(orders) {
+        if(orders.length===0){ document.getElementById('ordersList').innerHTML='<p>No orders yet</p>'; return; }
+        document.getElementById('ordersList').innerHTML = orders.map(order => `
+            <div class="order-card">
+                <div class="order-header">
+                    <div><span class="order-id">${order.orderId}</span> | ${new Date(order.date).toLocaleString()}</div>
+                    <div><span class="status status-${order.status}">${order.status}</span></div>
+                </div>
+                <div class="order-details">👤 ${order.customerName} | 📞 ${order.customerPhone} | 📧 ${order.customerEmail}</div>
+                <div class="order-items">🛒 ${order.items}</div>
+                <div>💰 Total: ₹${order.total} | 💳 ${order.paymentMethod} | ${order.paymentMethod !== 'Cash on Delivery' ? '🔢 UTR: '+order.utr : ''}</div>
+                <div>🔑 Delivery OTP: <strong>${order.deliveryOtp}</strong></div>
+                <div class="update-status">
+                    <select id="status-${order.id}">
+                        <option ${order.status==='Pending'?'selected':''}>Pending</option>
+                        <option ${order.status==='Confirmed'?'selected':''}>Confirmed</option>
+                        <option ${order.status==='Shipped'?'selected':''}>Shipped</option>
+                        <option ${order.status==='Delivered'?'selected':''}>Delivered</option>
+                    </select>
+                    <button onclick="updateStatus('${order.id}')">Update</button>
+                    <button class="delete-btn" onclick="deleteOrder('${order.id}')">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    async function updateStatus(orderId) {
+        const newStatus = document.getElementById(`status-${orderId}`).value;
+        await db.collection("orders").doc(orderId).update({status: newStatus});
+        alert("Status updated!"); loadOrders();
+    }
+    
+    async function deleteOrder(orderId) {
+        if(confirm("Delete this order?")) {
+            await db.collection("orders").doc(orderId).delete();
+            alert("Order deleted"); loadOrders();
+        }
+    }
+</script>
+</body>
+</html>
