@@ -15,11 +15,11 @@
         .header h1{color:white;font-size:22px;}
         .header p{color:#c8e6c9;font-size:11px;}
         .login-btn{background:white;color:#2e7d32;border:none;padding:8px 20px;border-radius:25px;cursor:pointer;font-weight:bold;}
-        .user-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-        .user-name{background:#1b5e20;color:white;padding:5px 12px;border-radius:25px;font-size:13px;}
-        .logout-btn{background:#ff6b35;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;}
-        .order-history-btn{background:#ff9800;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;}
-        .support-btn{background:#25D366;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;}
+        .user-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+        .user-name{background:#1b5e20;color:white;padding:5px 12px;border-radius:25px;font-size:12px;}
+        .logout-btn{background:#ff6b35;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
+        .order-history-btn{background:#ff9800;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
+        .support-btn{background:#25D366;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
         .admin-link{background:#1a1a2e;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-size:12px;}
         .cart-icon{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
         .cart-count{position:absolute;top:-5px;right:-5px;background:#ff6b35;color:white;font-size:11px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
@@ -48,8 +48,8 @@
         .cart-item-name{font-size:13px;font-weight:500;}
         .cart-item-price{font-size:12px;color:#2e7d32;}
         .cart-item-quantity{display:flex;align-items:center;gap:5px;margin-top:4px;}
-        .cart-item-quantity button{background:#f0f4f0;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;}
-        .remove-cart-item{background:#ff4444;color:white;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;}
+        .cart-item-quantity button{background:#f0f4f0;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;font-size:14px;}
+        .remove-cart-item{background:#ff4444;color:white;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;font-size:12px;}
         .payment-btn{background:#f0f4f0;padding:12px;border-radius:10px;cursor:pointer;margin-bottom:8px;text-align:center;border:2px solid #ddd;}
         .payment-btn.selected{background:#2e7d32;color:white;}
         .confirm-btn{background:#fb641b;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;}
@@ -80,7 +80,7 @@
 
 <div class="cart-icon" onclick="showCartModal()">🛒<span class="cart-count" id="cartCount">0</span></div>
 
-<div id="loadingSpinner" class="loading-spinner"><div class="loading-text"><div class="spinner"></div><p style="margin-top:10px;">Loading...</p></div></div>
+<div id="loadingSpinner" class="loading-spinner"><div class="loading-text"><div class="spinner"></div><p>Loading...</p></div></div>
 
 <div id="loginModal" class="modal">
     <div class="modal-content login-modal">
@@ -141,7 +141,6 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyBUqsrDawGJbX-wgcBFRU4vuaasjt5ZnKQ",
         authDomain: "discountzone-da33a.firebaseapp.com",
@@ -155,7 +154,6 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    // EmailJS
     emailjs.init("EE236Vmj4RMCjX1Dq");
     
     let currentUser = null;
@@ -163,15 +161,17 @@
     let selectedPayment = null;
     let currentProduct = null;
 
+    const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
+
     const products = [
-        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples grown naturally without pesticides. Rich in fiber, vitamins, and antioxidants.", features: ["100% Organic", "No Pesticides", "Rich in Fiber & Vitamin C"] },
-        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain premium basmati rice known for its aromatic flavor and fluffy texture. Perfect for biryani.", features: ["Aged 1 Year", "Long Grains", "Perfect for Biryani"] },
-        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure and natural honey collected from wild forests. No added sugar, no preservatives.", features: ["100% Pure", "No Added Sugar", "Rich in Antioxidants"] },
-        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables pack including seasonal veggies. Harvested fresh daily.", features: ["Daily Fresh", "Farm Direct", "5-6 Varieties"] },
-        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices - Turmeric, Cumin, Coriander, Red Chili, Garam Masala.", features: ["100% Organic", "No Preservatives", "Authentic Taste"] },
-        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds rich in Vitamin E, healthy fats, and antioxidants.", features: ["Premium Quality", "Rich in Vitamin E", "Heart Healthy"] },
-        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Premium Assam tea leaves with strong, malty flavor. Perfect for morning tea.", features: ["Assam CTC", "Strong Flavor", "250g Pack"] },
-        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed groundnut oil extracted using traditional wooden churner method.", features: ["Cold Pressed", "No Chemicals", "Wood Churned"] }
+        { id: 1, name: "Fresh Organic Apples", price: 180, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Farm-fresh organic apples.", features: ["100% Organic", "No Pesticides"] },
+        { id: 2, name: "Premium Basmati Rice", price: 220, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Long-grain basmati rice.", features: ["Aged 1 Year", "Long Grains"] },
+        { id: 3, name: "Pure Honey Jar", price: 350, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "100% pure natural honey.", features: ["100% Pure", "No Added Sugar"] },
+        { id: 4, name: "Fresh Veggies Combo", price: 299, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Mixed fresh vegetables.", features: ["Daily Fresh", "Farm Direct"] },
+        { id: 5, name: "Organic Spices Set", price: 450, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Set of 5 organic spices.", features: ["100% Organic", "No Preservatives"] },
+        { id: 6, name: "Natural Almonds", price: 520, image: "https://i.ibb.co/PG9tSjFw/image.jpg", desc: "Premium California almonds.", features: ["Premium Quality", "Heart Healthy"] },
+        { id: 7, name: "Premium Tea Pack", price: 199, image: "https://i.ibb.co/yFr0P33p/image.jpg", desc: "Assam tea leaves.", features: ["Strong Flavor", "250g Pack"] },
+        { id: 8, name: "Cold Pressed Oil", price: 399, image: "https://i.ibb.co/chKzpf73/image.jpg", desc: "Cold-pressed oil.", features: ["Cold Pressed", "No Chemicals"] }
     ];
 
     const UPI_IDS = { gpay: "karanyadavji971@okhdfcbank", paytm: "kara971@ptaxis", phonepe: "9267982460@ybl" };
@@ -200,7 +200,7 @@
     function removeFromCart(productId) { cart = cart.filter(i=>i.id!==productId); saveCart(); if(document.getElementById('checkoutModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
     function updateQuantity(productId, change) {
         const item = cart.find(i=>i.id===productId);
-        if(item) { item.quantity += change; if(item.quantity<=0) cart = cart.filter(i=>i.id!==productId); saveCart(); if(document.getElementById('checkoutModal').style.display==='flex') updateCartModal(); }
+        if(item) { item.quantity += change; if(item.quantity<=0) cart = cart.filter(i=>i.id!==productId); saveCart(); if(document.getElementById('checkoutModal').style.display==='flex') updateCartModal(); updateCartCount(); }
     }
 
     function renderProducts() {
@@ -225,7 +225,7 @@
         document.getElementById('detailOldPrice').innerHTML = `₹${currentProduct.price}`;
         document.getElementById('detailDiscount').innerHTML = `🔥 You save ₹${currentProduct.price - discounted} (10% OFF)`;
         document.getElementById('detailDesc').innerHTML = currentProduct.desc;
-        let featuresHtml = `<h4>✨ Product Features:</h4><ul>`;
+        let featuresHtml = `<h4>✨ Features:</h4><ul>`;
         currentProduct.features.forEach(f => { featuresHtml += `<li>✅ ${f}</li>`; });
         featuresHtml += `</ul>`;
         document.getElementById('detailFeatures').innerHTML = featuresHtml;
@@ -252,7 +252,7 @@
         });
         const subtotal = getCartSubtotal();
         const delivery = getDeliveryCharge();
-        html += `<div style="border-top:2px solid #ddd; padding-top:10px; margin-top:5px;">
+        html += `<div style="border-top:2px solid #ddd; padding-top:10px;">
             <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><span>₹${subtotal}</span></div>
             <div style="display:flex; justify-content:space-between; color:#2e7d32;"><span>Delivery:</span><span>${delivery===0 ? 'FREE' : '₹'+delivery}</span></div>
             <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-top:8px;"><span>Total:</span><span style="color:#2e7d32;">₹${subtotal+delivery}</span></div>
@@ -284,7 +284,7 @@
             else if(method === 'gpay') upiUrl = `tez://upi/pay?pa=${upiId}&pn=Discount%20Zone&am=${total}&cu=INR`;
             else if(method === 'paytm') upiUrl = `paytmmp://pay?pa=${upiId}&pn=Discount%20Zone&am=${total}&cu=INR`;
             window.location.href = upiUrl;
-            showToast("📱 Payment app opened. Complete payment and enter UTR.");
+            showToast("📱 Payment app opened. Enter UTR after payment.");
         }
     }
 
@@ -322,33 +322,30 @@
         
         try {
             await db.collection("orders").add(orderData);
-            // Send email to owner
             const templateParams = {
-                to_email: "abhishekbainsla363@gmail.com",
-                customer_name: name, customer_phone: phone, customer_address: address,
-                order_items: itemsList, subtotal: `₹${subtotal}`,
-                delivery_charge: delivery===0?"FREE":`₹${delivery}`,
+                to_email: ADMIN_EMAIL, customer_name: name, customer_phone: phone, customer_address: address,
+                order_items: itemsList, subtotal: `₹${subtotal}`, delivery_charge: delivery===0?"FREE":`₹${delivery}`,
                 order_total: `₹${total}`, payment_method: paymentNames[selectedPayment],
                 utr_number: utr||"COD", order_date: new Date().toLocaleString()
             };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             showLoading(false);
-            alert(`🎉 ORDER CONFIRMED!\nOrder ID: ${orderId}\nDelivery OTP: ${deliveryOtp}\nTotal: ₹${total}\n\nShow this OTP to delivery person.`);
-            cart = []; saveCart(); closeModal();
+            alert(`🎉 ORDER CONFIRMED!\nOrder ID: ${orderId}\nDelivery OTP: ${deliveryOtp}\nTotal: ₹${total}`);
+            cart = []; saveCart(); closeModal(); updateCartCount();
         } catch(e){ showLoading(false); showToast("Error: " + e.message); }
     }
 
-    // ========== AUTHENTICATION ==========
     auth.onAuthStateChanged((user) => { currentUser = user; updateUI(); });
     
     function updateUI() {
         if(currentUser){
             let name = currentUser.displayName || currentUser.email.split('@')[0];
+            let isAdmin = (currentUser.email === ADMIN_EMAIL);
             document.getElementById('authSection').innerHTML = `<div class="user-info">
                 <span class="user-name">👤 ${name}</span>
                 <button class="order-history-btn" onclick="showOrderHistory()">📋 Orders</button>
                 <button class="support-btn" onclick="window.open('https://wa.me/919458051202','_blank')">💬 Support</button>
-                <a href="admin.html" class="admin-link">👑 Admin</a>
+                ${isAdmin ? '<a href="admin.html" class="admin-link">👑 Admin</a>' : ''}
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>`;
         } else {
@@ -360,30 +357,33 @@
         const email = document.getElementById('loginEmail').value;
         const pwd = document.getElementById('loginPassword').value;
         try { await auth.signInWithEmailAndPassword(email, pwd); showToast("Login successful!"); closeLoginModal(); } 
-        catch(e){ showToast("Error: " + e.message); }
+        catch(e){ showToast(e.message); }
     }
     async function signUpWithEmail() {
         const email = document.getElementById('loginEmail').value;
         const pwd = document.getElementById('loginPassword').value;
         try { await auth.createUserWithEmailAndPassword(email, pwd); showToast("Account created!"); closeLoginModal(); } 
-        catch(e){ showToast("Error: " + e.message); }
+        catch(e){ showToast(e.message); }
     }
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        try { await auth.signInWithPopup(provider); showToast("Google login successful!"); closeLoginModal(); } 
-        catch(e){ showToast("Error: " + e.message); }
+        try { await auth.signInWithPopup(provider); showToast("Google login success!"); closeLoginModal(); } 
+        catch(e){ showToast(e.message); }
     }
-    function logout() { auth.signOut(); showToast("Logged out"); cart = []; saveCart(); }
+    function logout() { auth.signOut(); showToast("Logged out"); cart = []; saveCart(); updateCartCount(); }
     
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
         showLoading(true);
         try {
-            const snapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).orderBy("date","desc").get();
+            const snapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).get();
+            let orders = [];
+            snapshot.forEach(doc => orders.push(doc.data()));
+            orders.sort((a,b) => new Date(b.date) - new Date(a.date));
+            
             let html = "";
-            if(snapshot.empty) html = "<p style='text-align:center; padding:20px;'>No orders yet</p>";
-            else snapshot.forEach(doc => {
-                const o = doc.data();
+            if(orders.length===0) html = "<p style='text-align:center; padding:20px;'>No orders yet</p>";
+            else orders.forEach(o => {
                 html += `<div style="background:#f0f4f0; padding:12px; border-radius:10px; margin-bottom:12px; border-left:4px solid #2e7d32;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                         <strong>${o.orderId}</strong><span style="font-size:12px;">${new Date(o.date).toLocaleString()}</span>
