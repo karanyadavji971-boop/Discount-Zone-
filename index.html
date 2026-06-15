@@ -12,7 +12,6 @@
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Segoe UI',Roboto,sans-serif;background:#f0f4f0;color:#1a1a1a;padding-bottom:70px;}
         
-        /* Header Fixed - Cart Icon Top Right */
         .header{background:#2e7d32;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100;}
         .header h1{color:white;font-size:22px;}
         .header p{color:#c8e6c9;font-size:11px;}
@@ -20,12 +19,11 @@
         .login-btn{background:white;color:#2e7d32;border:none;padding:8px 15px;border-radius:25px;cursor:pointer;font-weight:bold;}
         .cart-icon{background:#ff9800;color:white;width:45px;height:45px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;position:relative;}
         .cart-count{position:absolute;top:-5px;right:-5px;background:#e74c3c;color:white;font-size:11px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-        .user-info{display:flex;align-items:center;gap:8px;}
+        .user-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
         .user-name{background:#1b5e20;color:white;padding:5px 12px;border-radius:25px;font-size:12px;}
         .logout-btn{background:#ff6b35;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
         .order-history-btn{background:#ff9800;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;}
         
-        /* Booking Section */
         .booking-section{max-width:600px;margin:20px auto;background:white;border-radius:20px;padding:25px;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
         .booking-section h2{color:#2e7d32;margin-bottom:20px;text-align:center;font-size:24px;}
         .form-group{margin-bottom:18px;}
@@ -36,30 +34,27 @@
         .book-btn{background:#ff9800;color:white;border:none;padding:14px;border-radius:10px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;}
         .book-btn:hover{background:#fb641b;}
         
-        /* Services Section - Display Only (No Add to Cart) */
         .services-section{background:#2e7d32;color:white;padding:40px 20px;margin-top:20px;}
         .services-section h3{text-align:center;font-size:22px;margin-bottom:25px;}
         .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;max-width:1000px;margin:0 auto;}
-        .service-card{background:#1b5e20;padding:15px;border-radius:12px;text-align:center;transition:0.2s;}
+        .service-card{background:#1b5e20;padding:15px;border-radius:12px;text-align:center;}
         .service-card i{font-size:28px;margin-bottom:8px;display:block;}
         .service-card span{font-size:13px;}
         
-        /* Products Section */
         .products-section{max-width:1200px;margin:30px auto;padding:0 20px;}
         .products-section h3{color:#2e7d32;margin-bottom:20px;font-size:22px;text-align:center;}
         .category-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:25px;justify-content:center;}
-        .category-btn{background:#f0f4f0;border:2px solid #2e7d32;padding:8px 18px;border-radius:30px;cursor:pointer;font-weight:bold;transition:0.2s;}
+        .category-btn{background:#f0f4f0;border:2px solid #2e7d32;padding:8px 18px;border-radius:30px;cursor:pointer;font-weight:bold;}
         .category-btn.active{background:#2e7d32;color:white;}
         .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;}
         @media (min-width:768px){.products-grid{grid-template-columns:repeat(4,1fr);}}
-        .product-card{background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);position:relative;}
+        .product-card{background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
         .product-img{width:100%;height:120px;object-fit:contain;}
         .product-name{font-size:13px;font-weight:500;margin:8px 0;}
         .product-price{color:#2e7d32;font-size:16px;font-weight:bold;}
         .outofstock-badge{background:#e74c3c;color:white;font-size:11px;padding:3px 8px;border-radius:20px;display:inline-block;margin-top:5px;}
-        .soldout-btn{background:#ccc;color:#666;border:none;padding:8px;border-radius:8px;width:100%;margin-top:8px;font-weight:500;cursor:not-allowed;}
+        .soldout-btn{background:#ccc;color:#666;border:none;padding:8px;border-radius:8px;width:100%;margin-top:8px;cursor:not-allowed;}
         
-        /* Modals */
         .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:1000;}
         .modal-content{background:white;border-radius:20px;width:90%;max-width:500px;padding:20px;max-height:85vh;overflow-y:auto;}
         .modal h3{color:#2e7d32;margin-bottom:15px;}
@@ -81,6 +76,7 @@
         .status-completed{background:#4caf50;color:white;}
         .status-cancelled{background:#e74c3c;color:white;}
         .cancel-order-btn{background:#e74c3c;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;margin-top:8px;font-size:11px;}
+        .repair-item{background:#f8f9fa;border-radius:10px;padding:12px;margin-bottom:12px;border-left:4px solid #ff9800;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -113,13 +109,13 @@
         </div>
         <div class="form-group"><label><i class="fas fa-microchip"></i> Device Model *</label><input type="text" id="deviceModel" placeholder="e.g., iPhone 13, Galaxy S23"></div>
         <div class="form-group"><label><i class="fas fa-exclamation-triangle"></i> Device Faults / Problem *</label>
-            <textarea id="deviceFaults" placeholder="Describe the issue (e.g., Screen broken, Battery drain, Charging problem, Dead phone, Water damage, etc.)"></textarea>
+            <textarea id="deviceFaults" placeholder="Describe the issue"></textarea>
         </div>
         <button type="submit" class="book-btn"><i class="fas fa-check-circle"></i> Book Now</button>
     </form>
 </div>
 
-<!-- Mobile Repair Services (Display Only - No Add to Cart) -->
+<!-- Mobile Repair Services (Display Only) -->
 <div class="services-section">
     <h3><i class="fas fa-wrench"></i> Our Mobile Repair Services</h3>
     <div class="services-grid">
@@ -132,14 +128,14 @@
     </div>
 </div>
 
-<!-- Products Section (All Accessories Out of Stock) -->
+<!-- Products Section (All Out of Stock) -->
 <div class="products-section">
     <h3><i class="fas fa-shopping-bag"></i> Mobile Accessories</h3>
     <div class="category-tabs" id="categoryTabs"></div>
     <div class="products-grid" id="productsGrid"></div>
 </div>
 
-<footer><p>© 2026 DS Zone Repair | Mobile Repair & Accessories Store | Same-Day Service</p></footer>
+<footer><p>© 2026 DS Zone Repair | Mobile Repair & Accessories Store</p></footer>
 
 <!-- Login Modal -->
 <div id="loginModal" class="modal">
@@ -155,11 +151,11 @@
     </div>
 </div>
 
-<!-- Order History Modal -->
+<!-- Order History Modal - Shows BOTH Repair Bookings AND Product Orders -->
 <div id="historyModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeHistoryModal()">&times;</span>
-        <h3><i class="fas fa-history"></i> My Orders</h3>
+        <h3><i class="fas fa-history"></i> My Orders & Repairs</h3>
         <div id="orderHistoryList" style="max-height:60vh; overflow-y:auto;"></div>
     </div>
 </div>
@@ -205,7 +201,7 @@
     let selectedPayment = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
     
-    // All Accessories - Out of Stock
+    // Products - All Out of Stock
     const products = [
         { id: 1, name: "🎧 Wireless Earbuds", price: 899, category: "earbuds", image: "https://i.imgur.com/8FkqJpR.jpg", outofstock: true },
         { id: 2, name: "⚡ 20W Fast Charger", price: 399, category: "charger", image: "https://i.imgur.com/wWnF8gH.jpg", outofstock: true },
@@ -240,7 +236,7 @@
         if(existing) existing.quantity++;
         else cart.push({...product, quantity:1});
         saveCart();
-        showToast(`✅ ${product.name} added to cart!`);
+        showToast(`✅ ${product.name} added!`);
     }
     
     function removeFromCart(index) { cart.splice(index,1); saveCart(); if(document.getElementById('cartModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
@@ -267,7 +263,7 @@
                 <div class="product-name">${p.name}</div>
                 <div class="product-price">₹${p.price}</div>
                 <div class="outofstock-badge"><i class="fas fa-times-circle"></i> Out of Stock</div>
-                <button class="soldout-btn" disabled>🛒 Out of Stock</button>
+                <button class="soldout-btn" disabled>Sold Out</button>
             </div>
         `).join('');
     }
@@ -334,14 +330,27 @@
         const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
         
         const orderData = {
-            orderId, date: new Date().toISOString(), customerEmail: currentUser.email,
-            customerName: currentUser.displayName || currentUser.email.split('@')[0],
+            orderId, date: new Date().toISOString(), type: "product_order",
+            customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0],
             items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment],
-            utr: utr || "COD", status: "Pending", cancelled: false
+            utr: utr || "COD", status: "Pending"
         };
         
         try {
             await db.collection("orders").add(orderData);
+            // EmailJS - Owner को notification
+            const templateParams = {
+                to_email: ADMIN_EMAIL,
+                customer_name: orderData.customerName,
+                customer_phone: "Not provided",
+                order_items: itemsList,
+                order_total: `₹${total}`,
+                payment_method: paymentNames[selectedPayment],
+                utr_number: utr || "COD",
+                order_date: new Date().toLocaleString(),
+                order_type: "Product Order"
+            };
+            await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             showToast("✅ Order placed successfully!");
             cart = []; saveCart(); closeModal(); updateCartCount();
         } catch(e){ showToast("Error: " + e.message); }
@@ -353,7 +362,6 @@
     function updateUI() {
         if(currentUser){
             let name = currentUser.displayName || currentUser.email.split('@')[0];
-            let isAdmin = (currentUser.email === ADMIN_EMAIL);
             document.getElementById('authSection').innerHTML = `<div class="user-info">
                 <span class="user-name"><i class="fas fa-user-circle"></i> ${name}</span>
                 <button class="order-history-btn" onclick="showOrderHistory()"><i class="fas fa-history"></i> Orders</button>
@@ -383,48 +391,68 @@
     }
     function logout() { auth.signOut(); showToast("Logged out"); cart = []; saveCart(); updateCartCount(); }
     
+    // ==================== SHOW ORDER HISTORY (BOTH REPAIRS AND PRODUCT ORDERS) ====================
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
         try {
-            const snapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).get();
-            let orders = [];
-            snapshot.forEach(doc => { let data = doc.data(); data.docId = doc.id; orders.push(data); });
-            orders.sort((a,b) => new Date(b.date) - new Date(a.date));
+            // Get Product Orders
+            const ordersSnapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).get();
+            // Get Repair Bookings
+            const repairsSnapshot = await db.collection("repairs").where("customerEmail","==",currentUser.email).get();
+            
+            let allItems = [];
+            ordersSnapshot.forEach(doc => { let data = doc.data(); data.docId = doc.id; data.itemType = "order"; allItems.push(data); });
+            repairsSnapshot.forEach(doc => { let data = doc.data(); data.docId = doc.id; data.itemType = "repair"; allItems.push(data); });
+            
+            allItems.sort((a,b) => new Date(b.date) - new Date(a.date));
             
             let html = "";
-            if(orders.length===0) html = "<p style='text-align:center; padding:20px;'>No orders yet</p>";
-            else orders.forEach(o => {
-                let statusClass = o.status === 'Completed' ? 'status-completed' : (o.status === 'Cancelled' ? 'status-cancelled' : 'status-pending');
-                html += `<div class="order-item">
-                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
-                        <strong>${o.orderId}</strong>
-                        <span class="order-status ${statusClass}">${o.status}</span>
-                    </div>
-                    <div style="font-size:12px;">${new Date(o.date).toLocaleString()}</div>
-                    <div style="font-size:13px; margin:8px 0;">${o.items.replace(/\n/g,'<br>')}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                        <span><strong>Total: ₹${o.total}</strong></span>
-                        <span>💳 ${o.paymentMethod}</span>
-                    </div>
-                    ${o.status === 'Pending' ? `<button class="cancel-order-btn" onclick="cancelOrder('${o.docId}')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
-                </div>`;
+            if(allItems.length === 0) html = "<p style='text-align:center; padding:20px;'>No orders or repairs yet</p>";
+            else allItems.forEach(item => {
+                if(item.itemType === "order") {
+                    let statusClass = item.status === 'Completed' ? 'status-completed' : (item.status === 'Cancelled' ? 'status-cancelled' : 'status-pending');
+                    html += `<div class="order-item">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
+                            <strong>🛒 ${item.orderId}</strong>
+                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
+                        </div>
+                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
+                        <div style="font-size:13px; margin:8px 0;">${item.items.replace(/\n/g,'<br>')}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                            <span><strong>Total: ₹${item.total}</strong></span>
+                            <span>💳 ${item.paymentMethod}</span>
+                        </div>
+                        ${item.status === 'Pending' ? `<button class="cancel-order-btn" onclick="cancelOrder('${item.docId}')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
+                    </div>`;
+                } else {
+                    html += `<div class="repair-item">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
+                            <strong>🔧 ${item.repairId}</strong>
+                            <span class="order-status status-pending">${item.status || 'Pending'}</span>
+                        </div>
+                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
+                        <div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
+                        <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div>
+                        <div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
+                    </div>`;
+                }
             });
             document.getElementById('orderHistoryList').innerHTML = html;
             document.getElementById('historyModal').style.display = 'flex';
-        } catch(e){ showToast("Error loading orders"); }
+        } catch(e){ showToast("Error loading orders: " + e.message); }
     }
     
     async function cancelOrder(orderId) {
         if(confirm("Are you sure you want to cancel this order?")){
             try {
-                await db.collection("orders").doc(orderId).update({ status: "Cancelled", cancelled: true });
+                await db.collection("orders").doc(orderId).update({ status: "Cancelled" });
                 showToast("Order cancelled successfully!");
                 showOrderHistory();
             } catch(e){ showToast("Error cancelling order"); }
         }
     }
     
-    // Repair Form Submit
+    // ==================== REPAIR FORM SUBMIT (SAVES TO FIRESTORE + EMAIL) ====================
     document.getElementById('repairForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
@@ -440,17 +468,29 @@
         
         const repairId = "REP" + Date.now() + Math.floor(Math.random()*1000);
         const repairData = {
-            repairId, date: new Date().toISOString(), customerEmail: currentUser.email,
-            customerName: name, customerPhone: phone, deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending"
+            repairId, date: new Date().toISOString(), type: "repair",
+            customerEmail: currentUser.email, customerName: name, customerPhone: phone,
+            deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending"
         };
+        
         try {
             await db.collection("repairs").add(repairData);
+            // EmailJS - Owner ko repair request notification
+            const templateParams = {
+                to_email: ADMIN_EMAIL,
+                customer_name: name,
+                customer_phone: phone,
+                device_type: deviceType,
+                device_brand: deviceBrand,
+                device_model: deviceModel,
+                device_faults: deviceFaults,
+                order_date: new Date().toLocaleString(),
+                order_type: "Repair Booking"
+            };
+            await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             showToast("✅ Repair request sent! We'll contact you soon.");
             document.getElementById('repairForm').reset();
-            
-            const templateParams = { to_email: ADMIN_EMAIL, customer_name: name, customer_phone: phone, device_type: deviceType, device_brand: deviceBrand, device_model: deviceModel, device_faults: deviceFaults, order_date: new Date().toLocaleString() };
-            await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-        } catch(e){ showToast("Error submitting request"); }
+        } catch(e){ showToast("Error: " + e.message); }
     });
     
     function showLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
