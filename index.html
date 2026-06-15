@@ -73,18 +73,20 @@
         .order-item{background:#f8f9fa;border-radius:10px;padding:12px;margin-bottom:12px;border-left:4px solid #2e7d32;}
         .order-status{padding:4px 10px;border-radius:20px;font-size:11px;display:inline-block;}
         .status-pending{background:#ff9800;color:white;}
+        .status-shipped{background:#2196f3;color:white;}
         .status-completed{background:#4caf50;color:white;}
         .status-cancelled{background:#e74c3c;color:white;}
         .cancel-order-btn{background:#e74c3c;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;margin-top:8px;font-size:11px;}
         .repair-item{background:#f8f9fa;border-radius:10px;padding:12px;margin-bottom:12px;border-left:4px solid #ff9800;}
         
-        /* Cancel Reason Modal */
         .cancel-reason-modal .reason-options{display:flex;flex-direction:column;gap:10px;margin:15px 0;}
-        .reason-option{display:flex;align-items:center;gap:10px;padding:8px;background:#f0f4f0;border-radius:8px;cursor:pointer;}
+        .reason-option{display:flex;align-items:center;gap:10px;padding:12px;background:#f0f4f0;border-radius:8px;cursor:pointer;transition:0.2s;}
+        .reason-option:hover{background:#e0e4e0;}
+        .reason-option.selected{background:#e8f5e9;border:1px solid #4caf50;}
         .reason-option input{width:18px;height:18px;}
         .reason-option label{flex:1;cursor:pointer;font-size:14px;}
         .other-reason-input{margin-top:10px;}
-        .other-reason-input input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:5px;}
+        .other-reason-input input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -123,7 +125,7 @@
     </form>
 </div>
 
-<!-- Mobile Repair Services (Display Only) -->
+<!-- Mobile Repair Services -->
 <div class="services-section">
     <h3><i class="fas fa-wrench"></i> Our Mobile Repair Services</h3>
     <div class="services-grid">
@@ -243,9 +245,10 @@
     let selectedPayment = null;
     let pendingCancelOrderId = null;
     let selectedCancelReason = "";
+    let selectedCancelElement = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
     
-    // Products - All Out of Stock
+    // Products
     const products = [
         { id: 1, name: "🎧 Wireless Earbuds", price: 899, category: "earbuds", image: "https://i.imgur.com/8FkqJpR.jpg", outofstock: true },
         { id: 2, name: "⚡ 20W Fast Charger", price: 399, category: "charger", image: "https://i.imgur.com/wWnF8gH.jpg", outofstock: true },
@@ -265,32 +268,12 @@
     
     let currentCategory = "all";
     
-    // ==================== CART FUNCTIONS ====================
     function loadCart() { const saved = localStorage.getItem('dsZoneCart'); if(saved) cart = JSON.parse(saved); updateCartCount(); }
     function saveCart() { localStorage.setItem('dsZoneCart', JSON.stringify(cart)); updateCartCount(); }
     function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s,i)=>s+i.quantity,0); }
     function getCartSubtotal() { return cart.reduce((s,i)=>s+(i.price*i.quantity),0); }
     function getDeliveryCharge() { return getCartSubtotal() >= 1000 ? 0 : 40; }
     function getTotal() { return getCartSubtotal() + getDeliveryCharge(); }
-    
-    function addToCart(productId) {
-        const product = products.find(p=>p.id===productId);
-        if(product.outofstock) { showToast("❌ This product is out of stock!"); return; }
-        const existing = cart.find(i=>i.id===productId);
-        if(existing) existing.quantity++;
-        else cart.push({...product, quantity:1});
-        saveCart();
-        showToast(`✅ ${product.name} added!`);
-    }
-    
-    function removeFromCart(index) { cart.splice(index,1); saveCart(); if(document.getElementById('cartModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
-    function updateQuantity(index, change) {
-        if(cart[index].quantity + change > 0) cart[index].quantity += change;
-        else cart.splice(index,1);
-        saveCart();
-        if(document.getElementById('cartModal').style.display==='flex') updateCartModal();
-        updateCartCount();
-    }
     
     function renderCategories() {
         const container = document.getElementById('categoryTabs');
@@ -344,6 +327,14 @@
     
     function showCartModal() { if(cart.length===0){showToast("Cart empty!");return;} updateCartModal(); selectedPayment=null; document.getElementById('utrSection').style.display='none'; document.querySelectorAll('.payment-btn').forEach(b=>b.classList.remove('selected')); document.getElementById('cartModal').style.display='flex'; }
     function closeModal() { document.getElementById('cartModal').style.display = 'none'; }
+    function removeFromCart(index) { cart.splice(index,1); saveCart(); if(document.getElementById('cartModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
+    function updateQuantity(index, change) {
+        if(cart[index].quantity + change > 0) cart[index].quantity += change;
+        else cart.splice(index,1);
+        saveCart();
+        if(document.getElementById('cartModal').style.display==='flex') updateCartModal();
+        updateCartCount();
+    }
     
     function selectPayment(method, btn) {
         selectedPayment = method;
@@ -382,6 +373,7 @@
         
         try {
             await db.collection("orders").add(orderData);
+            // Email to owner
             const templateParams = {
                 to_email: ADMIN_EMAIL,
                 customer_name: orderData.customerName,
@@ -391,7 +383,8 @@
                 payment_method: paymentNames[selectedPayment],
                 utr_number: utr || "COD",
                 order_date: new Date().toLocaleString(),
-                order_type: "Product Order"
+                order_type: "Product Order",
+                action_type: "NEW ORDER"
             };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             showToast("✅ Order placed successfully!");
@@ -436,8 +429,9 @@
     
     // ==================== CANCEL ORDER WITH REASON ====================
     function selectReason(element, reason) {
-        document.querySelectorAll('.reason-option').forEach(opt => opt.style.background = '#f0f4f0');
-        element.style.background = '#e8f5e9';
+        // Remove selected class from all
+        document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
         const radio = element.querySelector('input');
         if(radio) radio.checked = true;
         selectedCancelReason = reason;
@@ -449,11 +443,12 @@
         }
     }
     
-    function openCancelModal(orderId) {
+    function openCancelModal(orderId, orderDetails) {
         pendingCancelOrderId = orderId;
+        pendingCancelOrderDetails = orderDetails;
         selectedCancelReason = "";
         document.querySelectorAll('.reason-option').forEach(opt => {
-            opt.style.background = '#f0f4f0';
+            opt.classList.remove('selected');
             const radio = opt.querySelector('input');
             if(radio) radio.checked = false;
         });
@@ -476,11 +471,32 @@
         }
         
         try {
+            // Get order details before cancelling
+            const orderDoc = await db.collection("orders").doc(pendingCancelOrderId).get();
+            const orderData = orderDoc.data();
+            
             await db.collection("orders").doc(pendingCancelOrderId).update({ 
                 status: "Cancelled",
                 cancelReason: finalReason,
                 cancelledAt: new Date().toISOString()
             });
+            
+            // Send cancellation email to owner
+            const templateParams = {
+                to_email: ADMIN_EMAIL,
+                customer_name: orderData.customerName || "Customer",
+                customer_phone: "Not provided",
+                order_items: orderData.items || "Order items",
+                order_total: orderData.total || "N/A",
+                payment_method: orderData.paymentMethod || "N/A",
+                utr_number: orderData.utr || "COD",
+                order_date: new Date().toLocaleString(),
+                order_type: "Order Cancelled",
+                action_type: "CANCELLED",
+                cancel_reason: finalReason
+            };
+            await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
+            
             showToast("✅ Order cancelled successfully!");
             closeCancelReasonModal();
             showOrderHistory();
@@ -506,20 +522,24 @@
             if(allItems.length === 0) html = "<p style='text-align:center; padding:20px;'>No orders or repairs yet</p>";
             else allItems.forEach(item => {
                 if(item.itemType === "order") {
-                    let statusClass = item.status === 'Completed' ? 'status-completed' : (item.status === 'Cancelled' ? 'status-cancelled' : 'status-pending');
+                    let statusClass = 'status-pending';
+                    if(item.status === 'Shipped') statusClass = 'status-shipped';
+                    else if(item.status === 'Completed') statusClass = 'status-completed';
+                    else if(item.status === 'Cancelled') statusClass = 'status-cancelled';
+                    
                     html += `<div class="order-item">
                         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
                             <strong>🛒 ${item.orderId}</strong>
                             <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
                         </div>
                         <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
-                        <div style="font-size:13px; margin:8px 0;">${item.items.replace(/\n/g,'<br>')}</div>
+                        <div style="font-size:12px; margin:8px 0;">${item.items?.replace(/\n/g,'<br>') || ''}</div>
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
                             <span><strong>Total: ₹${item.total}</strong></span>
                             <span>💳 ${item.paymentMethod}</span>
                         </div>
                         ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Cancellation Reason: ${item.cancelReason}</div>` : ''}
-                        ${item.status === 'Pending' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
+                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
                     </div>`;
                 } else {
                     html += `<div class="repair-item">
@@ -571,7 +591,8 @@
                 device_model: deviceModel,
                 device_faults: deviceFaults,
                 order_date: new Date().toLocaleString(),
-                order_type: "Repair Booking"
+                order_type: "Repair Booking",
+                action_type: "NEW REPAIR"
             };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             showToast("✅ Repair request sent! We'll contact you soon.");
