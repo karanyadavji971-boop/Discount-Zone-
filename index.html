@@ -31,8 +31,9 @@
         .form-group input,.form-group select,.form-group textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;background:#f9f9f9;}
         .form-group textarea{height:80px;resize:vertical;}
         .form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
-        .book-btn{background:#ff9800;color:white;border:none;padding:14px;border-radius:10px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;}
-        .book-btn:hover{background:#fb641b;}
+        .book-btn{background:#ff9800;color:white;border:none;padding:14px;border-radius:10px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;position:relative;}
+        .book-btn:disabled{background:#ccc;cursor:not-allowed;}
+        .btn-loading{opacity:0.7;}
         
         .services-section{background:#2e7d32;color:white;padding:40px 20px;margin-top:20px;}
         .services-section h3{text-align:center;font-size:22px;margin-bottom:25px;}
@@ -66,7 +67,8 @@
         .cart-item-quantity button{background:#f0f4f0;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;}
         .payment-btn{background:#f0f4f0;padding:12px;border-radius:10px;cursor:pointer;margin-bottom:8px;text-align:center;border:2px solid #ddd;}
         .payment-btn.selected{background:#2e7d32;color:white;}
-        .confirm-btn{background:#fb641b;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;}
+        .confirm-btn{background:#fb641b;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;position:relative;}
+        .confirm-btn:disabled{background:#ccc;cursor:not-allowed;}
         .toast{position:fixed;bottom:20px;left:20px;right:20px;background:#1a1a2e;color:white;padding:12px;border-radius:10px;text-align:center;display:none;z-index:1100;}
         footer{text-align:center;padding:20px;color:#666;font-size:12px;background:#f0f4f0;margin-top:30px;}
         
@@ -87,6 +89,10 @@
         .reason-option label{flex:1;cursor:pointer;font-size:14px;}
         .other-reason-input{margin-top:10px;}
         .other-reason-input input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;}
+        
+        .loading-spinner{display:inline-block;width:18px;height:18px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px;vertical-align:middle;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        .btn-text{display:inline-block;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -121,7 +127,7 @@
         <div class="form-group"><label><i class="fas fa-exclamation-triangle"></i> Device Faults / Problem *</label>
             <textarea id="deviceFaults" placeholder="Describe the issue"></textarea>
         </div>
-        <button type="submit" class="book-btn"><i class="fas fa-check-circle"></i> Book Now</button>
+        <button type="submit" class="book-btn" id="bookNowBtn"><span class="btn-text"><i class="fas fa-check-circle"></i> Book Now</span></button>
     </form>
 </div>
 
@@ -219,7 +225,7 @@
             <div class="payment-btn" onclick="selectPayment('paytm', this)">🟦 Paytm</div>
         </div>
         <div id="utrSection" style="display:none; margin-top:15px;"><input type="text" id="utrNumber" placeholder="Enter UTR/Transaction ID *" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;"></div>
-        <button class="confirm-btn" onclick="placeOrder()"><i class="fas fa-check-circle"></i> Confirm Order</button>
+        <button class="confirm-btn" id="placeOrderBtn" onclick="placeOrder()"><span class="btn-text"><i class="fas fa-check-circle"></i> Confirm Order</span></button>
     </div>
 </div>
 
@@ -244,9 +250,23 @@
     let cart = [];
     let selectedPayment = null;
     let pendingCancelOrderId = null;
+    let pendingCancelRepairId = null;
     let selectedCancelReason = "";
-    let selectedCancelElement = null;
+    let selectedCancelItemType = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
+    
+    // Loading state management
+    function setButtonLoading(button, isLoading, originalText) {
+        if(isLoading) {
+            button.disabled = true;
+            button.classList.add('btn-loading');
+            button.innerHTML = '<span class="loading-spinner"></span><span class="btn-text">Please Wait...</span>';
+        } else {
+            button.disabled = false;
+            button.classList.remove('btn-loading');
+            button.innerHTML = originalText;
+        }
+    }
     
     // Products
     const products = [
@@ -353,11 +373,16 @@
     }
     
     async function placeOrder() {
+        const btn = document.getElementById('placeOrderBtn');
+        const originalText = btn.innerHTML;
+        
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
         if(cart.length===0){ showToast("Cart empty!"); return; }
         if(!selectedPayment){ showToast("Select payment method"); return; }
         const utr = document.getElementById('utrNumber')?.value.trim();
         if(selectedPayment !== 'cod' && !utr){ showToast("Enter UTR number"); return; }
+        
+        setButtonLoading(btn, true, originalText);
         
         const orderId = "ORD" + Date.now() + Math.floor(Math.random()*1000);
         let itemsList = cart.map(i=>`- ${i.name}: ₹${i.price} x ${i.quantity}`).join('\n');
@@ -373,7 +398,6 @@
         
         try {
             await db.collection("orders").add(orderData);
-            // Email to owner
             const templateParams = {
                 to_email: ADMIN_EMAIL,
                 customer_name: orderData.customerName,
@@ -390,6 +414,7 @@
             showToast("✅ Order placed successfully!");
             cart = []; saveCart(); closeModal(); updateCartCount();
         } catch(e){ showToast("Error: " + e.message); }
+        finally { setButtonLoading(btn, false, originalText); }
     }
     
     // ==================== AUTHENTICATION ====================
@@ -427,25 +452,21 @@
     }
     function logout() { auth.signOut(); showToast("Logged out"); cart = []; saveCart(); updateCartCount(); }
     
-    // ==================== CANCEL ORDER WITH REASON ====================
+    // ==================== CANCEL ORDER/REPAIR WITH REASON ====================
     function selectReason(element, reason) {
-        // Remove selected class from all
         document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
         element.classList.add('selected');
         const radio = element.querySelector('input');
         if(radio) radio.checked = true;
         selectedCancelReason = reason;
-        
-        if(reason === 'Other') {
-            document.getElementById('otherReasonDiv').style.display = 'block';
-        } else {
-            document.getElementById('otherReasonDiv').style.display = 'none';
-        }
+        if(reason === 'Other') { document.getElementById('otherReasonDiv').style.display = 'block'; } 
+        else { document.getElementById('otherReasonDiv').style.display = 'none'; }
     }
     
-    function openCancelModal(orderId, orderDetails) {
+    function openCancelModal(orderId, type, details) {
         pendingCancelOrderId = orderId;
-        pendingCancelOrderDetails = orderDetails;
+        pendingCancelRepairId = orderId;
+        selectedCancelItemType = type;
         selectedCancelReason = "";
         document.querySelectorAll('.reason-option').forEach(opt => {
             opt.classList.remove('selected');
@@ -458,52 +479,59 @@
     }
     
     async function confirmCancel() {
-        if(!selectedCancelReason) {
-            showToast("Please select a reason for cancellation");
-            return;
-        }
-        
+        if(!selectedCancelReason) { showToast("Please select a reason for cancellation"); return; }
         let finalReason = selectedCancelReason;
         if(selectedCancelReason === 'Other') {
             const otherText = document.getElementById('otherReasonText').value.trim();
             if(otherText) finalReason = "Other: " + otherText;
             else { showToast("Please specify your reason"); return; }
         }
-        
         try {
-            // Get order details before cancelling
-            const orderDoc = await db.collection("orders").doc(pendingCancelOrderId).get();
-            const orderData = orderDoc.data();
-            
-            await db.collection("orders").doc(pendingCancelOrderId).update({ 
-                status: "Cancelled",
-                cancelReason: finalReason,
-                cancelledAt: new Date().toISOString()
-            });
-            
-            // Send cancellation email to owner
-            const templateParams = {
-                to_email: ADMIN_EMAIL,
-                customer_name: orderData.customerName || "Customer",
-                customer_phone: "Not provided",
-                order_items: orderData.items || "Order items",
-                order_total: orderData.total || "N/A",
-                payment_method: orderData.paymentMethod || "N/A",
-                utr_number: orderData.utr || "COD",
-                order_date: new Date().toLocaleString(),
-                order_type: "Order Cancelled",
-                action_type: "CANCELLED",
-                cancel_reason: finalReason
-            };
-            await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-            
-            showToast("✅ Order cancelled successfully!");
+            if(selectedCancelItemType === 'order') {
+                const orderDoc = await db.collection("orders").doc(pendingCancelOrderId).get();
+                const orderData = orderDoc.data();
+                await db.collection("orders").doc(pendingCancelOrderId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString() });
+                const templateParams = {
+                    to_email: ADMIN_EMAIL,
+                    customer_name: orderData.customerName || "Customer",
+                    customer_phone: "Not provided",
+                    order_items: orderData.items || "Order items",
+                    order_total: orderData.total || "N/A",
+                    payment_method: orderData.paymentMethod || "N/A",
+                    utr_number: orderData.utr || "COD",
+                    order_date: new Date().toLocaleString(),
+                    order_type: "Order Cancelled",
+                    action_type: "CANCELLED",
+                    cancel_reason: finalReason
+                };
+                await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
+                showToast("✅ Order cancelled successfully!");
+            } else if(selectedCancelItemType === 'repair') {
+                const repairDoc = await db.collection("repairs").doc(pendingCancelRepairId).get();
+                const repairData = repairDoc.data();
+                await db.collection("repairs").doc(pendingCancelRepairId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString() });
+                const templateParams = {
+                    to_email: ADMIN_EMAIL,
+                    customer_name: repairData.customerName || "Customer",
+                    customer_phone: repairData.customerPhone || "N/A",
+                    device_type: repairData.deviceType || "N/A",
+                    device_brand: repairData.deviceBrand || "N/A",
+                    device_model: repairData.deviceModel || "N/A",
+                    device_faults: repairData.deviceFaults || "N/A",
+                    order_date: new Date().toLocaleString(),
+                    order_type: "Repair Cancelled",
+                    action_type: "CANCELLED",
+                    cancel_reason: finalReason
+                };
+                await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
+                showToast("✅ Repair booking cancelled successfully!");
+            }
             closeCancelReasonModal();
             showOrderHistory();
-        } catch(e) { showToast("Error cancelling order: " + e.message); }
+        } catch(e) { showToast("Error cancelling: " + e.message); }
     }
     
-    function closeCancelReasonModal() { document.getElementById('cancelReasonModal').style.display = 'none'; pendingCancelOrderId = null; }
+    function closeCancelReasonModal() { document.getElementById('cancelReasonModal').style.display = 'none'; pendingCancelOrderId = null; pendingCancelRepairId = null; }
     
     // ==================== SHOW ORDER HISTORY ====================
     async function showOrderHistory() {
@@ -515,7 +543,6 @@
             let allItems = [];
             ordersSnapshot.forEach(doc => { let data = doc.data(); data.docId = doc.id; data.itemType = "order"; allItems.push(data); });
             repairsSnapshot.forEach(doc => { let data = doc.data(); data.docId = doc.id; data.itemType = "repair"; allItems.push(data); });
-            
             allItems.sort((a,b) => new Date(b.date) - new Date(a.date));
             
             let html = "";
@@ -526,7 +553,6 @@
                     if(item.status === 'Shipped') statusClass = 'status-shipped';
                     else if(item.status === 'Completed') statusClass = 'status-completed';
                     else if(item.status === 'Cancelled') statusClass = 'status-cancelled';
-                    
                     html += `<div class="order-item">
                         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
                             <strong>🛒 ${item.orderId}</strong>
@@ -539,18 +565,22 @@
                             <span>💳 ${item.paymentMethod}</span>
                         </div>
                         ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Cancellation Reason: ${item.cancelReason}</div>` : ''}
-                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
+                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
                     </div>`;
                 } else {
+                    let statusClass = 'status-pending';
+                    if(item.status === 'Cancelled') statusClass = 'status-cancelled';
                     html += `<div class="repair-item">
                         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
                             <strong>🔧 ${item.repairId}</strong>
-                            <span class="order-status status-pending">${item.status || 'Pending'}</span>
+                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
                         </div>
                         <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
                         <div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
                         <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div>
                         <div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
+                        ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Cancellation Reason: ${item.cancelReason}</div>` : ''}
+                        ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}
                     </div>`;
                 }
             });
@@ -562,7 +592,10 @@
     // ==================== REPAIR FORM SUBMIT ====================
     document.getElementById('repairForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
+        const btn = document.getElementById('bookNowBtn');
+        const originalText = btn.innerHTML;
+        
+        if(!currentUser){ showToast("Please login first!"); showLoginModal(); setButtonLoading(btn, false, originalText); return; }
         const name = document.getElementById('custName').value.trim();
         const phone = document.getElementById('custPhone').value.trim();
         const deviceType = document.getElementById('deviceType').value;
@@ -570,8 +603,10 @@
         const deviceModel = document.getElementById('deviceModel').value.trim();
         const deviceFaults = document.getElementById('deviceFaults').value.trim();
         
-        if(!name || !phone || !deviceType || !deviceBrand || !deviceModel || !deviceFaults) { showToast("Please fill all fields!"); return; }
-        if(phone.length < 10) { showToast("Enter valid phone number!"); return; }
+        if(!name || !phone || !deviceType || !deviceBrand || !deviceModel || !deviceFaults) { showToast("Please fill all fields!"); setButtonLoading(btn, false, originalText); return; }
+        if(phone.length < 10) { showToast("Enter valid phone number!"); setButtonLoading(btn, false, originalText); return; }
+        
+        setButtonLoading(btn, true, originalText);
         
         const repairId = "REP" + Date.now() + Math.floor(Math.random()*1000);
         const repairData = {
@@ -598,6 +633,7 @@
             showToast("✅ Repair request sent! We'll contact you soon.");
             document.getElementById('repairForm').reset();
         } catch(e){ showToast("Error: " + e.message); }
+        finally { setButtonLoading(btn, false, originalText); }
     });
     
     function showLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
