@@ -33,7 +33,12 @@
         .form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
         .book-btn{background:#ff9800;color:white;border:none;padding:14px;border-radius:10px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;position:relative;}
         .book-btn:disabled{background:#ccc;cursor:not-allowed;}
-        .btn-loading{opacity:0.7;}
+        
+        /* Global Loading Overlay */
+        .global-loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);display:none;justify-content:center;align-items:center;z-index:2000;flex-direction:column;}
+        .global-loading .spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid #2e7d32;border-radius:50%;animation:spin 1s linear infinite;}
+        .global-loading p{color:white;margin-top:15px;font-size:16px;font-weight:500;}
+        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
         
         .services-section{background:#2e7d32;color:white;padding:40px 20px;margin-top:20px;}
         .services-section h3{text-align:center;font-size:22px;margin-bottom:25px;}
@@ -67,8 +72,7 @@
         .cart-item-quantity button{background:#f0f4f0;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;}
         .payment-btn{background:#f0f4f0;padding:12px;border-radius:10px;cursor:pointer;margin-bottom:8px;text-align:center;border:2px solid #ddd;}
         .payment-btn.selected{background:#2e7d32;color:white;}
-        .confirm-btn{background:#fb641b;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;position:relative;}
-        .confirm-btn:disabled{background:#ccc;cursor:not-allowed;}
+        .confirm-btn{background:#fb641b;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;}
         .toast{position:fixed;bottom:20px;left:20px;right:20px;background:#1a1a2e;color:white;padding:12px;border-radius:10px;text-align:center;display:none;z-index:1100;}
         footer{text-align:center;padding:20px;color:#666;font-size:12px;background:#f0f4f0;margin-top:30px;}
         
@@ -89,10 +93,6 @@
         .reason-option label{flex:1;cursor:pointer;font-size:14px;}
         .other-reason-input{margin-top:10px;}
         .other-reason-input input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;}
-        
-        .loading-spinner{display:inline-block;width:18px;height:18px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px;vertical-align:middle;}
-        @keyframes spin{to{transform:rotate(360deg);}}
-        .btn-text{display:inline-block;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -109,12 +109,19 @@
     </div>
 </div>
 
+<!-- Global Loading Overlay -->
+<div id="globalLoading" class="global-loading">
+    <div class="spinner"></div>
+    <p>⏳ Please Wait...</p>
+</div>
+
 <!-- Fast & Easy Booking Form -->
 <div class="booking-section">
     <h2><i class="fas fa-calendar-check"></i> Fast & Easy Booking</h2>
     <form id="repairForm">
         <div class="form-group"><label><i class="fas fa-user"></i> Name *</label><input type="text" id="custName" placeholder="Enter your full name" required></div>
         <div class="form-group"><label><i class="fas fa-phone"></i> Phone no. *</label><input type="tel" id="custPhone" placeholder="Enter your mobile number" required></div>
+        <div class="form-group"><label><i class="fas fa-map-marker-alt"></i> Address *</label><textarea id="custAddress" placeholder="Enter your full address for pickup" rows="2" required></textarea></div>
         <div class="form-row">
             <div class="form-group"><label><i class="fas fa-mobile-alt"></i> Select Device *</label>
                 <select id="deviceType"><option value="">Select Device</option><option value="Mobile Phone">Mobile Phone</option><option value="iPhone">iPhone</option><option value="Android Phone">Android Phone</option><option value="Tablet">Tablet</option></select>
@@ -127,7 +134,7 @@
         <div class="form-group"><label><i class="fas fa-exclamation-triangle"></i> Device Faults / Problem *</label>
             <textarea id="deviceFaults" placeholder="Describe the issue"></textarea>
         </div>
-        <button type="submit" class="book-btn" id="bookNowBtn"><span class="btn-text"><i class="fas fa-check-circle"></i> Book Now</span></button>
+        <button type="submit" class="book-btn" id="bookNowBtn"><i class="fas fa-check-circle"></i> Book Now</button>
     </form>
 </div>
 
@@ -225,7 +232,7 @@
             <div class="payment-btn" onclick="selectPayment('paytm', this)">🟦 Paytm</div>
         </div>
         <div id="utrSection" style="display:none; margin-top:15px;"><input type="text" id="utrNumber" placeholder="Enter UTR/Transaction ID *" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;"></div>
-        <button class="confirm-btn" id="placeOrderBtn" onclick="placeOrder()"><span class="btn-text"><i class="fas fa-check-circle"></i> Confirm Order</span></button>
+        <button class="confirm-btn" id="placeOrderBtn" onclick="placeOrder()"><i class="fas fa-check-circle"></i> Confirm Order</button>
     </div>
 </div>
 
@@ -255,17 +262,8 @@
     let selectedCancelItemType = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
     
-    // Loading state management
-    function setButtonLoading(button, isLoading, originalText) {
-        if(isLoading) {
-            button.disabled = true;
-            button.classList.add('btn-loading');
-            button.innerHTML = '<span class="loading-spinner"></span><span class="btn-text">Please Wait...</span>';
-        } else {
-            button.disabled = false;
-            button.classList.remove('btn-loading');
-            button.innerHTML = originalText;
-        }
+    function showGlobalLoading(show) {
+        document.getElementById('globalLoading').style.display = show ? 'flex' : 'none';
     }
     
     // Products
@@ -288,7 +286,7 @@
     
     let currentCategory = "all";
     
-    function loadCart() { const saved = localStorage.getItem('dsZoneCart'); if(saved) cart = JSON.parse(saved); updateCartCount(); }
+    function loadCart() { const saved = localStorage.getItem('dsZoneCart'); if(saved) cart = JSON.parse(saved); updateCartCount(); renderProducts(); renderCategories(); }
     function saveCart() { localStorage.setItem('dsZoneCart', JSON.stringify(cart)); updateCartCount(); }
     function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s,i)=>s+i.quantity,0); }
     function getCartSubtotal() { return cart.reduce((s,i)=>s+(i.price*i.quantity),0); }
@@ -373,30 +371,26 @@
     }
     
     async function placeOrder() {
-        const btn = document.getElementById('placeOrderBtn');
-        const originalText = btn.innerHTML;
-        
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
         if(cart.length===0){ showToast("Cart empty!"); return; }
         if(!selectedPayment){ showToast("Select payment method"); return; }
         const utr = document.getElementById('utrNumber')?.value.trim();
         if(selectedPayment !== 'cod' && !utr){ showToast("Enter UTR number"); return; }
         
-        setButtonLoading(btn, true, originalText);
-        
-        const orderId = "ORD" + Date.now() + Math.floor(Math.random()*1000);
-        let itemsList = cart.map(i=>`- ${i.name}: ₹${i.price} x ${i.quantity}`).join('\n');
-        const total = getTotal();
-        const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
-        
-        const orderData = {
-            orderId, date: new Date().toISOString(), type: "product_order",
-            customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0],
-            items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment],
-            utr: utr || "COD", status: "Pending"
-        };
-        
+        showGlobalLoading(true);
         try {
+            const orderId = "ORD" + Date.now() + Math.floor(Math.random()*1000);
+            let itemsList = cart.map(i=>`- ${i.name}: ₹${i.price} x ${i.quantity}`).join('\n');
+            const total = getTotal();
+            const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
+            
+            const orderData = {
+                orderId, date: new Date().toISOString(), type: "product_order",
+                customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0],
+                items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment],
+                utr: utr || "COD", status: "Pending"
+            };
+            
             await db.collection("orders").add(orderData);
             const templateParams = {
                 to_email: ADMIN_EMAIL,
@@ -414,7 +408,7 @@
             showToast("✅ Order placed successfully!");
             cart = []; saveCart(); closeModal(); updateCartCount();
         } catch(e){ showToast("Error: " + e.message); }
-        finally { setButtonLoading(btn, false, originalText); }
+        finally { showGlobalLoading(false); }
     }
     
     // ==================== AUTHENTICATION ====================
@@ -436,19 +430,25 @@
     async function loginWithEmail() {
         const email = document.getElementById('loginEmail').value;
         const pwd = document.getElementById('loginPassword').value;
+        showGlobalLoading(true);
         try { await auth.signInWithEmailAndPassword(email, pwd); showToast("Login successful!"); closeLoginModal(); } 
         catch(e){ showToast(e.message); }
+        finally { showGlobalLoading(false); }
     }
     async function signUpWithEmail() {
         const email = document.getElementById('loginEmail').value;
         const pwd = document.getElementById('loginPassword').value;
+        showGlobalLoading(true);
         try { await auth.createUserWithEmailAndPassword(email, pwd); showToast("Account created!"); closeLoginModal(); } 
         catch(e){ showToast(e.message); }
+        finally { showGlobalLoading(false); }
     }
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
+        showGlobalLoading(true);
         try { await auth.signInWithPopup(provider); showToast("Google login success!"); closeLoginModal(); } 
         catch(e){ showToast(e.message); }
+        finally { showGlobalLoading(false); }
     }
     function logout() { auth.signOut(); showToast("Logged out"); cart = []; saveCart(); updateCartCount(); }
     
@@ -463,7 +463,7 @@
         else { document.getElementById('otherReasonDiv').style.display = 'none'; }
     }
     
-    function openCancelModal(orderId, type, details) {
+    function openCancelModal(orderId, type) {
         pendingCancelOrderId = orderId;
         pendingCancelRepairId = orderId;
         selectedCancelItemType = type;
@@ -486,6 +486,7 @@
             if(otherText) finalReason = "Other: " + otherText;
             else { showToast("Please specify your reason"); return; }
         }
+        showGlobalLoading(true);
         try {
             if(selectedCancelItemType === 'order') {
                 const orderDoc = await db.collection("orders").doc(pendingCancelOrderId).get();
@@ -529,6 +530,7 @@
             closeCancelReasonModal();
             showOrderHistory();
         } catch(e) { showToast("Error cancelling: " + e.message); }
+        finally { showGlobalLoading(false); }
     }
     
     function closeCancelReasonModal() { document.getElementById('cancelReasonModal').style.display = 'none'; pendingCancelOrderId = null; pendingCancelRepairId = null; }
@@ -536,6 +538,7 @@
     // ==================== SHOW ORDER HISTORY ====================
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
+        showGlobalLoading(true);
         try {
             const ordersSnapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).get();
             const repairsSnapshot = await db.collection("repairs").where("customerEmail","==",currentUser.email).get();
@@ -579,6 +582,7 @@
                         <div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
                         <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div>
                         <div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
+                        <div style="margin-top:5px;"><strong>Address:</strong> ${item.customerAddress || 'Not provided'}</div>
                         ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Cancellation Reason: ${item.cancelReason}</div>` : ''}
                         ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}
                     </div>`;
@@ -587,40 +591,39 @@
             document.getElementById('orderHistoryList').innerHTML = html;
             document.getElementById('historyModal').style.display = 'flex';
         } catch(e){ showToast("Error loading orders: " + e.message); }
+        finally { showGlobalLoading(false); }
     }
     
     // ==================== REPAIR FORM SUBMIT ====================
     document.getElementById('repairForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const btn = document.getElementById('bookNowBtn');
-        const originalText = btn.innerHTML;
-        
-        if(!currentUser){ showToast("Please login first!"); showLoginModal(); setButtonLoading(btn, false, originalText); return; }
+        if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
         const name = document.getElementById('custName').value.trim();
         const phone = document.getElementById('custPhone').value.trim();
+        const address = document.getElementById('custAddress').value.trim();
         const deviceType = document.getElementById('deviceType').value;
         const deviceBrand = document.getElementById('deviceBrand').value;
         const deviceModel = document.getElementById('deviceModel').value.trim();
         const deviceFaults = document.getElementById('deviceFaults').value.trim();
         
-        if(!name || !phone || !deviceType || !deviceBrand || !deviceModel || !deviceFaults) { showToast("Please fill all fields!"); setButtonLoading(btn, false, originalText); return; }
-        if(phone.length < 10) { showToast("Enter valid phone number!"); setButtonLoading(btn, false, originalText); return; }
+        if(!name || !phone || !address || !deviceType || !deviceBrand || !deviceModel || !deviceFaults) { showToast("Please fill all fields!"); return; }
+        if(phone.length < 10) { showToast("Enter valid phone number!"); return; }
         
-        setButtonLoading(btn, true, originalText);
-        
-        const repairId = "REP" + Date.now() + Math.floor(Math.random()*1000);
-        const repairData = {
-            repairId, date: new Date().toISOString(), type: "repair",
-            customerEmail: currentUser.email, customerName: name, customerPhone: phone,
-            deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending"
-        };
-        
+        showGlobalLoading(true);
         try {
+            const repairId = "REP" + Date.now() + Math.floor(Math.random()*1000);
+            const repairData = {
+                repairId, date: new Date().toISOString(), type: "repair",
+                customerEmail: currentUser.email, customerName: name, customerPhone: phone, customerAddress: address,
+                deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending"
+            };
+            
             await db.collection("repairs").add(repairData);
             const templateParams = {
                 to_email: ADMIN_EMAIL,
                 customer_name: name,
                 customer_phone: phone,
+                customer_address: address,
                 device_type: deviceType,
                 device_brand: deviceBrand,
                 device_model: deviceModel,
@@ -633,7 +636,7 @@
             showToast("✅ Repair request sent! We'll contact you soon.");
             document.getElementById('repairForm').reset();
         } catch(e){ showToast("Error: " + e.message); }
-        finally { setButtonLoading(btn, false, originalText); }
+        finally { showGlobalLoading(false); }
     });
     
     function showLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
