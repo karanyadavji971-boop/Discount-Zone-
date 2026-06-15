@@ -77,6 +77,14 @@
         .status-cancelled{background:#e74c3c;color:white;}
         .cancel-order-btn{background:#e74c3c;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;margin-top:8px;font-size:11px;}
         .repair-item{background:#f8f9fa;border-radius:10px;padding:12px;margin-bottom:12px;border-left:4px solid #ff9800;}
+        
+        /* Cancel Reason Modal */
+        .cancel-reason-modal .reason-options{display:flex;flex-direction:column;gap:10px;margin:15px 0;}
+        .reason-option{display:flex;align-items:center;gap:10px;padding:8px;background:#f0f4f0;border-radius:8px;cursor:pointer;}
+        .reason-option input{width:18px;height:18px;}
+        .reason-option label{flex:1;cursor:pointer;font-size:14px;}
+        .other-reason-input{margin-top:10px;}
+        .other-reason-input input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:5px;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -151,12 +159,46 @@
     </div>
 </div>
 
-<!-- Order History Modal - Shows BOTH Repair Bookings AND Product Orders -->
+<!-- Order History Modal -->
 <div id="historyModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeHistoryModal()">&times;</span>
         <h3><i class="fas fa-history"></i> My Orders & Repairs</h3>
         <div id="orderHistoryList" style="max-height:60vh; overflow-y:auto;"></div>
+    </div>
+</div>
+
+<!-- Cancel Reason Modal -->
+<div id="cancelReasonModal" class="modal cancel-reason-modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeCancelReasonModal()">&times;</span>
+        <h3><i class="fas fa-question-circle"></i> Cancel Order Reason</h3>
+        <p style="margin-bottom:15px; color:#666;">Please tell us why you want to cancel this order:</p>
+        <div class="reason-options" id="reasonOptions">
+            <div class="reason-option" onclick="selectReason(this, 'Changed my mind')">
+                <input type="radio" name="cancelReason" value="Changed my mind"> <label>🤔 Changed my mind</label>
+            </div>
+            <div class="reason-option" onclick="selectReason(this, 'Found better price elsewhere')">
+                <input type="radio" name="cancelReason" value="Found better price elsewhere"> <label>💰 Found better price elsewhere</label>
+            </div>
+            <div class="reason-option" onclick="selectReason(this, 'Delivery time too long')">
+                <input type="radio" name="cancelReason" value="Delivery time too long"> <label>⏰ Delivery time too long</label>
+            </div>
+            <div class="reason-option" onclick="selectReason(this, 'Accidental order')">
+                <input type="radio" name="cancelReason" value="Accidental order"> <label>😅 Accidental order</label>
+            </div>
+            <div class="reason-option" onclick="selectReason(this, 'Technical issue with payment')">
+                <input type="radio" name="cancelReason" value="Technical issue with payment"> <label>💳 Technical issue with payment</label>
+            </div>
+            <div class="reason-option" onclick="selectReason(this, 'Other')">
+                <input type="radio" name="cancelReason" value="Other"> <label>📝 Other (please specify)</label>
+            </div>
+        </div>
+        <div id="otherReasonDiv" class="other-reason-input" style="display:none;">
+            <input type="text" id="otherReasonText" placeholder="Please specify your reason...">
+        </div>
+        <button class="book-btn" onclick="confirmCancel()" style="margin-top:15px; background:#e74c3c;">Confirm Cancellation</button>
+        <button class="book-btn" onclick="closeCancelReasonModal()" style="margin-top:10px; background:#666;">Go Back</button>
     </div>
 </div>
 
@@ -199,6 +241,8 @@
     let currentUser = null;
     let cart = [];
     let selectedPayment = null;
+    let pendingCancelOrderId = null;
+    let selectedCancelReason = "";
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
     
     // Products - All Out of Stock
@@ -338,7 +382,6 @@
         
         try {
             await db.collection("orders").add(orderData);
-            // EmailJS - Owner को notification
             const templateParams = {
                 to_email: ADMIN_EMAIL,
                 customer_name: orderData.customerName,
@@ -391,13 +434,66 @@
     }
     function logout() { auth.signOut(); showToast("Logged out"); cart = []; saveCart(); updateCartCount(); }
     
-    // ==================== SHOW ORDER HISTORY (BOTH REPAIRS AND PRODUCT ORDERS) ====================
+    // ==================== CANCEL ORDER WITH REASON ====================
+    function selectReason(element, reason) {
+        document.querySelectorAll('.reason-option').forEach(opt => opt.style.background = '#f0f4f0');
+        element.style.background = '#e8f5e9';
+        const radio = element.querySelector('input');
+        if(radio) radio.checked = true;
+        selectedCancelReason = reason;
+        
+        if(reason === 'Other') {
+            document.getElementById('otherReasonDiv').style.display = 'block';
+        } else {
+            document.getElementById('otherReasonDiv').style.display = 'none';
+        }
+    }
+    
+    function openCancelModal(orderId) {
+        pendingCancelOrderId = orderId;
+        selectedCancelReason = "";
+        document.querySelectorAll('.reason-option').forEach(opt => {
+            opt.style.background = '#f0f4f0';
+            const radio = opt.querySelector('input');
+            if(radio) radio.checked = false;
+        });
+        document.getElementById('otherReasonDiv').style.display = 'none';
+        document.getElementById('otherReasonText').value = "";
+        document.getElementById('cancelReasonModal').style.display = 'flex';
+    }
+    
+    async function confirmCancel() {
+        if(!selectedCancelReason) {
+            showToast("Please select a reason for cancellation");
+            return;
+        }
+        
+        let finalReason = selectedCancelReason;
+        if(selectedCancelReason === 'Other') {
+            const otherText = document.getElementById('otherReasonText').value.trim();
+            if(otherText) finalReason = "Other: " + otherText;
+            else { showToast("Please specify your reason"); return; }
+        }
+        
+        try {
+            await db.collection("orders").doc(pendingCancelOrderId).update({ 
+                status: "Cancelled",
+                cancelReason: finalReason,
+                cancelledAt: new Date().toISOString()
+            });
+            showToast("✅ Order cancelled successfully!");
+            closeCancelReasonModal();
+            showOrderHistory();
+        } catch(e) { showToast("Error cancelling order: " + e.message); }
+    }
+    
+    function closeCancelReasonModal() { document.getElementById('cancelReasonModal').style.display = 'none'; pendingCancelOrderId = null; }
+    
+    // ==================== SHOW ORDER HISTORY ====================
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
         try {
-            // Get Product Orders
             const ordersSnapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).get();
-            // Get Repair Bookings
             const repairsSnapshot = await db.collection("repairs").where("customerEmail","==",currentUser.email).get();
             
             let allItems = [];
@@ -422,7 +518,8 @@
                             <span><strong>Total: ₹${item.total}</strong></span>
                             <span>💳 ${item.paymentMethod}</span>
                         </div>
-                        ${item.status === 'Pending' ? `<button class="cancel-order-btn" onclick="cancelOrder('${item.docId}')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
+                        ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Cancellation Reason: ${item.cancelReason}</div>` : ''}
+                        ${item.status === 'Pending' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
                     </div>`;
                 } else {
                     html += `<div class="repair-item">
@@ -442,17 +539,7 @@
         } catch(e){ showToast("Error loading orders: " + e.message); }
     }
     
-    async function cancelOrder(orderId) {
-        if(confirm("Are you sure you want to cancel this order?")){
-            try {
-                await db.collection("orders").doc(orderId).update({ status: "Cancelled" });
-                showToast("Order cancelled successfully!");
-                showOrderHistory();
-            } catch(e){ showToast("Error cancelling order"); }
-        }
-    }
-    
-    // ==================== REPAIR FORM SUBMIT (SAVES TO FIRESTORE + EMAIL) ====================
+    // ==================== REPAIR FORM SUBMIT ====================
     document.getElementById('repairForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
@@ -475,7 +562,6 @@
         
         try {
             await db.collection("repairs").add(repairData);
-            // EmailJS - Owner ko repair request notification
             const templateParams = {
                 to_email: ADMIN_EMAIL,
                 customer_name: name,
