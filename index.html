@@ -1,4 +1,3 @@
-```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +24,7 @@
         .logout-btn{background:#ff6b35;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;}
         .order-history-btn{background:#ff9800;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;}
         
-        /* Floating Support - Right Side */
+        /* Support Button */
         .support-float{position:fixed;bottom:100px;right:20px;z-index:150;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;animation:float-bounce 3s ease-in-out infinite;}
         @keyframes float-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
         .support-ring{width:65px;height:65px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 25px rgba(37,211,102,0.5);position:relative;transition:0.3s;}
@@ -38,14 +37,21 @@
         @keyframes pulse-ring{0%{transform:scale(1);opacity:1;}100%{transform:scale(1.5);opacity:0;}}
         @keyframes badge-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
         
-        /* Admin Add Product Panel */
-        .admin-panel{background:white;border-radius:20px;padding:20px;margin:20px auto;max-width:600px;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
-        .admin-panel h3{color:#2e7d32;margin-bottom:15px;text-align:center;}
-        .admin-panel input,.admin-panel textarea,.admin-panel select{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;}
-        .admin-panel textarea{height:60px;resize:vertical;}
-        .admin-panel .add-product-btn{background:#2e7d32;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;}
-        .admin-panel .add-product-btn:hover{background:#1b5e20;}
-        .admin-toggle{background:#2e7d32;color:white;border:none;padding:8px 16px;border-radius:25px;cursor:pointer;font-size:12px;font-weight:bold;}
+        /* Slider Section */
+        .slider-section{max-width:1200px;margin:20px auto;padding:0 20px;position:relative;}
+        .slider-container{overflow:hidden;border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,0.1);position:relative;background:white;}
+        .slider-track{display:flex;transition:transform 0.5s ease-in-out;will-change:transform;}
+        .slider-slide{min-width:100%;display:flex;justify-content:center;align-items:center;padding:10px;background:#f8f9fa;}
+        .slider-slide img{width:100%;height:220px;object-fit:cover;border-radius:12px;}
+        .slider-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:white;border:none;padding:12px 16px;border-radius:50%;cursor:pointer;font-size:18px;z-index:10;transition:0.3s;}
+        .slider-btn:hover{background:rgba(0,0,0,0.8);}
+        .slider-btn.prev{left:10px;}
+        .slider-btn.next{right:10px;}
+        .slider-dots{display:flex;justify-content:center;gap:10px;padding:12px 0;position:absolute;bottom:0;left:0;right:0;z-index:5;}
+        .slider-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:0.3s;border:1px solid #ddd;}
+        .slider-dot.active{background:#2e7d32;transform:scale(1.2);border-color:#2e7d32;}
+        .slider-dot:hover{background:#2e7d32;}
+        .slider-arrow-label{position:absolute;top:10px;right:15px;background:rgba(0,0,0,0.6);color:white;padding:4px 12px;border-radius:20px;font-size:11px;z-index:5;}
         
         .booking-section{max-width:600px;margin:20px auto;background:white;border-radius:20px;padding:25px;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
         .booking-section h2{color:#2e7d32;margin-bottom:20px;text-align:center;font-size:22px;}
@@ -84,7 +90,6 @@
         .add-cart-btn{background:#ff9800;color:white;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:pointer;font-weight:500;font-size:12px;}
         .add-cart-btn:hover{background:#fb641b;}
         
-        /* Product Detail Page (New Page Style) */
         .product-detail-page{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:1000;overflow-y:auto;}
         .detail-header{background:#2e7d32;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
         .detail-header h2{color:white;font-size:18px;}
@@ -109,8 +114,6 @@
         .detail-features li{margin:5px 0;font-size:14px;color:#444;}
         .detail-add-btn{background:#ff9800;color:white;border:none;padding:14px;border-radius:10px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;margin-top:15px;}
         .detail-add-btn:hover{background:#fb641b;}
-        
-        /* Similar Products */
         .similar-products{margin-top:30px;}
         .similar-products h3{color:#2e7d32;margin-bottom:15px;font-size:18px;}
         .similar-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
@@ -162,26 +165,12 @@
 <div class="header">
     <div><h1><i class="fas fa-tools"></i> DS Zone Repair</h1><p>Fast, Reliable & Affordable Mobile Repair</p></div>
     <div class="header-right">
-        <button class="admin-toggle" onclick="toggleAdminPanel()"><i class="fas fa-plus"></i> Add Product</button>
         <div id="authSection"><button class="login-btn" onclick="showLoginModal()"><i class="fas fa-user"></i> Login</button></div>
         <div class="cart-icon" onclick="showCartModal()">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-count" id="cartCount">0</span>
         </div>
     </div>
-</div>
-
-<!-- Admin Add Product Panel -->
-<div class="admin-panel" id="adminPanel" style="display:none;">
-    <h3><i class="fas fa-plus-circle"></i> Add New Product</h3>
-    <input type="text" id="prodName" placeholder="Product Name *">
-    <input type="text" id="prodPrice" placeholder="Price ₹ *">
-    <input type="text" id="prodOldPrice" placeholder="Old Price ₹ (optional)">
-    <input type="text" id="prodCategory" placeholder="Category (e.g., earbuds, charger)">
-    <textarea id="prodDesc" placeholder="Product Description *"></textarea>
-    <input type="text" id="prodImages" placeholder="Image URLs (comma separated) *">
-    <textarea id="prodFeatures" placeholder="Features (one per line)"></textarea>
-    <button class="add-product-btn" onclick="addProduct()"><i class="fas fa-save"></i> Add Product</button>
 </div>
 
 <!-- Support Button -->
@@ -199,6 +188,24 @@
 <div id="globalLoading" class="global-loading">
     <div class="spinner"></div>
     <p>⏳ Please Wait...</p>
+</div>
+
+<!-- ==================== SLIDER SECTION ==================== -->
+<div class="slider-section">
+    <div class="slider-container">
+        <div class="slider-track" id="sliderTrack">
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800" alt="Screen Repair"></div>
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=800" alt="Battery Replacement"></div>
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800" alt="Charging Port Repair"></div>
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=800" alt="Water Damage"></div>
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800" alt="Speaker Repair"></div>
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=800" alt="Dead Phone Repair"></div>
+        </div>
+        <div class="slider-arrow-label">🔧 Mobile Repair Services</div>
+        <button class="slider-btn prev" onclick="moveSlider(-1)">❮</button>
+        <button class="slider-btn next" onclick="moveSlider(1)">❯</button>
+        <div class="slider-dots" id="sliderDots"></div>
+    </div>
 </div>
 
 <!-- Booking Form -->
@@ -244,7 +251,7 @@
     <div class="products-grid" id="productsGrid"></div>
 </div>
 
-<!-- Product Detail Page (Full Page) -->
+<!-- Product Detail Page -->
 <div class="product-detail-page" id="productDetailPage">
     <div class="detail-header">
         <h2 id="detailPageTitle">Product</h2>
@@ -353,7 +360,42 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    // ==================== FIREBASE CONFIG ====================
+    // ==================== SLIDER ====================
+    let currentSlide = 0;
+    const totalSlides = document.querySelectorAll('.slider-slide').length;
+    let autoSlideInterval;
+
+    function moveSlider(direction) {
+        const track = document.getElementById('sliderTrack');
+        currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        updateDots();
+        resetAutoSlide();
+    }
+
+    function updateDots() {
+        document.querySelectorAll('.slider-dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentSlide);
+        });
+    }
+
+    function resetAutoSlide() {
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = setInterval(() => moveSlider(1), 4000);
+    }
+
+    function initSlider() {
+        const dotsContainer = document.getElementById('sliderDots');
+        for(let i=0; i<totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => { currentSlide = i; document.getElementById('sliderTrack').style.transform = `translateX(-${i * 100}%)`; updateDots(); resetAutoSlide(); };
+            dotsContainer.appendChild(dot);
+        }
+        autoSlideInterval = setInterval(() => moveSlider(1), 4000);
+    }
+
+    // ==================== FIREBASE ====================
     const firebaseConfig = {
         apiKey: "AIzaSyBUqsrDawGJbX-wgcBFRU4vuaasjt5ZnKQ",
         authDomain: "discountzone-da33a.firebaseapp.com",
@@ -377,7 +419,7 @@
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
     const SUPPORT_NUMBER = "9711678678";
     
-    // ==================== PRODUCTS DATABASE ====================
+    // ==================== PRODUCTS ====================
     let products = [
         { 
             id: 1, 
@@ -390,7 +432,7 @@
                 "https://i.imgur.com/T7gY4QG.jpg",
                 "https://i.imgur.com/wWnF8gH.jpg"
             ], 
-            desc: "Premium wireless earbuds with deep bass, 20hr battery life, Bluetooth 5.3. Perfect for calls and music.",
+            desc: "Premium wireless earbuds with deep bass, 20hr battery life, Bluetooth 5.3.",
             features: ["Bluetooth 5.3", "20hr Battery Life", "Deep Bass", "Noise Cancellation", "Fast Charging"]
         },
         { 
@@ -403,7 +445,7 @@
                 "https://i.imgur.com/wWnF8gH.jpg",
                 "https://i.imgur.com/NqXj7Zt.jpg"
             ], 
-            desc: "20W fast charger with Type-C port. Compatible with all smartphones. Safety protected.",
+            desc: "20W fast charger with Type-C port. Compatible with all smartphones.",
             features: ["20W Fast Charging", "Type-C Port", "Overcharge Protection", "Compact Design"]
         },
         { 
@@ -416,7 +458,7 @@
                 "https://i.imgur.com/5cYbKpR.jpg",
                 "https://i.imgur.com/8FkqJpR.jpg"
             ], 
-            desc: "Over-ear headphones with soft cushion, 30hr battery, foldable design for easy carrying.",
+            desc: "Over-ear headphones with soft cushion, 30hr battery, foldable design.",
             features: ["30hr Battery", "Foldable Design", "Soft Cushion", "Deep Bass", "Built-in Mic"]
         },
         { 
@@ -442,7 +484,7 @@
                 "https://i.imgur.com/NqXj7Zt.jpg",
                 "https://i.imgur.com/wWnF8gH.jpg"
             ], 
-            desc: "Class 10 high-speed memory card for phones, tablets, cameras. Reliable storage.",
+            desc: "Class 10 high-speed memory card for phones, tablets, cameras.",
             features: ["64GB Storage", "Class 10 Speed", "Waterproof", "Temperature Proof", "5 Year Warranty"]
         }
     ];
@@ -454,60 +496,7 @@
         document.getElementById('globalLoading').style.display = show ? 'flex' : 'none';
     }
     
-    // ==================== ADMIN: ADD PRODUCT ====================
-    function toggleAdminPanel() {
-        const panel = document.getElementById('adminPanel');
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    }
-    
-    function addProduct() {
-        const name = document.getElementById('prodName').value.trim();
-        const price = parseFloat(document.getElementById('prodPrice').value);
-        const oldPrice = parseFloat(document.getElementById('prodOldPrice').value) || price * 1.3;
-        const category = document.getElementById('prodCategory').value.trim() || 'uncategorized';
-        const desc = document.getElementById('prodDesc').value.trim();
-        const images = document.getElementById('prodImages').value.split(',').map(s => s.trim()).filter(s => s);
-        const features = document.getElementById('prodFeatures').value.split('\n').filter(s => s.trim());
-        
-        if(!name || !price || !desc || images.length === 0) {
-            showToast("Please fill all required fields (Name, Price, Description, Images)");
-            return;
-        }
-        
-        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-        const newProduct = { id: newId, name, price, oldPrice, category, images, desc, features };
-        products.push(newProduct);
-        
-        // Save to localStorage
-        localStorage.setItem('dsZoneProducts', JSON.stringify(products));
-        
-        renderProducts();
-        renderCategories();
-        showToast("✅ Product added successfully!");
-        
-        // Clear form
-        document.getElementById('prodName').value = '';
-        document.getElementById('prodPrice').value = '';
-        document.getElementById('prodOldPrice').value = '';
-        document.getElementById('prodCategory').value = '';
-        document.getElementById('prodDesc').value = '';
-        document.getElementById('prodImages').value = '';
-        document.getElementById('prodFeatures').value = '';
-        document.getElementById('adminPanel').style.display = 'none';
-    }
-    
-    // ==================== LOAD PRODUCTS ====================
-    function loadProducts() {
-        const saved = localStorage.getItem('dsZoneProducts');
-        if(saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if(parsed && parsed.length > 0) products = parsed;
-            } catch(e) {}
-        }
-    }
-    
-    // ==================== CART FUNCTIONS ====================
+    // ==================== CART ====================
     function loadCart() { const saved = localStorage.getItem('dsZoneCart'); if(saved) cart = JSON.parse(saved); updateCartCount(); renderProducts(); renderCategories(); }
     function saveCart() { localStorage.setItem('dsZoneCart', JSON.stringify(cart)); updateCartCount(); }
     function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s,i)=>s+i.quantity,0); }
@@ -525,12 +514,7 @@
         closeDetailPage();
     }
     
-    function addToCartFromDetail() {
-        if(detailProductId !== null) {
-            addToCart(detailProductId);
-        }
-    }
-    
+    function addToCartFromDetail() { if(detailProductId !== null) addToCart(detailProductId); }
     function removeFromCart(index) { cart.splice(index,1); saveCart(); if(document.getElementById('cartModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
     function updateQuantity(index, change) {
         if(cart[index].quantity + change > 0) cart[index].quantity += change;
@@ -564,14 +548,12 @@
         `).join('');
     }
     
-    // ==================== PRODUCT DETAIL PAGE (Full Page) ====================
+    // ==================== DETAIL PAGE ====================
     function openDetailPage(productId) {
         const product = products.find(p => p.id === productId);
         if(!product) return;
-        
         detailProductId = productId;
         detailCurrentIndex = 0;
-        
         document.getElementById('detailPageTitle').innerHTML = product.name;
         document.getElementById('detailMainImage').src = product.images[0];
         document.getElementById('detailName').innerHTML = product.name;
@@ -579,23 +561,18 @@
         document.getElementById('detailOldPrice').innerHTML = product.oldPrice ? `₹${product.oldPrice}` : '';
         document.getElementById('detailDesc').innerHTML = product.desc;
         
-        // Features
         let featuresHtml = `<h4>✨ Product Features:</h4><ul>`;
         if(product.features && product.features.length > 0) {
             product.features.forEach(f => { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> ${f}</li>`; });
-        } else {
-            featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> Premium quality product</li>`;
-        }
+        } else { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> Premium quality product</li>`; }
         featuresHtml += `</ul>`;
         document.getElementById('detailFeatures').innerHTML = featuresHtml;
         
-        // Thumbnails
         const thumbContainer = document.getElementById('detailThumbnails');
         thumbContainer.innerHTML = product.images.map((img, idx) => `
             <img class="detail-thumb ${idx===0?'active':''}" src="${img}" onclick="changeDetailImageTo(${idx})" onerror="this.src='https://via.placeholder.com/65'">
         `).join('');
         
-        // Similar Products
         const similarContainer = document.getElementById('similarProducts');
         const similar = products.filter(p => p.id !== productId && p.category === product.category).slice(0,4);
         if(similar.length === 0) {
@@ -609,17 +586,12 @@
                 </div>
             `).join('');
         }
-        
         document.getElementById('productDetailPage').style.display = 'block';
         document.body.style.overflow = 'hidden';
         window.scrollTo(0,0);
     }
     
-    function closeDetailPage() {
-        document.getElementById('productDetailPage').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-    
+    function closeDetailPage() { document.getElementById('productDetailPage').style.display = 'none'; document.body.style.overflow = 'auto'; }
     function changeDetailImage(direction) {
         const product = products.find(p => p.id === detailProductId);
         if(!product) return;
@@ -627,14 +599,12 @@
         detailCurrentIndex = (detailCurrentIndex + direction + total) % total;
         updateDetailImage(product);
     }
-    
     function changeDetailImageTo(index) {
         const product = products.find(p => p.id === detailProductId);
         if(!product) return;
         detailCurrentIndex = index;
         updateDetailImage(product);
     }
-    
     function updateDetailImage(product) {
         document.getElementById('detailMainImage').src = product.images[detailCurrentIndex];
         document.querySelectorAll('.detail-thumb').forEach((el, idx) => {
@@ -698,21 +668,18 @@
         if(!selectedPayment){ showToast("Select payment method"); return; }
         const utr = document.getElementById('utrNumber')?.value.trim();
         if(selectedPayment !== 'cod' && !utr){ showToast("Enter UTR number"); return; }
-        
         showGlobalLoading(true);
         try {
             const orderId = "ORD" + Date.now() + Math.floor(Math.random()*1000);
             let itemsList = cart.map(i=>`- ${i.name}: ₹${i.price} x ${i.quantity}`).join('\n');
             const total = getTotal();
             const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
-            
             const orderData = {
                 orderId, date: new Date().toISOString(), type: "product_order",
                 customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0],
                 items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment],
                 utr: utr || "COD", status: "Pending"
             };
-            
             await db.collection("orders").add(orderData);
             const templateParams = {
                 to_email: ADMIN_EMAIL,
@@ -864,12 +831,10 @@
         try {
             const ordersSnapshot = await db.collection("orders").where("customerEmail","==",currentUser.email).get();
             const repairsSnapshot = await db.collection("repairs").where("customerEmail","==",currentUser.email).get();
-            
             let allItems = [];
             ordersSnapshot.forEach(doc => { let data = doc.data(); data.docId = doc.id; data.itemType = "order"; allItems.push(data); });
             repairsSnapshot.forEach(doc => { let data = doc.data(); data.docId = doc.id; data.itemType = "repair"; allItems.push(data); });
             allItems.sort((a,b) => new Date(b.date) - new Date(a.date));
-            
             let html = "";
             if(allItems.length === 0) html = "<p style='text-align:center; padding:20px;'>No orders or repairs yet</p>";
             else allItems.forEach(item => {
@@ -927,10 +892,8 @@
         const deviceBrand = document.getElementById('deviceBrand').value;
         const deviceModel = document.getElementById('deviceModel').value.trim();
         const deviceFaults = document.getElementById('deviceFaults').value.trim();
-        
         if(!name || !phone || !address || !deviceType || !deviceBrand || !deviceModel || !deviceFaults) { showToast("Please fill all fields!"); return; }
         if(phone.length < 10) { showToast("Enter valid phone number!"); return; }
-        
         showGlobalLoading(true);
         try {
             const repairId = "REP" + Date.now() + Math.floor(Math.random()*1000);
@@ -939,7 +902,6 @@
                 customerEmail: currentUser.email, customerName: name, customerPhone: phone, customerAddress: address,
                 deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending"
             };
-            
             await db.collection("repairs").add(repairData);
             const templateParams = {
                 to_email: ADMIN_EMAIL,
@@ -962,7 +924,7 @@
         finally { showGlobalLoading(false); }
     });
     
-    // ==================== NEW BOOKING ALERT ====================
+    // ==================== NOTIFICATIONS ====================
     function checkForNewRepair(repairData) {
         try {
             const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
@@ -973,9 +935,7 @@
                 body: `Customer: ${repairData.customerName}\nPhone: ${repairData.customerPhone}\nDevice: ${repairData.deviceType} - ${repairData.deviceBrand}`,
                 icon: "https://i.imgur.com/8FkqJpR.jpg"
             });
-        } else if (Notification.permission !== "denied") {
-            Notification.requestPermission();
-        }
+        } else if (Notification.permission !== "denied") { Notification.requestPermission(); }
         setTimeout(() => { showToast(`🔔 NEW BOOKING! ${repairData.customerName} - ${repairData.deviceType}`); }, 1000);
     }
     
@@ -997,12 +957,10 @@
     function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
     function showToast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2500); }
     
-    loadProducts();
+    initSlider();
     loadCart();
-    
     if (Notification.permission === "default") Notification.requestPermission();
     auth.onAuthStateChanged((user) => { if (user) listenForNewBookings(); });
 </script>
 </body>
 </html>
-```
