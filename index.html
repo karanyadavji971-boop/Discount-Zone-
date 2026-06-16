@@ -1,3 +1,4 @@
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,18 +25,27 @@
         .logout-btn{background:#ff6b35;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;}
         .order-history-btn{background:#ff9800;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;}
         
-        /* Floating Support Button - Right Side Unique Design */
+        /* Floating Support - Right Side */
         .support-float{position:fixed;bottom:100px;right:20px;z-index:150;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;animation:float-bounce 3s ease-in-out infinite;}
         @keyframes float-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
         .support-ring{width:65px;height:65px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 25px rgba(37,211,102,0.5);position:relative;transition:0.3s;}
-        .support-ring:hover{transform:scale(1.08);box-shadow:0 8px 35px rgba(37,211,102,0.7);}
+        .support-ring:hover{transform:scale(1.08);}
         .support-ring .pulse-ring{position:absolute;width:100%;height:100%;border-radius:50%;border:2px solid rgba(37,211,102,0.3);animation:pulse-ring 2s ease-out infinite;}
         .support-ring .pulse-ring:nth-child(2){animation-delay:0.5s;}
         .support-ring i{font-size:28px;color:white;z-index:2;}
-        .support-label{background:rgba(0,0,0,0.75);color:white;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.5px;white-space:nowrap;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);}
+        .support-label{background:rgba(0,0,0,0.75);color:white;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:600;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);}
         .support-badge{position:absolute;top:-5px;right:-5px;background:#ff4444;color:white;font-size:9px;padding:2px 6px;border-radius:20px;font-weight:bold;animation:badge-pulse 1.5s infinite;}
         @keyframes pulse-ring{0%{transform:scale(1);opacity:1;}100%{transform:scale(1.5);opacity:0;}}
         @keyframes badge-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+        
+        /* Admin Add Product Panel */
+        .admin-panel{background:white;border-radius:20px;padding:20px;margin:20px auto;max-width:600px;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
+        .admin-panel h3{color:#2e7d32;margin-bottom:15px;text-align:center;}
+        .admin-panel input,.admin-panel textarea,.admin-panel select{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;}
+        .admin-panel textarea{height:60px;resize:vertical;}
+        .admin-panel .add-product-btn{background:#2e7d32;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;}
+        .admin-panel .add-product-btn:hover{background:#1b5e20;}
+        .admin-toggle{background:#2e7d32;color:white;border:none;padding:8px 16px;border-radius:25px;cursor:pointer;font-size:12px;font-weight:bold;}
         
         .booking-section{max-width:600px;margin:20px auto;background:white;border-radius:20px;padding:25px;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
         .booking-section h2{color:#2e7d32;margin-bottom:20px;text-align:center;font-size:22px;}
@@ -66,12 +76,48 @@
         .category-btn.active{background:#2e7d32;color:white;}
         .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
         @media (min-width:768px){.products-grid{grid-template-columns:repeat(4,1fr);}}
-        .product-card{background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.08);}
+        .product-card{background:white;border-radius:12px;padding:12px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:0.2s;}
+        .product-card:hover{transform:translateY(-3px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}
         .product-img{width:100%;height:110px;object-fit:contain;}
         .product-name{font-size:13px;font-weight:500;margin:6px 0;}
         .product-price{color:#2e7d32;font-size:15px;font-weight:bold;}
-        .outofstock-badge{background:#e74c3c;color:white;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;}
-        .soldout-btn{background:#ccc;color:#666;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:not-allowed;font-size:12px;}
+        .add-cart-btn{background:#ff9800;color:white;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:pointer;font-weight:500;font-size:12px;}
+        .add-cart-btn:hover{background:#fb641b;}
+        
+        /* Product Detail Page (New Page Style) */
+        .product-detail-page{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:1000;overflow-y:auto;}
+        .detail-header{background:#2e7d32;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
+        .detail-header h2{color:white;font-size:18px;}
+        .detail-close{background:white;color:#2e7d32;border:none;padding:6px 14px;border-radius:25px;cursor:pointer;font-weight:bold;}
+        .detail-container{padding:20px;max-width:800px;margin:0 auto;}
+        .detail-gallery{position:relative;background:white;border-radius:12px;padding:10px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+        .detail-main-image{width:100%;height:300px;object-fit:contain;border-radius:8px;}
+        .detail-thumbnails{display:flex;gap:10px;margin-top:12px;overflow-x:auto;padding:5px 0;justify-content:center;flex-wrap:nowrap;}
+        .detail-thumb{width:65px;height:65px;object-fit:contain;border-radius:8px;cursor:pointer;border:2px solid #ddd;transition:0.2s;flex-shrink:0;}
+        .detail-thumb.active{border:2px solid #2e7d32;}
+        .detail-thumb:hover{border:2px solid #2e7d32;}
+        .detail-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:white;border:none;padding:10px 14px;border-radius:50%;cursor:pointer;font-size:18px;z-index:5;}
+        .detail-nav.prev{left:5px;}
+        .detail-nav.next{right:5px;}
+        .detail-nav:hover{background:rgba(0,0,0,0.8);}
+        .detail-title{font-size:24px;font-weight:bold;margin-bottom:8px;}
+        .detail-price{font-size:28px;color:#2e7d32;font-weight:bold;margin-bottom:10px;}
+        .detail-old-price{font-size:16px;color:#999;text-decoration:line-through;margin-left:10px;}
+        .detail-desc{color:#555;margin:15px 0;line-height:1.6;}
+        .detail-features{background:#f0f4f0;padding:15px;border-radius:10px;margin:15px 0;}
+        .detail-features h4{margin-bottom:8px;color:#2e7d32;}
+        .detail-features li{margin:5px 0;font-size:14px;color:#444;}
+        .detail-add-btn{background:#ff9800;color:white;border:none;padding:14px;border-radius:10px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;margin-top:15px;}
+        .detail-add-btn:hover{background:#fb641b;}
+        
+        /* Similar Products */
+        .similar-products{margin-top:30px;}
+        .similar-products h3{color:#2e7d32;margin-bottom:15px;font-size:18px;}
+        .similar-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+        .similar-card{background:white;border-radius:10px;padding:10px;text-align:center;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.05);}
+        .similar-card img{width:100%;height:80px;object-fit:contain;}
+        .similar-card .name{font-size:12px;font-weight:500;margin:5px 0;}
+        .similar-card .price{color:#2e7d32;font-size:13px;font-weight:bold;}
         
         .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:1000;}
         .modal-content{background:white;border-radius:20px;width:92%;max-width:480px;padding:20px;max-height:85vh;overflow-y:auto;}
@@ -116,6 +162,7 @@
 <div class="header">
     <div><h1><i class="fas fa-tools"></i> DS Zone Repair</h1><p>Fast, Reliable & Affordable Mobile Repair</p></div>
     <div class="header-right">
+        <button class="admin-toggle" onclick="toggleAdminPanel()"><i class="fas fa-plus"></i> Add Product</button>
         <div id="authSection"><button class="login-btn" onclick="showLoginModal()"><i class="fas fa-user"></i> Login</button></div>
         <div class="cart-icon" onclick="showCartModal()">
             <i class="fas fa-shopping-cart"></i>
@@ -124,8 +171,21 @@
     </div>
 </div>
 
-<!-- Floating Support Button - RIGHT SIDE with Unique Design -->
-<a href="tel:9711678678" class="support-float" id="supportBtn">
+<!-- Admin Add Product Panel -->
+<div class="admin-panel" id="adminPanel" style="display:none;">
+    <h3><i class="fas fa-plus-circle"></i> Add New Product</h3>
+    <input type="text" id="prodName" placeholder="Product Name *">
+    <input type="text" id="prodPrice" placeholder="Price ₹ *">
+    <input type="text" id="prodOldPrice" placeholder="Old Price ₹ (optional)">
+    <input type="text" id="prodCategory" placeholder="Category (e.g., earbuds, charger)">
+    <textarea id="prodDesc" placeholder="Product Description *"></textarea>
+    <input type="text" id="prodImages" placeholder="Image URLs (comma separated) *">
+    <textarea id="prodFeatures" placeholder="Features (one per line)"></textarea>
+    <button class="add-product-btn" onclick="addProduct()"><i class="fas fa-save"></i> Add Product</button>
+</div>
+
+<!-- Support Button -->
+<a href="tel:9711678678" class="support-float">
     <div class="support-ring">
         <div class="pulse-ring"></div>
         <div class="pulse-ring"></div>
@@ -135,13 +195,13 @@
     <span class="support-label"><i class="fas fa-headset"></i> Call / WhatsApp</span>
 </a>
 
-<!-- Global Loading Overlay -->
+<!-- Global Loading -->
 <div id="globalLoading" class="global-loading">
     <div class="spinner"></div>
     <p>⏳ Please Wait...</p>
 </div>
 
-<!-- Fast & Easy Booking Form -->
+<!-- Booking Form -->
 <div class="booking-section">
     <h2><i class="fas fa-calendar-check"></i> Fast & Easy Booking</h2>
     <form id="repairForm">
@@ -164,7 +224,7 @@
     </form>
 </div>
 
-<!-- Mobile Repair Services -->
+<!-- Services -->
 <div class="services-section">
     <h3><i class="fas fa-wrench"></i> Our Mobile Repair Services</h3>
     <div class="services-grid">
@@ -177,11 +237,39 @@
     </div>
 </div>
 
-<!-- Products Section (All Out of Stock - Only Cart) -->
+<!-- Products -->
 <div class="products-section">
     <h3><i class="fas fa-shopping-bag"></i> Mobile Accessories</h3>
     <div class="category-tabs" id="categoryTabs"></div>
     <div class="products-grid" id="productsGrid"></div>
+</div>
+
+<!-- Product Detail Page (Full Page) -->
+<div class="product-detail-page" id="productDetailPage">
+    <div class="detail-header">
+        <h2 id="detailPageTitle">Product</h2>
+        <button class="detail-close" onclick="closeDetailPage()"><i class="fas fa-times"></i> Close</button>
+    </div>
+    <div class="detail-container">
+        <div class="detail-gallery">
+            <img id="detailMainImage" class="detail-main-image" src="">
+            <button class="detail-nav prev" onclick="changeDetailImage(-1)">❮</button>
+            <button class="detail-nav next" onclick="changeDetailImage(1)">❯</button>
+            <div class="detail-thumbnails" id="detailThumbnails"></div>
+        </div>
+        <div class="detail-title" id="detailName"></div>
+        <div>
+            <span class="detail-price" id="detailPrice"></span>
+            <span class="detail-old-price" id="detailOldPrice"></span>
+        </div>
+        <div class="detail-desc" id="detailDesc"></div>
+        <div class="detail-features" id="detailFeatures"></div>
+        <button class="detail-add-btn" onclick="addToCartFromDetail()"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+        <div class="similar-products">
+            <h3><i class="fas fa-tags"></i> Similar Products</h3>
+            <div class="similar-grid" id="similarProducts"></div>
+        </div>
+    </div>
 </div>
 
 <footer><p>© 2026 DS Zone Repair | Mobile Repair & Accessories Store</p></footer>
@@ -200,7 +288,7 @@
     </div>
 </div>
 
-<!-- Order History Modal -->
+<!-- Order History -->
 <div id="historyModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeHistoryModal()">&times;</span>
@@ -265,7 +353,7 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    // ==================== FIREBASE ====================
+    // ==================== FIREBASE CONFIG ====================
     const firebaseConfig = {
         apiKey: "AIzaSyBUqsrDawGJbX-wgcBFRU4vuaasjt5ZnKQ",
         authDomain: "discountzone-da33a.firebaseapp.com",
@@ -289,30 +377,137 @@
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
     const SUPPORT_NUMBER = "9711678678";
     
+    // ==================== PRODUCTS DATABASE ====================
+    let products = [
+        { 
+            id: 1, 
+            name: "Wireless Bluetooth Earbuds", 
+            price: 899, 
+            oldPrice: 1299,
+            category: "earbuds", 
+            images: [
+                "https://i.imgur.com/8FkqJpR.jpg",
+                "https://i.imgur.com/T7gY4QG.jpg",
+                "https://i.imgur.com/wWnF8gH.jpg"
+            ], 
+            desc: "Premium wireless earbuds with deep bass, 20hr battery life, Bluetooth 5.3. Perfect for calls and music.",
+            features: ["Bluetooth 5.3", "20hr Battery Life", "Deep Bass", "Noise Cancellation", "Fast Charging"]
+        },
+        { 
+            id: 2, 
+            name: "20W Fast Charger", 
+            price: 399, 
+            oldPrice: 599,
+            category: "charger", 
+            images: [
+                "https://i.imgur.com/wWnF8gH.jpg",
+                "https://i.imgur.com/NqXj7Zt.jpg"
+            ], 
+            desc: "20W fast charger with Type-C port. Compatible with all smartphones. Safety protected.",
+            features: ["20W Fast Charging", "Type-C Port", "Overcharge Protection", "Compact Design"]
+        },
+        { 
+            id: 3, 
+            name: "Over-Ear Bluetooth Headphones", 
+            price: 1299, 
+            oldPrice: 1999,
+            category: "headphone", 
+            images: [
+                "https://i.imgur.com/5cYbKpR.jpg",
+                "https://i.imgur.com/8FkqJpR.jpg"
+            ], 
+            desc: "Over-ear headphones with soft cushion, 30hr battery, foldable design for easy carrying.",
+            features: ["30hr Battery", "Foldable Design", "Soft Cushion", "Deep Bass", "Built-in Mic"]
+        },
+        { 
+            id: 4, 
+            name: "Portable Bluetooth Speaker", 
+            price: 999, 
+            oldPrice: 1499,
+            category: "speaker", 
+            images: [
+                "https://i.imgur.com/T7gY4QG.jpg",
+                "https://i.imgur.com/NqXj7Zt.jpg"
+            ], 
+            desc: "10W portable speaker with RGB lights, 8hr playtime, IPX5 water resistant.",
+            features: ["RGB Lights", "8hr Playtime", "IPX5 Water Resistant", "TWS Pairing", "Rich Bass"]
+        },
+        { 
+            id: 5, 
+            name: "64GB MicroSD Card", 
+            price: 499, 
+            oldPrice: 799,
+            category: "memorycard", 
+            images: [
+                "https://i.imgur.com/NqXj7Zt.jpg",
+                "https://i.imgur.com/wWnF8gH.jpg"
+            ], 
+            desc: "Class 10 high-speed memory card for phones, tablets, cameras. Reliable storage.",
+            features: ["64GB Storage", "Class 10 Speed", "Waterproof", "Temperature Proof", "5 Year Warranty"]
+        }
+    ];
+    
+    let detailCurrentIndex = 0;
+    let detailProductId = null;
+    
     function showGlobalLoading(show) {
         document.getElementById('globalLoading').style.display = show ? 'flex' : 'none';
     }
     
-    // Products - Only Add to Cart, No Booking
-    const products = [
-        { id: 1, name: "🎧 Wireless Earbuds", price: 899, category: "earbuds", image: "https://i.imgur.com/8FkqJpR.jpg", outofstock: true },
-        { id: 2, name: "⚡ 20W Fast Charger", price: 399, category: "charger", image: "https://i.imgur.com/wWnF8gH.jpg", outofstock: true },
-        { id: 3, name: "🎧 Over-Ear Headphones", price: 1299, category: "headphone", image: "https://i.imgur.com/5cYbKpR.jpg", outofstock: true },
-        { id: 4, name: "🔊 Bluetooth Speaker", price: 999, category: "speaker", image: "https://i.imgur.com/T7gY4QG.jpg", outofstock: true },
-        { id: 5, name: "💾 64GB Memory Card", price: 499, category: "memorycard", image: "https://i.imgur.com/NqXj7Zt.jpg", outofstock: true },
-        { id: 6, name: "🔑 32GB Pendrive", price: 299, category: "pendrive", image: "https://i.imgur.com/8FkqJpR.jpg", outofstock: true },
-        { id: 7, name: "🔌 Type-C Cable", price: 199, category: "cable", image: "https://i.imgur.com/wWnF8gH.jpg", outofstock: true },
-        { id: 8, name: "🎧 Neckband Earphones", price: 799, category: "neckband", image: "https://i.imgur.com/5cYbKpR.jpg", outofstock: true }
-    ];
+    // ==================== ADMIN: ADD PRODUCT ====================
+    function toggleAdminPanel() {
+        const panel = document.getElementById('adminPanel');
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
     
-    const categories = [
-        { id: "all", name: "All" }, { id: "earbuds", name: "Earbuds" }, { id: "charger", name: "Chargers" },
-        { id: "headphone", name: "Headphones" }, { id: "speaker", name: "Speakers" }, { id: "memorycard", name: "Memory" },
-        { id: "pendrive", name: "Pendrive" }, { id: "cable", name: "Cables" }, { id: "neckband", name: "Neckbands" }
-    ];
+    function addProduct() {
+        const name = document.getElementById('prodName').value.trim();
+        const price = parseFloat(document.getElementById('prodPrice').value);
+        const oldPrice = parseFloat(document.getElementById('prodOldPrice').value) || price * 1.3;
+        const category = document.getElementById('prodCategory').value.trim() || 'uncategorized';
+        const desc = document.getElementById('prodDesc').value.trim();
+        const images = document.getElementById('prodImages').value.split(',').map(s => s.trim()).filter(s => s);
+        const features = document.getElementById('prodFeatures').value.split('\n').filter(s => s.trim());
+        
+        if(!name || !price || !desc || images.length === 0) {
+            showToast("Please fill all required fields (Name, Price, Description, Images)");
+            return;
+        }
+        
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        const newProduct = { id: newId, name, price, oldPrice, category, images, desc, features };
+        products.push(newProduct);
+        
+        // Save to localStorage
+        localStorage.setItem('dsZoneProducts', JSON.stringify(products));
+        
+        renderProducts();
+        renderCategories();
+        showToast("✅ Product added successfully!");
+        
+        // Clear form
+        document.getElementById('prodName').value = '';
+        document.getElementById('prodPrice').value = '';
+        document.getElementById('prodOldPrice').value = '';
+        document.getElementById('prodCategory').value = '';
+        document.getElementById('prodDesc').value = '';
+        document.getElementById('prodImages').value = '';
+        document.getElementById('prodFeatures').value = '';
+        document.getElementById('adminPanel').style.display = 'none';
+    }
     
-    let currentCategory = "all";
+    // ==================== LOAD PRODUCTS ====================
+    function loadProducts() {
+        const saved = localStorage.getItem('dsZoneProducts');
+        if(saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if(parsed && parsed.length > 0) products = parsed;
+            } catch(e) {}
+        }
+    }
     
+    // ==================== CART FUNCTIONS ====================
     function loadCart() { const saved = localStorage.getItem('dsZoneCart'); if(saved) cart = JSON.parse(saved); updateCartCount(); renderProducts(); renderCategories(); }
     function saveCart() { localStorage.setItem('dsZoneCart', JSON.stringify(cart)); updateCartCount(); }
     function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s,i)=>s+i.quantity,0); }
@@ -320,32 +515,140 @@
     function getDeliveryCharge() { return getCartSubtotal() >= 1000 ? 0 : 40; }
     function getTotal() { return getCartSubtotal() + getDeliveryCharge(); }
     
+    function addToCart(productId) {
+        const product = products.find(p=>p.id===productId);
+        const existing = cart.find(i=>i.id===productId);
+        if(existing) existing.quantity++;
+        else cart.push({...product, quantity:1});
+        saveCart();
+        showToast(`✅ ${product.name} added to cart!`);
+        closeDetailPage();
+    }
+    
+    function addToCartFromDetail() {
+        if(detailProductId !== null) {
+            addToCart(detailProductId);
+        }
+    }
+    
+    function removeFromCart(index) { cart.splice(index,1); saveCart(); if(document.getElementById('cartModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
+    function updateQuantity(index, change) {
+        if(cart[index].quantity + change > 0) cart[index].quantity += change;
+        else cart.splice(index,1);
+        saveCart();
+        if(document.getElementById('cartModal').style.display==='flex') updateCartModal();
+        updateCartCount();
+    }
+    
+    // ==================== RENDER ====================
     function renderCategories() {
         const container = document.getElementById('categoryTabs');
-        container.innerHTML = categories.map(cat => `<button class="category-btn ${currentCategory===cat.id?'active':''}" onclick="filterByCategory('${cat.id}')">${cat.name}</button>`).join('');
+        let categories = ['all'];
+        products.forEach(p => { if(!categories.includes(p.category)) categories.push(p.category); });
+        container.innerHTML = categories.map(cat => `<button class="category-btn ${currentCategory===cat?'active':''}" onclick="filterByCategory('${cat}')">${cat.charAt(0).toUpperCase() + cat.slice(1)}</button>`).join('');
     }
+    
+    let currentCategory = "all";
     function filterByCategory(cat) { currentCategory = cat; renderCategories(); renderProducts(); }
     
     function renderProducts() {
         const container = document.getElementById('productsGrid');
         let filtered = currentCategory==='all' ? products : products.filter(p=>p.category===currentCategory);
         container.innerHTML = filtered.map(p => `
-            <div class="product-card">
-                <img class="product-img" src="${p.image}" onerror="this.src='https://via.placeholder.com/120'">
+            <div class="product-card" onclick="openDetailPage(${p.id})">
+                <img class="product-img" src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/120'">
                 <div class="product-name">${p.name}</div>
                 <div class="product-price">₹${p.price}</div>
-                <div class="outofstock-badge"><i class="fas fa-times-circle"></i> Out of Stock</div>
-                <button class="soldout-btn" disabled>Sold Out</button>
+                <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(${p.id})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
             </div>
         `).join('');
     }
     
+    // ==================== PRODUCT DETAIL PAGE (Full Page) ====================
+    function openDetailPage(productId) {
+        const product = products.find(p => p.id === productId);
+        if(!product) return;
+        
+        detailProductId = productId;
+        detailCurrentIndex = 0;
+        
+        document.getElementById('detailPageTitle').innerHTML = product.name;
+        document.getElementById('detailMainImage').src = product.images[0];
+        document.getElementById('detailName').innerHTML = product.name;
+        document.getElementById('detailPrice').innerHTML = `₹${product.price}`;
+        document.getElementById('detailOldPrice').innerHTML = product.oldPrice ? `₹${product.oldPrice}` : '';
+        document.getElementById('detailDesc').innerHTML = product.desc;
+        
+        // Features
+        let featuresHtml = `<h4>✨ Product Features:</h4><ul>`;
+        if(product.features && product.features.length > 0) {
+            product.features.forEach(f => { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> ${f}</li>`; });
+        } else {
+            featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> Premium quality product</li>`;
+        }
+        featuresHtml += `</ul>`;
+        document.getElementById('detailFeatures').innerHTML = featuresHtml;
+        
+        // Thumbnails
+        const thumbContainer = document.getElementById('detailThumbnails');
+        thumbContainer.innerHTML = product.images.map((img, idx) => `
+            <img class="detail-thumb ${idx===0?'active':''}" src="${img}" onclick="changeDetailImageTo(${idx})" onerror="this.src='https://via.placeholder.com/65'">
+        `).join('');
+        
+        // Similar Products
+        const similarContainer = document.getElementById('similarProducts');
+        const similar = products.filter(p => p.id !== productId && p.category === product.category).slice(0,4);
+        if(similar.length === 0) {
+            similarContainer.innerHTML = `<p style="color:#999; grid-column:1/-1; text-align:center;">No similar products found</p>`;
+        } else {
+            similarContainer.innerHTML = similar.map(p => `
+                <div class="similar-card" onclick="openDetailPage(${p.id})">
+                    <img src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/80'">
+                    <div class="name">${p.name}</div>
+                    <div class="price">₹${p.price}</div>
+                </div>
+            `).join('');
+        }
+        
+        document.getElementById('productDetailPage').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        window.scrollTo(0,0);
+    }
+    
+    function closeDetailPage() {
+        document.getElementById('productDetailPage').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    function changeDetailImage(direction) {
+        const product = products.find(p => p.id === detailProductId);
+        if(!product) return;
+        const total = product.images.length;
+        detailCurrentIndex = (detailCurrentIndex + direction + total) % total;
+        updateDetailImage(product);
+    }
+    
+    function changeDetailImageTo(index) {
+        const product = products.find(p => p.id === detailProductId);
+        if(!product) return;
+        detailCurrentIndex = index;
+        updateDetailImage(product);
+    }
+    
+    function updateDetailImage(product) {
+        document.getElementById('detailMainImage').src = product.images[detailCurrentIndex];
+        document.querySelectorAll('.detail-thumb').forEach((el, idx) => {
+            el.classList.toggle('active', idx === detailCurrentIndex);
+        });
+    }
+    
+    // ==================== CART MODAL ====================
     function updateCartModal() {
         if(cart.length===0){ showToast("Cart empty!"); closeModal(); return; }
         let html = "";
         cart.forEach((item,idx) => {
             html += `<div class="cart-item">
-                <img class="cart-item-img" src="${item.image || 'https://i.imgur.com/8FkqJpR.jpg'}">
+                <img class="cart-item-img" src="${item.images[0] || 'https://i.imgur.com/8FkqJpR.jpg'}" onerror="this.src='https://via.placeholder.com/40'">
                 <div class="cart-item-details">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">₹${item.price} x ${item.quantity}</div>
@@ -372,14 +675,6 @@
     
     function showCartModal() { if(cart.length===0){showToast("Cart empty!");return;} updateCartModal(); selectedPayment=null; document.getElementById('utrSection').style.display='none'; document.querySelectorAll('.payment-btn').forEach(b=>b.classList.remove('selected')); document.getElementById('cartModal').style.display='flex'; }
     function closeModal() { document.getElementById('cartModal').style.display = 'none'; }
-    function removeFromCart(index) { cart.splice(index,1); saveCart(); if(document.getElementById('cartModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
-    function updateQuantity(index, change) {
-        if(cart[index].quantity + change > 0) cart[index].quantity += change;
-        else cart.splice(index,1);
-        saveCart();
-        if(document.getElementById('cartModal').style.display==='flex') updateCartModal();
-        updateCartCount();
-    }
     
     function selectPayment(method, btn) {
         selectedPayment = method;
@@ -438,7 +733,7 @@
         finally { showGlobalLoading(false); }
     }
     
-    // ==================== AUTHENTICATION ====================
+    // ==================== AUTH ====================
     auth.onAuthStateChanged((user) => { currentUser = user; updateUI(); });
     
     function updateUI() {
@@ -479,7 +774,7 @@
     }
     function logout() { auth.signOut(); showToast("Logged out"); cart = []; saveCart(); updateCartCount(); }
     
-    // ==================== CANCEL ORDER/REPAIR WITH REASON ====================
+    // ==================== CANCEL ====================
     function selectReason(element, reason) {
         document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
         element.classList.add('selected');
@@ -562,7 +857,7 @@
     
     function closeCancelReasonModal() { document.getElementById('cancelReasonModal').style.display = 'none'; pendingCancelOrderId = null; pendingCancelRepairId = null; }
     
-    // ==================== SHOW ORDER HISTORY ====================
+    // ==================== ORDER HISTORY ====================
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
         showGlobalLoading(true);
@@ -621,7 +916,7 @@
         finally { showGlobalLoading(false); }
     }
     
-    // ==================== REPAIR FORM SUBMIT ====================
+    // ==================== REPAIR FORM ====================
     document.getElementById('repairForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
@@ -660,23 +955,19 @@
                 action_type: "NEW REPAIR"
             };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-            
-            // New booking alert
             checkForNewRepair(repairData);
-            
             showToast("✅ Repair request sent! We'll contact you soon.");
             document.getElementById('repairForm').reset();
         } catch(e){ showToast("Error: " + e.message); }
         finally { showGlobalLoading(false); }
     });
     
-    // ==================== NEW BOOKING ALERT SYSTEM ====================
+    // ==================== NEW BOOKING ALERT ====================
     function checkForNewRepair(repairData) {
         try {
             const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
             audio.play();
         } catch(e) {}
-        
         if (Notification.permission === "granted") {
             new Notification("🔧 New Repair Booking!", {
                 body: `Customer: ${repairData.customerName}\nPhone: ${repairData.customerPhone}\nDevice: ${repairData.deviceType} - ${repairData.deviceBrand}`,
@@ -685,51 +976,33 @@
         } else if (Notification.permission !== "denied") {
             Notification.requestPermission();
         }
-        
-        setTimeout(() => {
-            showToast(`🔔 NEW BOOKING! ${repairData.customerName} - ${repairData.deviceType}`);
-        }, 1000);
+        setTimeout(() => { showToast(`🔔 NEW BOOKING! ${repairData.customerName} - ${repairData.deviceType}`); }, 1000);
     }
     
     function listenForNewBookings() {
         if (!currentUser) return;
-        db.collection("repairs")
-            .where("status", "==", "Pending")
-            .orderBy("date", "desc")
-            .limit(1)
-            .onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added") {
-                        const data = change.doc.data();
-                        if (data.customerEmail !== currentUser.email) {
-                            checkForNewRepair(data);
-                        }
-                    }
-                });
-            }, (error) => {
-                console.log("Snapshot error:", error);
+        db.collection("repairs").where("status","==","Pending").orderBy("date","desc").limit(1).onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const data = change.doc.data();
+                    if (data.customerEmail !== currentUser.email) checkForNewRepair(data);
+                }
             });
+        }, (error) => { console.log("Snapshot error:", error); });
     }
     
-    // ==================== INITIALIZE ====================
+    // ==================== INIT ====================
     function showLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
     function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
     function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
     function showToast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2500); }
     
-    renderCategories();
-    renderProducts();
+    loadProducts();
     loadCart();
     
-    if (Notification.permission === "default") {
-        Notification.requestPermission();
-    }
-    
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            listenForNewBookings();
-        }
-    });
+    if (Notification.permission === "default") Notification.requestPermission();
+    auth.onAuthStateChanged((user) => { if (user) listenForNewBookings(); });
 </script>
 </body>
 </html>
+```
