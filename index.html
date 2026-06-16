@@ -327,16 +327,111 @@
     let selectedCancelItemType = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
     
-    // ==================== PRODUCTS ====================
+    // ==================== ACE HILL PRODUCTS ====================
     let products = [
-        { id: 1, name: "🎧 Wireless Earbuds", price: 899, oldPrice: 1299, category: "earbuds", images: ["https://i.imgur.com/8FkqJpR.jpg","https://i.imgur.com/T7gY4QG.jpg"], desc: "Premium wireless earbuds with deep bass, 20hr battery life, Bluetooth 5.3.", features: ["Bluetooth 5.3", "20hr Battery", "Deep Bass", "Noise Cancellation"] },
-        { id: 2, name: "⚡ 20W Fast Charger", price: 399, oldPrice: 599, category: "charger", images: ["https://i.imgur.com/wWnF8gH.jpg","https://i.imgur.com/NqXj7Zt.jpg"], desc: "20W fast charger with Type-C port. Compatible with all smartphones.", features: ["20W Fast Charging", "Type-C Port", "Overcharge Protection"] },
-        { id: 3, name: "🎧 Over-Ear Headphones", price: 1299, oldPrice: 1999, category: "headphone", images: ["https://i.imgur.com/5cYbKpR.jpg","https://i.imgur.com/8FkqJpR.jpg"], desc: "Over-ear headphones with soft cushion, 30hr battery, foldable design.", features: ["30hr Battery", "Foldable", "Soft Cushion", "Deep Bass"] },
-        { id: 4, name: "🔊 Bluetooth Speaker", price: 999, oldPrice: 1499, category: "speaker", images: ["https://i.imgur.com/T7gY4QG.jpg","https://i.imgur.com/NqXj7Zt.jpg"], desc: "10W portable speaker with RGB lights, 8hr playtime, IPX5 water resistant.", features: ["RGB Lights", "8hr Playtime", "IPX5", "TWS Pairing"] },
-        { id: 5, name: "💾 64GB Memory Card", price: 499, oldPrice: 799, category: "memorycard", images: ["https://i.imgur.com/NqXj7Zt.jpg","https://i.imgur.com/wWnF8gH.jpg"], desc: "Class 10 high-speed memory card for phones, tablets, cameras.", features: ["64GB", "Class 10", "Waterproof", "5 Year Warranty"], outofstock: true },
-        { id: 6, name: "🔑 32GB Pendrive", price: 299, oldPrice: 499, category: "pendrive", images: ["https://i.imgur.com/8FkqJpR.jpg","https://i.imgur.com/wWnF8gH.jpg"], desc: "Metal body USB 3.0 pendrive. Fast data transfer, compact design.", features: ["32GB", "USB 3.0", "Metal Body", "5 Year Warranty"], outofstock: true },
-        { id: 7, name: "🔌 Type-C Cable", price: 199, oldPrice: 299, category: "cable", images: ["https://i.imgur.com/wWnF8gH.jpg","https://i.imgur.com/NqXj7Zt.jpg"], desc: "Braided Type-C cable, 1.5 meter length, fast charging support.", features: ["Braided", "1.5m", "Fast Charging", "Durable"], outofstock: true },
-        { id: 8, name: "🎧 Neckband Earphones", price: 799, oldPrice: 1199, category: "neckband", images: ["https://i.imgur.com/5cYbKpR.jpg","https://i.imgur.com/8FkqJpR.jpg"], desc: "Magnetic neckband earphones with 12hr battery, deep bass, comfortable fit.", features: ["Magnetic", "12hr Battery", "Deep Bass", "Sweat Proof"], outofstock: true }
+        {
+            id: "ACE-CHARGER-35W-001",
+            name: "Ace Hill 35W Quick Charge Dash Charger",
+            price: 699,
+            oldPrice: 999,
+            category: "charger",
+            images: [
+                "https://i.ibb.co/HLNmg6JC/IMG-20260616-182447.png",
+                "https://i.ibb.co/xSVy5Skm/Chat-GPT-Image-Jun-16-2026-06-07-06-PM.png",
+                "https://i.ibb.co/PqFkqNk/IMG-20260616-182419.png"
+            ],
+            desc: "35W Super Fast Charging with Qualcomm Quick Charge 4.0+. Supports Dash Charge, Warp Charge, VOOC. Compatible with iPhone & Android.",
+            features: [
+                "35W Super Fast Charging",
+                "Quick Charge 4.0+",
+                "Dash, Warp, VOOC Support",
+                "iPhone & Android Compatible",
+                "Smart Charging Technology",
+                "OVP/OCP/Over Heat Protection"
+            ]
+        },
+        {
+            id: "ACE-CABLE-120W-001",
+            name: "Ace Hill Super VOOC 120W Cable",
+            price: 299,
+            oldPrice: 599,
+            category: "cable",
+            images: [
+                "https://i.ibb.co/j99Px1XJ/IMG-20260616-190919.png",
+                "https://i.ibb.co/tPDB63N3/IMG-20260616-191008.png",
+                "https://i.ibb.co/Xr7rQSxB/IMG-20260616-191105.png",
+                "https://i.ibb.co/fdLVzqHd/IMG-20260616-191155.png"
+            ],
+            desc: "120W Super VOOC fast charging cable. USB-A to Type-C. Supports VOOC, SuperVOOC, DASH, WARP, DART, FLASH, TURBO protocols.",
+            features: [
+                "120W Fast Charging",
+                "Super VOOC Support",
+                "USB-A to Type-C",
+                "High Speed Data Transfer",
+                "Durable & Flexible",
+                "1 Meter Length"
+            ]
+        },
+        {
+            id: "ACE-CABLE-PD-65W-001",
+            name: "Ace Hill 65W PD Type C to Type C Cable",
+            price: 349,
+            oldPrice: 599,
+            category: "cable",
+            images: [
+                "https://i.ibb.co/HpGvTdqZ/IMG-20260616-232011.png",
+                "https://i.ibb.co/sp3Cxqx8/IMG-20260616-232054.png"
+            ],
+            desc: "65W PD Type C to Type C fast charging cable. Qualcomm Quick Charge 4.0 support. Premium red braided design.",
+            features: [
+                "65W PD Fast Charging",
+                "Quick Charge 4.0",
+                "Type C to Type C",
+                "iPhone/Android Compatible",
+                "High Speed Data Transfer",
+                "Red Braided Design"
+            ]
+        },
+        {
+            id: "ACE-CABLE-V8-001",
+            name: "Ace Hill V8 USB Data Cable",
+            price: 99,
+            oldPrice: 199,
+            category: "cable",
+            images: [
+                "https://i.ibb.co/d4DqZDG1/IMG-20260616-231336.png",
+                "https://i.ibb.co/JFqqGMHX/IMG-20260616-231508.png"
+            ],
+            desc: "V8 USB data cable with 30W fast charging. USB-A to V8 connector. Durable and flexible build.",
+            features: [
+                "30W Fast Charging",
+                "USB-A to V8",
+                "High Speed Data",
+                "Durable & Flexible",
+                "Tangle-Free Design",
+                "1 Meter Length"
+            ]
+        },
+        {
+            id: "ACE-CABLE-iPhone-001",
+            name: "Ace Hill iPhone Lightning USB Cable",
+            price: 99,
+            oldPrice: 249,
+            category: "cable",
+            images: [
+                "https://i.ibb.co/Ppr5PnR/IMG-20260616-231601.png",
+                "https://i.ibb.co/NgbLt99k/IMG-20260616-231646.png"
+            ],
+            desc: "iPhone Lightning USB data cable with 5V-2.5A fast charging. MFi certified. Durable braided design.",
+            features: [
+                "5V-2.5A Fast Charging",
+                "MFi Certified",
+                "iPhone Compatible",
+                "Durable Braided Design",
+                "Tangle-Free",
+                "1 Meter Length"
+            ]
+        }
     ];
     
     let detailCurrentIndex = 0;
@@ -354,7 +449,6 @@
     
     function addToCart(productId) {
         const product = products.find(p=>p.id===productId);
-        if(product.outofstock) { showToast("❌ This product is out of stock!"); return; }
         const existing = cart.find(i=>i.id===productId);
         if(existing) existing.quantity++;
         else cart.push({...product, quantity:1});
@@ -385,20 +479,17 @@
     function renderProducts() {
         const container = document.getElementById('productsGrid');
         let filtered = currentCategory==='all' ? products : products.filter(p=>p.category===currentCategory);
-        container.innerHTML = filtered.map(p => {
-            let outofstock = p.outofstock || false;
-            return `
-            <div class="product-card" onclick="openDetailModal(${p.id})">
+        container.innerHTML = filtered.map(p => `
+            <div class="product-card" onclick="openDetailModal('${p.id}')">
                 <img class="product-img" src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/120'">
                 <div class="product-name">${p.name}</div>
                 <div class="product-price">₹${p.price}</div>
-                ${outofstock ? `<div class="outofstock-badge">Out of Stock</div>` : ''}
-                ${outofstock ? `<button class="soldout-btn" disabled>Sold Out</button>` : `<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(${p.id})"><i class="fas fa-cart-plus"></i> Add to Cart</button>`}
-            </div>`;
-        }).join('');
+                <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('${p.id}')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+            </div>
+        `).join('');
     }
     
-    // ==================== DETAIL POPUP MODAL ====================
+    // ==================== DETAIL POPUP ====================
     function openDetailModal(productId) {
         const product = products.find(p => p.id === productId);
         if(!product) return;
@@ -410,10 +501,8 @@
         document.getElementById('detailOldPrice').innerHTML = product.oldPrice ? `₹${product.oldPrice}` : '';
         document.getElementById('detailDesc').innerHTML = product.desc;
         
-        let featuresHtml = `<h4>✨ Product Features:</h4><ul>`;
-        if(product.features && product.features.length > 0) {
-            product.features.forEach(f => { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> ${f}</li>`; });
-        } else { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> Premium quality product</li>`; }
+        let featuresHtml = `<h4>✨ Features:</h4><ul>`;
+        product.features.forEach(f => { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> ${f}</li>`; });
         featuresHtml += `</ul>`;
         document.getElementById('detailFeatures').innerHTML = featuresHtml;
         
@@ -423,7 +512,7 @@
         const similarContainer = document.getElementById('similarProducts');
         const similar = products.filter(p => p.id !== productId && p.category === product.category).slice(0,4);
         if(similar.length === 0) { similarContainer.innerHTML = `<p style="color:#999; grid-column:1/-1; text-align:center;">No similar products</p>`; }
-        else { similarContainer.innerHTML = similar.map(p => `<div class="similar-card" onclick="openDetailModal(${p.id})"><img src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/70'"><div class="name">${p.name}</div><div class="price">₹${p.price}</div></div>`).join(''); }
+        else { similarContainer.innerHTML = similar.map(p => `<div class="similar-card" onclick="openDetailModal('${p.id}')"><img src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/70'"><div class="name">${p.name}</div><div class="price">₹${p.price}</div></div>`).join(''); }
         
         document.getElementById('detailModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -689,6 +778,8 @@
     function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
     function showToast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2500); }
     
+    renderCategories();
+    renderProducts();
     loadCart();
     if (Notification.permission === "default") Notification.requestPermission();
     auth.onAuthStateChanged((user) => { if (user) listenForNewBookings(); });
