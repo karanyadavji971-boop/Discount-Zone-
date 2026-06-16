@@ -2,41 +2,177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Discount Zone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Admin Panel - DS Zone Repair</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:system-ui;background:#f0f2f5;padding:20px;}
-        .container{max-width:1400px;margin:0 auto;}
-        h1{color:#2874f0;margin-bottom:20px;}
-        .order-card{background:white;border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-        .order-header{display:flex;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eee;}
-        .order-id{font-weight:bold;color:#2874f0;}
-        .status{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold;}
-        .status-Pending{background:#ff9800;color:white;}
-        .status-Confirmed{background:#2196f3;color:white;}
-        .status-Shipped{background:#9c27b0;color:white;}
-        .status-Delivered{background:#4caf50;color:white;}
-        .order-details{font-size:14px;color:#555;margin:10px 0;}
-        .order-items{background:#f8f9fa;padding:10px;border-radius:8px;margin:10px 0;font-size:13px;}
-        .update-status{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;}
-        select{padding:8px;border-radius:6px;border:1px solid #ddd;}
-        button{padding:8px 16px;background:#2874f0;color:white;border:none;border-radius:6px;cursor:pointer;}
-        .delete-btn{background:#dc3545;}
-        .login-section{text-align:center;padding:50px;}
-        .login-btn{background:#2874f0;padding:12px 30px;border-radius:30px;font-size:16px;}
+        body{font-family:'Segoe UI',Roboto,sans-serif;background:#f0f4f0;color:#1a1a1a;padding:20px;}
+        
+        .header{background:#2e7d32;padding:15px 20px;border-radius:16px;margin-bottom:25px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;color:white;}
+        .header h1{font-size:22px;}
+        .header .logout-btn{background:#ff6b35;color:white;border:none;padding:8px 20px;border-radius:25px;cursor:pointer;font-weight:bold;}
+        .header .back-btn{background:white;color:#2e7d32;border:none;padding:8px 20px;border-radius:25px;cursor:pointer;font-weight:bold;text-decoration:none;margin-right:10px;}
+        .header .user-email{background:rgba(255,255,255,0.2);padding:6px 14px;border-radius:25px;font-size:12px;}
+        
+        .admin-container{max-width:800px;margin:0 auto;}
+        
+        /* Login Box - Google Sign In */
+        .login-box{max-width:400px;margin:80px auto;background:white;border-radius:20px;padding:40px 30px;text-align:center;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
+        .login-box .logo{font-size:48px;margin-bottom:15px;}
+        .login-box h2{color:#2e7d32;margin-bottom:8px;}
+        .login-box p{color:#666;font-size:14px;margin-bottom:25px;}
+        .login-box .google-btn{background:white;border:1px solid #ddd;padding:14px;border-radius:50px;width:100%;cursor:pointer;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;transition:0.2s;}
+        .login-box .google-btn:hover{background:#f5f5f5;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+        .login-box .google-btn img{width:24px;height:24px;}
+        .login-error{color:#e74c3c;margin-top:12px;display:none;font-size:14px;}
+        .login-box .divider{display:flex;align-items:center;gap:15px;margin:20px 0;color:#999;font-size:13px;}
+        .login-box .divider::before,.login-box .divider::after{content:'';flex:1;height:1px;background:#ddd;}
+        .login-box .email-input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;margin-bottom:10px;}
+        .login-box .email-btn{background:#2e7d32;color:white;border:none;padding:12px;border-radius:10px;width:100%;cursor:pointer;font-weight:bold;font-size:15px;}
+        .login-box .email-btn:hover{background:#1b5e20;}
+        
+        .card{background:white;border-radius:20px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+        .card h3{color:#2e7d32;margin-bottom:15px;}
+        .form-group{margin-bottom:15px;}
+        .form-group label{display:block;margin-bottom:5px;font-weight:600;color:#333;font-size:13px;}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;font-size:14px;}
+        .form-group textarea{height:70px;resize:vertical;}
+        .btn-primary{background:#2e7d32;color:white;border:none;padding:12px;border-radius:10px;width:100%;font-weight:bold;cursor:pointer;}
+        .btn-primary:hover{background:#1b5e20;}
+        .btn-danger{background:#e74c3c;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;}
+        .btn-edit{background:#ff9800;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:5px;}
+        
+        .product-list{display:grid;gap:10px;margin-top:15px;}
+        .product-item{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#f8f9fa;border-radius:10px;flex-wrap:wrap;gap:8px;}
+        .product-item .info{flex:1;}
+        .product-item .name{font-weight:600;font-size:14px;}
+        .product-item .price{color:#2e7d32;font-weight:bold;}
+        .product-item .category{font-size:12px;color:#666;}
+        
+        .tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+        .tab-btn{background:#f0f4f0;border:2px solid #2e7d32;padding:8px 20px;border-radius:30px;cursor:pointer;font-weight:bold;}
+        .tab-btn.active{background:#2e7d32;color:white;}
+        
+        .toast{position:fixed;bottom:20px;left:20px;right:20px;background:#1a1a2e;color:white;padding:12px;border-radius:10px;text-align:center;display:none;z-index:1100;}
+        .edit-form{display:none;background:#f8f9fa;padding:15px;border-radius:10px;margin-top:10px;}
+        .edit-form.show{display:block;}
+        
+        @media (max-width:600px){
+            .product-item{flex-direction:column;align-items:flex-start;}
+            .product-item .actions{width:100%;}
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🛍️ Discount Zone - Admin Panel</h1>
-    <div id="ordersList"></div>
+
+<div id="adminApp">
+    <!-- Login Screen - Google Sign In -->
+    <div id="loginScreen" style="display:flex;">
+        <div class="login-box">
+            <div class="logo">🔐</div>
+            <h2>Admin Panel</h2>
+            <p>Sign in to manage your products</p>
+            
+            <!-- Google Sign In Button -->
+            <button class="google-btn" onclick="loginWithGoogle()">
+                <svg width="24" height="24" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                Sign in with Google
+            </button>
+            
+            <div class="divider">or</div>
+            
+            <!-- Email Login (Backup) -->
+            <input type="email" id="adminEmail" class="email-input" placeholder="Admin Email" value="abhishekbainsla363@gmail.com">
+            <input type="password" id="adminPassword" class="email-input" placeholder="Password">
+            <button class="email-btn" onclick="adminLogin()">Sign in with Email</button>
+            
+            <div id="loginError" class="login-error"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboardScreen" style="display:none;">
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-tools"></i> DS Zone Admin</h1>
+                <p style="font-size:12px; opacity:0.8;">Manage Products & Categories</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <span class="user-email" id="userEmailDisplay">admin@email.com</span>
+                <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Store</a>
+                <button class="logout-btn" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <div class="admin-container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('products')"><i class="fas fa-box"></i> Products</button>
+                <button class="tab-btn" onclick="switchTab('add')"><i class="fas fa-plus"></i> Add Product</button>
+            </div>
+
+            <!-- Products List -->
+            <div id="productsTab" class="card">
+                <h3><i class="fas fa-list"></i> All Products</h3>
+                <div id="productList" class="product-list"></div>
+            </div>
+
+            <!-- Add Product Form -->
+            <div id="addTab" class="card" style="display:none;">
+                <h3><i class="fas fa-plus-circle"></i> Add New Product</h3>
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <label>Product Name *</label>
+                        <input type="text" id="prodName" placeholder="e.g., Ace Hill 35W Charger" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="prodCategory" required>
+                            <option value="charger">Charger</option>
+                            <option value="cable">Cable</option>
+                            <option value="earbuds">Earbuds</option>
+                            <option value="headphone">Headphone</option>
+                            <option value="speaker">Speaker</option>
+                            <option value="memorycard">Memory Card</option>
+                            <option value="pendrive">Pendrive</option>
+                            <option value="neckband">Neckband</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₹) *</label>
+                        <input type="number" id="prodPrice" placeholder="e.g., 599" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Old Price (₹) - Optional</label>
+                        <input type="number" id="prodOldPrice" placeholder="e.g., 999">
+                    </div>
+                    <div class="form-group">
+                        <label>Image URLs (comma separated) *</label>
+                        <input type="text" id="prodImages" placeholder="https://i.ibb.co/xxx.png, https://i.ibb.co/yyy.png" required>
+                        <small style="color:#999;">पहली image main image होगी</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Description *</label>
+                        <textarea id="prodDesc" placeholder="Product description..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Features (one per line)</label>
+                        <textarea id="prodFeatures" placeholder="Fast Charging&#10;Durable Design&#10;Made in India"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Add Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
+    // ==================== FIREBASE ====================
     const firebaseConfig = {
         apiKey: "AIzaSyBUqsrDawGJbX-wgcBFRU4vuaasjt5ZnKQ",
         authDomain: "discountzone-da33a.firebaseapp.com",
@@ -45,70 +181,258 @@
         messagingSenderId: "171693927426",
         appId: "1:171693927426:web:02e912a0a8ce86bfb70b1b"
     };
-    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    const ALLOWED_EMAIL = "abhishekbainsla363@gmail.com";
     
-    auth.onAuthStateChanged(async (user) => {
-        if(user && user.email === ALLOWED_EMAIL) { loadOrders(); }
-        else if(user && user.email !== ALLOWED_EMAIL) { alert("Access denied."); auth.signOut(); showLogin(); }
-        else { showLogin(); }
+    let currentUser = null;
+    const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
+    
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 2500);
+    }
+    
+    // ==================== GOOGLE SIGN IN ====================
+    async function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        
+        try {
+            const result = await auth.signInWithPopup(provider);
+            const user = result.user;
+            
+            // Check if email is admin
+            if(user.email !== ADMIN_EMAIL) {
+                showToast("❌ Unauthorized: Only admin can access");
+                await auth.signOut();
+                document.getElementById('loginError').innerText = "❌ Unauthorized: Only admin can access";
+                document.getElementById('loginError').style.display = 'block';
+                return;
+            }
+            
+            currentUser = user;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('userEmailDisplay').innerText = user.email;
+            loadProducts();
+            showToast("✅ Welcome Admin!");
+            
+        } catch(e) {
+            document.getElementById('loginError').innerText = "❌ " + e.message;
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+    
+    // ==================== EMAIL LOGIN (Backup) ====================
+    async function adminLogin() {
+        const email = document.getElementById('adminEmail').value.trim();
+        const password = document.getElementById('adminPassword').value;
+        
+        if(email !== ADMIN_EMAIL) {
+            document.getElementById('loginError').innerText = "❌ Unauthorized: Only admin can access";
+            document.getElementById('loginError').style.display = 'block';
+            return;
+        }
+        
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('userEmailDisplay').innerText = email;
+            loadProducts();
+        } catch(e) {
+            document.getElementById('loginError').innerText = "❌ " + e.message;
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+    
+    function adminLogout() {
+        auth.signOut();
+        currentUser = null;
+        document.getElementById('dashboardScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminPassword').value = '';
+        showToast("Logged out");
+    }
+    
+    auth.onAuthStateChanged((user) => {
+        if(user && user.email === ADMIN_EMAIL) {
+            currentUser = user;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('userEmailDisplay').innerText = user.email;
+            loadProducts();
+        } else if(user && user.email !== ADMIN_EMAIL) {
+            auth.signOut();
+            document.getElementById('loginError').innerText = "❌ Unauthorized: Only admin can access";
+            document.getElementById('loginError').style.display = 'block';
+        }
     });
     
-    function showLogin() {
-        document.getElementById('ordersList').innerHTML = `<div class="login-section"><h3>🔐 Admin Login Required</h3><button class="login-btn" onclick="login()">Login with Google</button></div>`;
+    // ==================== TABS ====================
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        if(tab === 'products') {
+            document.getElementById('productsTab').style.display = 'block';
+            document.getElementById('addTab').style.display = 'none';
+            document.querySelector('.tab-btn').classList.add('active');
+        } else {
+            document.getElementById('productsTab').style.display = 'none';
+            document.getElementById('addTab').style.display = 'block';
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        }
     }
     
-    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    
-    async function loadOrders() {
-        document.getElementById('ordersList').innerHTML = '<div class="loading">Loading...</div>';
-        const snapshot = await db.collection("orders").orderBy("date", "desc").get();
-        let orders = [];
-        snapshot.forEach(doc => orders.push({id: doc.id, ...doc.data()}));
-        renderOrders(orders);
+    // ==================== LOAD PRODUCTS ====================
+    async function loadProducts() {
+        const container = document.getElementById('productList');
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Loading products...</div>';
+        
+        try {
+            const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+            if(snapshot.empty) {
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">No products yet. Add your first product!</div>';
+                return;
+            }
+            
+            let html = '';
+            snapshot.forEach(doc => {
+                const p = doc.data();
+                html += `
+                    <div class="product-item" id="product-${doc.id}">
+                        <div class="info">
+                            <div class="name">${p.name}</div>
+                            <div class="price">₹${p.price} ${p.oldPrice ? `<span style="text-decoration:line-through;color:#999;font-size:12px;">₹${p.oldPrice}</span>` : ''}</div>
+                            <div class="category">${p.category}</div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-edit" onclick="editProduct('${doc.id}')"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn-danger" onclick="deleteProduct('${doc.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="edit-form" id="edit-${doc.id}">
+                        <div class="form-group"><label>Name</label><input type="text" id="edit-name-${doc.id}" value="${p.name}"></div>
+                        <div class="form-group"><label>Category</label>
+                            <select id="edit-cat-${doc.id}">
+                                <option value="charger" ${p.category==='charger'?'selected':''}>Charger</option>
+                                <option value="cable" ${p.category==='cable'?'selected':''}>Cable</option>
+                                <option value="earbuds" ${p.category==='earbuds'?'selected':''}>Earbuds</option>
+                                <option value="headphone" ${p.category==='headphone'?'selected':''}>Headphone</option>
+                                <option value="speaker" ${p.category==='speaker'?'selected':''}>Speaker</option>
+                                <option value="memorycard" ${p.category==='memorycard'?'selected':''}>Memory Card</option>
+                                <option value="pendrive" ${p.category==='pendrive'?'selected':''}>Pendrive</option>
+                                <option value="neckband" ${p.category==='neckband'?'selected':''}>Neckband</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Price (₹)</label><input type="number" id="edit-price-${doc.id}" value="${p.price}"></div>
+                        <div class="form-group"><label>Old Price</label><input type="number" id="edit-oldprice-${doc.id}" value="${p.oldPrice || ''}"></div>
+                        <div class="form-group"><label>Images (comma separated)</label><input type="text" id="edit-images-${doc.id}" value="${p.images ? p.images.join(', ') : ''}"></div>
+                        <div class="form-group"><label>Description</label><textarea id="edit-desc-${doc.id}">${p.desc || ''}</textarea></div>
+                        <div class="form-group"><label>Features (one per line)</label><textarea id="edit-features-${doc.id}">${p.features ? p.features.join('\n') : ''}</textarea></div>
+                        <button class="btn-primary" onclick="saveEdit('${doc.id}')"><i class="fas fa-save"></i> Save Changes</button>
+                        <button onclick="document.getElementById('edit-${doc.id}').classList.remove('show')" style="background:#ccc;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;margin-left:10px;">Cancel</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch(e) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#e74c3c;">Error loading products</div>';
+            console.log(e);
+        }
     }
     
-    function renderOrders(orders) {
-        if(orders.length===0){ document.getElementById('ordersList').innerHTML='<p>No orders yet</p>'; return; }
-        document.getElementById('ordersList').innerHTML = orders.map(order => `
-            <div class="order-card">
-                <div class="order-header">
-                    <div><span class="order-id">${order.orderId}</span> | ${new Date(order.date).toLocaleString()}</div>
-                    <div><span class="status status-${order.status}">${order.status}</span></div>
-                </div>
-                <div class="order-details">👤 ${order.customerName} | 📞 ${order.customerPhone} | 📧 ${order.customerEmail}</div>
-                <div class="order-items">🛒 ${order.items}</div>
-                <div>💰 Total: ₹${order.total} | 💳 ${order.paymentMethod} | ${order.paymentMethod !== 'Cash on Delivery' ? '🔢 UTR: '+order.utr : ''}</div>
-                <div>🔑 Delivery OTP: <strong>${order.deliveryOtp}</strong></div>
-                <div class="update-status">
-                    <select id="status-${order.id}">
-                        <option ${order.status==='Pending'?'selected':''}>Pending</option>
-                        <option ${order.status==='Confirmed'?'selected':''}>Confirmed</option>
-                        <option ${order.status==='Shipped'?'selected':''}>Shipped</option>
-                        <option ${order.status==='Delivered'?'selected':''}>Delivered</option>
-                    </select>
-                    <button onclick="updateStatus('${order.id}')">Update</button>
-                    <button class="delete-btn" onclick="deleteOrder('${order.id}')">Delete</button>
-                </div>
-            </div>
-        `).join('');
+    // ==================== ADD PRODUCT ====================
+    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('prodName').value.trim();
+        const category = document.getElementById('prodCategory').value;
+        const price = parseInt(document.getElementById('prodPrice').value);
+        const oldPrice = document.getElementById('prodOldPrice').value ? parseInt(document.getElementById('prodOldPrice').value) : null;
+        const images = document.getElementById('prodImages').value.split(',').map(s => s.trim()).filter(s => s);
+        const desc = document.getElementById('prodDesc').value.trim();
+        const features = document.getElementById('prodFeatures').value.split('\n').filter(s => s.trim());
+        
+        if(!name || !price || !desc || images.length === 0) {
+            showToast("❌ Please fill all required fields!");
+            return;
+        }
+        
+        try {
+            await db.collection('products').add({
+                name,
+                category,
+                price,
+                oldPrice,
+                images,
+                desc,
+                features,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast("✅ Product added successfully!");
+            document.getElementById('addProductForm').reset();
+            loadProducts();
+            switchTab('products');
+        } catch(e) {
+            showToast("❌ Error adding product: " + e.message);
+        }
+    });
+    
+    // ==================== EDIT PRODUCT ====================
+    function editProduct(docId) {
+        const form = document.getElementById(`edit-${docId}`);
+        if(form) {
+            form.classList.toggle('show');
+        }
     }
     
-    async function updateStatus(orderId) {
-        const newStatus = document.getElementById(`status-${orderId}`).value;
-        await db.collection("orders").doc(orderId).update({status: newStatus});
-        alert("Status updated!"); loadOrders();
+    async function saveEdit(docId) {
+        const name = document.getElementById(`edit-name-${docId}`).value.trim();
+        const category = document.getElementById(`edit-cat-${docId}`).value;
+        const price = parseInt(document.getElementById(`edit-price-${docId}`).value);
+        const oldPrice = document.getElementById(`edit-oldprice-${docId}`).value ? parseInt(document.getElementById(`edit-oldprice-${docId}`).value) : null;
+        const images = document.getElementById(`edit-images-${docId}`).value.split(',').map(s => s.trim()).filter(s => s);
+        const desc = document.getElementById(`edit-desc-${docId}`).value.trim();
+        const features = document.getElementById(`edit-features-${docId}`).value.split('\n').filter(s => s.trim());
+        
+        if(!name || !price || !desc || images.length === 0) {
+            showToast("❌ Please fill all required fields!");
+            return;
+        }
+        
+        try {
+            await db.collection('products').doc(docId).update({
+                name,
+                category,
+                price,
+                oldPrice,
+                images,
+                desc,
+                features
+            });
+            showToast("✅ Product updated!");
+            document.getElementById(`edit-${docId}`).classList.remove('show');
+            loadProducts();
+        } catch(e) {
+            showToast("❌ Error updating: " + e.message);
+        }
     }
     
-    async function deleteOrder(orderId) {
-        if(confirm("Delete this order?")) {
-            await db.collection("orders").doc(orderId).delete();
-            alert("Order deleted"); loadOrders();
+    // ==================== DELETE PRODUCT ====================
+    async function deleteProduct(docId) {
+        if(!confirm("Are you sure you want to delete this product?")) return;
+        try {
+            await db.collection('products').doc(docId).delete();
+            showToast("✅ Product deleted!");
+            loadProducts();
+        } catch(e) {
+            showToast("❌ Error deleting: " + e.message);
         }
     }
 </script>
+
 </body>
 </html>
