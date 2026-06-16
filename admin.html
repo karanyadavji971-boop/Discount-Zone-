@@ -1,321 +1,413 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Admin - Orders</title>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DS Zone - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fa;color:#1a1a1a;padding:16px;}
-
-        /* Login */
-        .login-box{max-width:340px;margin:80px auto;background:#fff;border-radius:16px;padding:32px 24px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
-        .login-box h2{font-size:22px;font-weight:600;color:#1a1a1a;}
-        .login-box p{font-size:14px;color:#888;margin:6px 0 20px;}
-        .google-btn{background:#fff;border:1px solid #e0e0e0;padding:12px;border-radius:12px;width:100%;cursor:pointer;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:0.15s;}
-        .google-btn:hover{background:#f5f5f5;}
-        .login-error{color:#e74c3c;font-size:13px;margin-top:10px;display:none;}
-
-        /* Header */
-        .header{background:#fff;border-radius:14px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-        .header-left{display:flex;align-items:center;gap:10px;}
-        .header h1{font-size:18px;font-weight:600;color:#1a1a1a;}
-        .badge{background:#e74c3c;color:#fff;font-size:10px;padding:2px 8px;border-radius:30px;}
-        .header-actions{display:flex;align-items:center;gap:8px;}
-        .header-actions a,.header-actions button{background:transparent;border:1px solid #e0e0e0;padding:6px 14px;border-radius:30px;cursor:pointer;font-size:12px;font-weight:500;color:#1a1a1a;text-decoration:none;transition:0.15s;}
-        .header-actions a:hover,.header-actions button:hover{background:#f0f0f0;}
-        .logout-btn{color:#e74c3c;border-color:#fde8e8;}
-        .logout-btn:hover{background:#fde8e8;}
-
-        /* Stats */
-        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
-        .stat-box{background:#fff;border-radius:12px;padding:14px 10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-        .stat-number{font-size:24px;font-weight:700;color:#1a73e8;}
-        .stat-label{font-size:12px;color:#888;margin-top:2px;}
-
-        /* Tabs */
-        .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-        .tab-btn{background:#fff;border:1px solid #e0e0e0;padding:6px 16px;border-radius:30px;cursor:pointer;font-size:13px;font-weight:500;color:#666;transition:0.15s;}
-        .tab-btn.active{background:#1a73e8;color:#fff;border-color:#1a73e8;}
-        .tab-btn:hover{background:#f0f0f0;}
-        .tab-btn.active:hover{background:#1557b0;}
-
-        /* Orders */
-        .order-card{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-        .order-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
-        .order-id{font-weight:600;font-size:14px;color:#1a1a1a;}
-        .order-date{font-size:12px;color:#999;}
-        .order-customer{font-size:14px;margin:4px 0;}
-        .order-items{font-size:13px;color:#555;background:#f5f7fa;padding:8px 10px;border-radius:8px;margin:6px 0;max-height:48px;overflow-y:auto;line-height:1.4;}
-        .order-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:6px;}
-        .order-total{font-weight:700;font-size:15px;color:#1a1a1a;}
-        
-        .status-tag{font-size:11px;padding:3px 12px;border-radius:30px;font-weight:500;}
-        .status-pending{background:#fff3e0;color:#e65100;}
-        .status-shipped{background:#e3f2fd;color:#0d47a1;}
-        .status-completed{background:#e8f5e9;color:#1b5e20;}
-        .status-cancelled{background:#fce4ec;color:#c62828;}
-
-        .order-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-        .order-actions select{padding:5px 10px;border-radius:30px;border:1px solid #e0e0e0;font-size:12px;background:#fff;}
-        .order-actions button{background:#1a73e8;color:#fff;border:none;padding:5px 14px;border-radius:30px;cursor:pointer;font-size:12px;font-weight:500;transition:0.15s;}
-        .order-actions button:hover{background:#1557b0;}
-
-        .no-orders{text-align:center;padding:40px;color:#999;font-size:14px;}
-
-        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 24px;border-radius:30px;font-size:14px;display:none;z-index:1100;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
-
-        /* Responsive */
-        @media (max-width:600px){
-            .stats{grid-template-columns:repeat(2,1fr);}
-            .header{flex-direction:column;align-items:stretch;}
-            .header-actions{justify-content:flex-end;}
-            .order-top{flex-direction:column;align-items:flex-start;}
-            .order-bottom{flex-direction:column;align-items:flex-start;}
-            .order-actions{width:100%;justify-content:space-between;}
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f4f6fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .stat-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .order-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: 0.3s; border-left: 4px solid #3b82f6; }
+        .order-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-completed { background: #d1fae5; color: #065f46; }
+        .badge-repair { background: #dbeafe; color: #1e40af; }
+        .badge-urgent { background: #fee2e2; color: #991b1b; }
+        .btn { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 12px; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-outline { background: transparent; border: 2px solid #e5e7eb; color: #374151; }
+        .btn-outline:hover { background: #f3f4f6; }
+        .search-box { border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px 16px 10px 44px; width: 100%; outline: none; transition: 0.3s; background: white; }
+        .search-box:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.1); }
+        .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #64748b; transition: 0.3s; cursor: pointer; text-decoration: none; }
+        .sidebar-link:hover, .sidebar-link.active { background: #e0e7ff; color: #1e40af; }
+        .sidebar-link.active { background: #dbeafe; font-weight: 600; border-right: 4px solid #3b82f6; }
+        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around; padding: 8px 0; z-index: 100; }
+        .mobile-nav a { display: flex; flex-direction: column; align-items: center; color: #94a3b8; text-decoration: none; font-size: 10px; padding: 4px 12px; border-radius: 12px; transition: 0.3s; }
+        .mobile-nav a.active { color: #3b82f6; background: #eff6ff; }
+        .mobile-nav a .material-symbols-outlined { font-size: 24px; }
+        @media (min-width: 768px) { .mobile-nav { display: none; } }
+        .loading { text-align: center; padding: 40px; color: #94a3b8; }
+        .loading .spinner { border: 4px solid #e5e7eb; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .toast { position: fixed; bottom: 100px; right: 20px; background: #1e293b; color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 200; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <!-- Login -->
-    <div id="loginScreen">
-        <div class="login-box">
-            <div style="font-size:40px;">📦</div>
-            <h2>Admin</h2>
-            <p>Manage orders</p>
-            <button class="google-btn" onclick="loginWithGoogle()">
-                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                Sign in with Google
-            </button>
-            <div id="loginError" class="login-error"></div>
+<!-- ========== SIDEBAR (Desktop) ========== -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 hidden md:block p-4 z-50">
+    <div class="flex items-center gap-3 mb-8 px-2">
+        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">D</div>
+        <h1 class="text-xl font-bold text-gray-800">DS Zone</h1>
+    </div>
+    <nav class="space-y-1">
+        <a href="#" class="sidebar-link active" onclick="showPage('dashboard')">
+            <span class="material-symbols-outlined">dashboard</span> Dashboard
+        </a>
+        <a href="#" class="sidebar-link" onclick="showPage('orders')">
+            <span class="material-symbols-outlined">shopping_bag</span> Orders
+        </a>
+        <a href="#" class="sidebar-link" onclick="showPage('customers')">
+            <span class="material-symbols-outlined">people</span> Customers
+        </a>
+        <a href="#" class="sidebar-link" onclick="showPage('activity')">
+            <span class="material-symbols-outlined">notifications</span> Activity
+        </a>
+        <a href="#" class="sidebar-link" onclick="showPage('settings')">
+            <span class="material-symbols-outlined">settings</span> Settings
+        </a>
+    </nav>
+    <div class="absolute bottom-6 left-4 right-4 pt-4 border-t border-gray-200">
+        <div class="flex items-center gap-3 px-2">
+            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">AB</div>
+            <div>
+                <p class="font-semibold text-sm">Admin</p>
+                <p class="text-xs text-gray-500">admin@dszone.shop</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- ========== MAIN CONTENT ========== -->
+<main class="md:ml-64 p-4 md:p-8 pb-24 md:pb-8 min-h-screen">
+
+    <!-- TOP BAR -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800" id="pageTitle">📊 Dashboard</h2>
+            <p class="text-sm text-gray-500" id="pageSub">Real-time store overview</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-gray-500 cursor-pointer hover:text-gray-700">notifications</span>
+            <span class="material-symbols-outlined text-gray-500 cursor-pointer hover:text-gray-700">logout</span>
         </div>
     </div>
 
-    <!-- Dashboard -->
-    <div id="dashboardScreen" style="display:none;">
-        <div class="header">
-            <div class="header-left">
-                <span style="font-size:20px;">📦</span>
-                <h1>Orders</h1>
-                <span id="notifBadge" class="badge" style="display:none;background:#e74c3c;" id="notifCount">0</span>
+    <!-- ===== DASHBOARD PAGE ===== -->
+    <div id="page-dashboard">
+        <!-- STATS -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer">
+            <div class="stat-card"><p class="text-sm text-gray-500">📦 Total Orders</p><p class="text-2xl font-bold text-gray-800" id="totalOrders">0</p></div>
+            <div class="stat-card"><p class="text-sm text-gray-500">⏳ Pending</p><p class="text-2xl font-bold text-amber-600" id="pendingOrders">0</p></div>
+            <div class="stat-card"><p class="text-sm text-gray-500">💰 Revenue</p><p class="text-2xl font-bold text-green-600" id="totalRevenue">₹0</p></div>
+            <div class="stat-card"><p class="text-sm text-gray-500">📅 Today</p><p class="text-2xl font-bold text-blue-600" id="todayOrders">0</p></div>
+        </div>
+
+        <!-- RECENT ORDERS (Dashboard) -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-lg">🕐 Recent Orders</h3>
+                <button onclick="showPage('orders')" class="text-sm text-blue-600 hover:text-blue-800">View All →</button>
             </div>
-            <div class="header-actions">
-                <span id="userEmail" style="font-size:12px;color:#888;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-                <a href="index.html">Store</a>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
+            <div id="recentOrdersList"></div>
         </div>
-
-        <!-- Stats -->
-        <div class="stats" id="statsContainer">
-            <div class="stat-box"><div class="stat-number" id="totalOrders">0</div><div class="stat-label">Total</div></div>
-            <div class="stat-box"><div class="stat-number" id="pendingOrders">0</div><div class="stat-label">Pending</div></div>
-            <div class="stat-box"><div class="stat-number" id="shippedOrders">0</div><div class="stat-label">Shipped</div></div>
-            <div class="stat-box"><div class="stat-number" id="completedOrders">0</div><div class="stat-label">Completed</div></div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="filterOrders('all',this)">All</button>
-            <button class="tab-btn" onclick="filterOrders('Pending',this)">Pending</button>
-            <button class="tab-btn" onclick="filterOrders('Shipped',this)">Shipped</button>
-            <button class="tab-btn" onclick="filterOrders('Completed',this)">Completed</button>
-            <button class="tab-btn" onclick="filterOrders('Cancelled',this)">Cancelled</button>
-        </div>
-
-        <!-- Orders -->
-        <div id="ordersContainer"><div class="no-orders">Loading...</div></div>
     </div>
-</div>
 
-<div id="toast" class="toast"></div>
+    <!-- ===== ORDERS PAGE ===== -->
+    <div id="page-orders" style="display:none;">
+        <!-- Search & Filter -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <div class="flex-1 relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                <input type="text" id="searchInput" class="search-box" placeholder="Search by Name, Product, ID..." oninput="filterOrders()">
+            </div>
+            <div class="flex gap-2 overflow-x-auto pb-1">
+                <button class="btn btn-primary" onclick="filterByStatus('all')">All</button>
+                <button class="btn btn-outline" onclick="filterByStatus('pending')">Pending</button>
+                <button class="btn btn-outline" onclick="filterByStatus('completed')">Completed</button>
+                <button class="btn btn-outline" onclick="filterByStatus('repair')">In Repair</button>
+            </div>
+        </div>
 
+        <!-- Orders List -->
+        <div id="ordersList" class="space-y-4"></div>
+    </div>
+
+    <!-- ===== CUSTOMERS PAGE ===== -->
+    <div id="page-customers" style="display:none;">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="font-semibold text-lg mb-4">👥 All Customers</h3>
+            <div id="customersList"></div>
+        </div>
+    </div>
+
+    <!-- ===== ACTIVITY PAGE ===== -->
+    <div id="page-activity" style="display:none;">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="font-semibold text-lg mb-4">🔔 Recent Activity</h3>
+            <div id="activityList"></div>
+        </div>
+    </div>
+
+    <!-- ===== SETTINGS PAGE ===== -->
+    <div id="page-settings" style="display:none;">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="font-semibold text-lg mb-4">⚙️ Settings</h3>
+            <p class="text-gray-500">Store settings coming soon...</p>
+        </div>
+    </div>
+
+</main>
+
+<!-- ========== MOBILE BOTTOM NAV ========== -->
+<nav class="mobile-nav">
+    <a href="#" class="active" onclick="showPage('dashboard')">
+        <span class="material-symbols-outlined">dashboard</span> Home
+    </a>
+    <a href="#" onclick="showPage('orders')">
+        <span class="material-symbols-outlined">shopping_bag</span> Orders
+    </a>
+    <a href="#" onclick="showPage('customers')">
+        <span class="material-symbols-outlined">people</span> Customers
+    </a>
+    <a href="#" onclick="showPage('activity')">
+        <span class="material-symbols-outlined">notifications</span> Activity
+    </a>
+</nav>
+
+<!-- ========== TOAST NOTIFICATION ========== -->
+<div id="toast" class="toast" style="display:none;"></div>
+
+<!-- ========== JAVASCRIPT ========== -->
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBUqsrDawGJbX-wgcBFRU4vuaasjt5ZnKQ",
-        authDomain: "discountzone-da33a.firebaseapp.com",
-        projectId: "discountzone-da33a",
-        storageBucket: "discountzone-da33a.firebasestorage.app",
-        messagingSenderId: "171693927426",
-        appId: "1:171693927426:web:02e912a0a8ce86bfb70b1b"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    
-    const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
-    let currentFilter = "all";
-    let allOrders = [];
-    let newOrderCount = 0;
-    
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 2000);
-    }
-    
-    // ========== LOGIN ==========
-    async function loginWithGoogle() {
-        try {
-            const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-            if(result.user.email !== ADMIN_EMAIL) {
-                await auth.signOut();
-                document.getElementById('loginError').innerText = "❌ Unauthorized!";
-                document.getElementById('loginError').style.display = 'block';
-                return;
-            }
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'flex';
-            document.getElementById('userEmail').innerText = result.user.email;
-            loadOrders();
-            if (Notification.permission === "default") Notification.requestPermission();
-        } catch(e) {
-            document.getElementById('loginError').innerText = "❌ " + e.message;
-            document.getElementById('loginError').style.display = 'block';
-        }
-    }
-    
-    auth.onAuthStateChanged(user => {
-        if(user && user.email === ADMIN_EMAIL) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'flex';
-            document.getElementById('userEmail').innerText = user.email;
-            loadOrders();
-        }
-    });
-    
-    function logout() {
-        auth.signOut();
-        document.getElementById('dashboardScreen').style.display = 'none';
-        document.getElementById('loginScreen').style.display = 'flex';
-    }
-    
-    // ========== FILTER ==========
-    function filterOrders(status, btn) {
-        currentFilter = status;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        if(btn) btn.classList.add('active');
-        renderOrders();
-    }
-    
-    // ========== NOTIFICATION ==========
-    function sendNotification(order) {
-        if (Notification.permission === "granted") {
-            new Notification("🛒 New Order!", {
-                body: `Customer: ${order.customerName || order.name}\nTotal: ₹${order.total || 'N/A'}`,
-                icon: "https://i.imgur.com/8FkqJpR.jpg"
-            });
-        }
-        showToast(`🔔 New order from ${order.customerName || order.name}`);
-        try {
-            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
-            audio.play();
-        } catch(e) {}
-    }
-    
-    // ========== LOAD ORDERS ==========
-    function loadOrders() {
-        db.collection('orders').orderBy('date', 'desc').onSnapshot((snapshot) => {
-            let orders = [];
-            snapshot.forEach(doc => { let data = doc.data(); data.docId = doc.id; data.isRepair = false; orders.push(data); });
-            
-            db.collection('repairs').orderBy('date', 'desc').onSnapshot((repairSnap) => {
-                repairSnap.forEach(doc => { let data = doc.data(); data.docId = doc.id; data.isRepair = true; orders.push(data); });
-                orders.sort((a,b) => new Date(b.date) - new Date(a.date));
-                
-                if(allOrders.length > 0 && orders.length > allOrders.length) {
-                    const newOrder = orders[0];
-                    if(newOrder) sendNotification(newOrder);
-                }
-                allOrders = orders;
-                renderOrders();
-                updateStats();
-            });
-        });
-    }
-    
+    // ===== SAMPLE DATA (यहाँ तुम्हारा Real Data आएगा) =====
+    let orders = [
+        { id: '#REP-20485', customer: 'Rahul Sharma', phone: '9876543210', product: 'iPhone 15 Pro', issue: 'Screen Cracked', price: 599, qty: 1, total: 599, status: 'repair', date: '2026-06-17 14:30', urgent: true },
+        { id: '#REP-20489', customer: 'Priya Patel', phone: '8765432109', product: 'Samsung Galaxy S24', issue: 'Battery Drain', price: 899, qty: 1, total: 899, status: 'pending', date: '2026-06-17 12:15', urgent: false },
+        { id: '#REP-20477', customer: 'Amit Kumar', phone: '7654321098', product: 'Google Pixel 8', issue: 'OS Boot Loop', price: 699, qty: 1, total: 699, status: 'completed', date: '2026-06-16 18:45', urgent: false },
+        { id: '#REP-20492', customer: 'Sneha Reddy', phone: '6543210987', product: 'iPad Air M2', issue: 'Port Not Working', price: 1299, qty: 1, total: 1299, status: 'pending', date: '2026-06-17 09:20', urgent: true },
+        { id: '#REP-20501', customer: 'Vikram Singh', phone: '5432109876', product: 'OnePlus 12', issue: 'Camera Glitch', price: 749, qty: 1, total: 749, status: 'repair', date: '2026-06-16 22:10', urgent: false },
+        { id: '#REP-20512', customer: 'Neha Gupta', phone: '4321098765', product: 'MacBook Air', issue: 'Battery Replacement', price: 2499, qty: 1, total: 2499, status: 'pending', date: '2026-06-17 08:00', urgent: false },
+    ];
+
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    // ===== UPDATE STATS =====
     function updateStats() {
-        const total = allOrders.length;
-        const pending = allOrders.filter(o => o.status === 'Pending').length;
-        const shipped = allOrders.filter(o => o.status === 'Shipped').length;
-        const completed = allOrders.filter(o => o.status === 'Completed').length;
-        document.getElementById('totalOrders').innerText = total;
-        document.getElementById('pendingOrders').innerText = pending;
-        document.getElementById('shippedOrders').innerText = shipped;
-        document.getElementById('completedOrders').innerText = completed;
+        const total = orders.length;
+        const pending = orders.filter(o => o.status === 'pending' || o.status === 'repair').length;
+        const revenue = orders.reduce((sum, o) => sum + o.total, 0);
+        const today = orders.filter(o => o.date.startsWith('2026-06-17')).length;
+        
+        document.getElementById('totalOrders').textContent = total;
+        document.getElementById('pendingOrders').textContent = pending;
+        document.getElementById('totalRevenue').textContent = '₹' + revenue;
+        document.getElementById('todayOrders').textContent = today;
     }
-    
-    function renderOrders() {
-        const container = document.getElementById('ordersContainer');
-        let filtered = currentFilter === 'all' ? allOrders : allOrders.filter(o => o.status === currentFilter);
-        if(filtered.length === 0) {
-            container.innerHTML = '<div class="no-orders">📭 No orders</div>';
+
+    // ===== RENDER ORDERS =====
+    function renderOrders(orderList, containerId, limit = 0) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        let list = orderList;
+        if (limit > 0) list = list.slice(0, limit);
+        
+        if (list.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400">😴 No orders found</div>`;
             return;
         }
         
-        let html = '';
-        filtered.slice(0, 30).forEach(o => {
-            const statusClass = o.status === 'Pending' ? 'status-pending' : 
-                               o.status === 'Shipped' ? 'status-shipped' : 
-                               o.status === 'Completed' ? 'status-completed' : 'status-cancelled';
-            const items = o.items ? o.items.replace(/\n/g, '<br>') : (o.deviceFaults || '');
-            const customer = o.customerName || o.name || 'Unknown';
-            const phone = o.customerPhone || o.phone || '';
-            const total = o.total || 'N/A';
-            const isRepair = o.isRepair || false;
+        container.innerHTML = list.map(o => {
+            const statusBadge = {
+                'pending': '<span class="badge badge-pending">⏳ Pending</span>',
+                'completed': '<span class="badge badge-completed">✅ Completed</span>',
+                'repair': '<span class="badge badge-repair">🔧 In Repair</span>'
+            }[o.status] || '<span class="badge badge-pending">⏳ Pending</span>';
             
-            html += `
-                <div class="order-card">
-                    <div class="order-top">
-                        <span class="order-id">${isRepair ? '🔧' : '🛒'} ${o.orderId || o.repairId || 'Order'}</span>
-                        <span class="order-date">${new Date(o.date).toLocaleString()}</span>
-                    </div>
-                    <div class="order-customer">👤 ${customer} ${phone ? '📞 '+phone : ''}</div>
-                    ${o.customerAddress ? `<div style="font-size:12px;color:#888;">📍 ${o.customerAddress}</div>` : ''}
-                    ${isRepair ? `<div style="font-size:13px;color:#555;margin:4px 0;"><strong>Device:</strong> ${o.deviceType || ''} ${o.deviceBrand || ''} ${o.deviceModel || ''}</div>` : ''}
-                    <div class="order-items">${items}</div>
-                    <div class="order-bottom">
-                        <span class="order-total">${isRepair ? '🔧 Repair' : '₹'+total}</span>
-                        <div class="order-actions">
-                            <span class="status-tag ${statusClass}">${o.status || 'Pending'}</span>
-                            <select onchange="document.getElementById('status-${o.docId}').value=this.value">
-                                <option value="Pending" ${o.status==='Pending'?'selected':''}>Pending</option>
-                                <option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped</option>
-                                <option value="Completed" ${o.status==='Completed'?'selected':''}>Completed</option>
-                                <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
-                            </select>
-                            <button onclick="updateStatus('${o.docId}')">Update</button>
+            const urgentBadge = o.urgent ? '<span class="badge badge-urgent">🚨 Urgent</span>' : '';
+            
+            return `
+                <div class="order-card border-l-4 ${o.urgent ? 'border-red-500' : 'border-blue-500'}">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 flex-wrap mb-2">
+                                <span class="text-xs font-bold text-gray-400">${o.id}</span>
+                                ${urgentBadge}
+                                ${statusBadge}
+                            </div>
+                            <h4 class="font-bold text-gray-800 text-lg">${o.product}</h4>
+                            <p class="text-sm text-gray-600">${o.issue}</p>
+                            <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
+                                <span><span class="material-symbols-outlined text-[16px] align-middle">person</span> ${o.customer}</span>
+                                <span><span class="material-symbols-outlined text-[16px] align-middle">call</span> <a href="tel:${o.phone}" class="text-blue-600 hover:underline">${o.phone}</a></span>
+                                <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${o.date}</span>
+                                <span class="font-bold text-green-600">₹${o.total}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
+                            <button onclick="updateStatus('${o.id}')" class="btn btn-success text-xs">✅ Complete</button>
+                            <button onclick="deleteOrder('${o.id}')" class="btn btn-danger text-xs">🗑️ Delete</button>
                         </div>
                     </div>
                 </div>
             `;
+        }).join('');
+    }
+
+    // ===== FILTER ORDERS =====
+    function filterOrders() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        currentSearch = search;
+        applyFilters();
+    }
+
+    function filterByStatus(status) {
+        currentFilter = status;
+        // Update button styles
+        document.querySelectorAll('#page-orders .btn-outline, #page-orders .btn-primary').forEach(b => {
+            b.className = 'btn btn-outline';
         });
-        container.innerHTML = html;
+        event.target.className = 'btn btn-primary';
+        applyFilters();
     }
-    
-    // ========== UPDATE STATUS ==========
-    async function updateStatus(docId) {
-        const select = document.querySelector(`#ordersContainer .order-card select`);
-        if(!select) return;
-        const newStatus = select.value;
-        try {
-            const orderDoc = await db.collection('orders').doc(docId).get();
-            if(orderDoc.exists) {
-                await db.collection('orders').doc(docId).update({ status: newStatus });
-            } else {
-                await db.collection('repairs').doc(docId).update({ status: newStatus });
-            }
-            showToast("✅ Updated to " + newStatus);
-        } catch(e) {
-            showToast("❌ Error: " + e.message);
+
+    function applyFilters() {
+        let filtered = orders;
+        if (currentFilter !== 'all') {
+            filtered = filtered.filter(o => o.status === currentFilter);
         }
+        if (currentSearch) {
+            filtered = filtered.filter(o => 
+                o.customer.toLowerCase().includes(currentSearch) ||
+                o.product.toLowerCase().includes(currentSearch) ||
+                o.id.toLowerCase().includes(currentSearch)
+            );
+        }
+        renderOrders(filtered, 'ordersList');
     }
+
+    // ===== UPDATE STATUS =====
+    function updateStatus(id) {
+        const order = orders.find(o => o.id === id);
+        if (!order) return;
+        order.status = order.status === 'completed' ? 'pending' : 'completed';
+        updateStats();
+        applyFilters();
+        renderOrders(orders.slice(0, 5), 'recentOrdersList');
+        showToast('✅ Order ' + id + ' updated to ' + order.status);
+    }
+
+    // ===== DELETE ORDER =====
+    function deleteOrder(id) {
+        if (!confirm('Delete order ' + id + '?')) return;
+        orders = orders.filter(o => o.id !== id);
+        updateStats();
+        applyFilters();
+        renderOrders(orders.slice(0, 5), 'recentOrdersList');
+        showToast('🗑️ Order ' + id + ' deleted');
+    }
+
+    // ===== ACTIVITY LOG =====
+    function updateActivity() {
+        const activities = [
+            { icon: '📱', text: 'iPhone 15 Pro repair completed by Tech David', time: '12 minutes ago' },
+            { icon: '🛍️', text: 'New accessory order #ORD-8921 received', time: '45 minutes ago' },
+            { icon: '👤', text: 'New customer Priya Patel registered', time: '2 hours ago' },
+            { icon: '⚠️', text: 'Inventory alert: MacBook Air Batteries low', time: '4 hours ago' },
+            { icon: '💾', text: 'Weekly backup completed successfully', time: '6 hours ago' },
+        ];
+        document.getElementById('activityList').innerHTML = activities.map(a => `
+            <div class="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
+                <span class="text-2xl">${a.icon}</span>
+                <div class="flex-1">
+                    <p class="text-sm text-gray-800">${a.text}</p>
+                    <p class="text-xs text-gray-400">${a.time}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ===== CUSTOMERS LIST =====
+    function updateCustomers() {
+        const customers = [...new Map(orders.map(o => [o.phone, { name: o.customer, phone: o.phone, orders: 1 }]))].map(([key, val]) => val);
+        document.getElementById('customersList').innerHTML = customers.map(c => `
+            <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">${c.name[0]}</div>
+                    <div>
+                        <p class="font-semibold text-gray-800">${c.name}</p>
+                        <p class="text-sm text-gray-500">${c.phone}</p>
+                    </div>
+                </div>
+                <span class="text-sm text-gray-400">${c.orders} order${c.orders > 1 ? 's' : ''}</span>
+            </div>
+        `).join('');
+    }
+
+    // ===== SHOW TOAST =====
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    // ===== PAGE NAVIGATION =====
+    function showPage(page) {
+        // Hide all pages
+        document.querySelectorAll('[id^="page-"]').forEach(el => el.style.display = 'none');
+        // Show selected
+        const target = document.getElementById('page-' + page);
+        if (target) target.style.display = 'block';
+        
+        // Update title
+        const titles = {
+            dashboard: ['📊 Dashboard', 'Real-time store overview'],
+            orders: ['🛒 Orders', 'Manage all customer orders'],
+            customers: ['👥 Customers', 'All registered customers'],
+            activity: ['🔔 Activity', 'Recent store activities'],
+            settings: ['⚙️ Settings', 'Store configuration']
+        };
+        document.getElementById('pageTitle').textContent = titles[page]?.[0] || 'Dashboard';
+        document.getElementById('pageSub').textContent = titles[page]?.[1] || '';
+        
+        // Update sidebar
+        document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.sidebar-link').forEach(el => {
+            if (el.textContent.trim().toLowerCase().includes(page)) el.classList.add('active');
+        });
+        
+        // Update mobile nav
+        document.querySelectorAll('.mobile-nav a').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.mobile-nav a').forEach(el => {
+            if (el.textContent.trim().toLowerCase().includes(page)) el.classList.add('active');
+        });
+        
+        // Refresh data
+        if (page === 'orders') applyFilters();
+        if (page === 'dashboard') {
+            renderOrders(orders.slice(0, 5), 'recentOrdersList');
+            updateStats();
+        }
+        if (page === 'customers') updateCustomers();
+        if (page === 'activity') updateActivity();
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', function() {
+        updateStats();
+        renderOrders(orders.slice(0, 5), 'recentOrdersList');
+        applyFilters();
+        updateCustomers();
+        updateActivity();
+        showPage('dashboard');
+    });
 </script>
+
 </body>
 </html>
