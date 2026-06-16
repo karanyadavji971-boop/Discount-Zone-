@@ -1,175 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Admin Panel - DS Zone Repair</title>
+    <title>DS Zone - Admin Panel</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Segoe UI',Roboto,sans-serif;background:#f0f4f0;color:#1a1a1a;padding:20px;}
-        
-        .header{background:#2e7d32;padding:15px 20px;border-radius:16px;margin-bottom:25px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;color:white;}
-        .header h1{font-size:22px;}
-        .header .logout-btn{background:#ff6b35;color:white;border:none;padding:8px 20px;border-radius:25px;cursor:pointer;font-weight:bold;}
-        .header .back-btn{background:white;color:#2e7d32;border:none;padding:8px 20px;border-radius:25px;cursor:pointer;font-weight:bold;text-decoration:none;margin-right:10px;}
-        .header .user-email{background:rgba(255,255,255,0.2);padding:6px 14px;border-radius:25px;font-size:12px;}
-        
-        .admin-container{max-width:800px;margin:0 auto;}
-        
-        /* Login Box - Google Sign In */
-        .login-box{max-width:400px;margin:80px auto;background:white;border-radius:20px;padding:40px 30px;text-align:center;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
-        .login-box .logo{font-size:48px;margin-bottom:15px;}
-        .login-box h2{color:#2e7d32;margin-bottom:8px;}
-        .login-box p{color:#666;font-size:14px;margin-bottom:25px;}
-        .login-box .google-btn{background:white;border:1px solid #ddd;padding:14px;border-radius:50px;width:100%;cursor:pointer;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;transition:0.2s;}
-        .login-box .google-btn:hover{background:#f5f5f5;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-        .login-box .google-btn img{width:24px;height:24px;}
-        .login-error{color:#e74c3c;margin-top:12px;display:none;font-size:14px;}
-        .login-box .divider{display:flex;align-items:center;gap:15px;margin:20px 0;color:#999;font-size:13px;}
-        .login-box .divider::before,.login-box .divider::after{content:'';flex:1;height:1px;background:#ddd;}
-        .login-box .email-input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;margin-bottom:10px;}
-        .login-box .email-btn{background:#2e7d32;color:white;border:none;padding:12px;border-radius:10px;width:100%;cursor:pointer;font-weight:bold;font-size:15px;}
-        .login-box .email-btn:hover{background:#1b5e20;}
-        
-        .card{background:white;border-radius:20px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
-        .card h3{color:#2e7d32;margin-bottom:15px;}
-        .form-group{margin-bottom:15px;}
-        .form-group label{display:block;margin-bottom:5px;font-weight:600;color:#333;font-size:13px;}
-        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;font-size:14px;}
-        .form-group textarea{height:70px;resize:vertical;}
-        .btn-primary{background:#2e7d32;color:white;border:none;padding:12px;border-radius:10px;width:100%;font-weight:bold;cursor:pointer;}
-        .btn-primary:hover{background:#1b5e20;}
-        .btn-danger{background:#e74c3c;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;}
-        .btn-edit{background:#ff9800;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:5px;}
-        
-        .product-list{display:grid;gap:10px;margin-top:15px;}
-        .product-item{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#f8f9fa;border-radius:10px;flex-wrap:wrap;gap:8px;}
-        .product-item .info{flex:1;}
-        .product-item .name{font-weight:600;font-size:14px;}
-        .product-item .price{color:#2e7d32;font-weight:bold;}
-        .product-item .category{font-size:12px;color:#666;}
-        
-        .tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-        .tab-btn{background:#f0f4f0;border:2px solid #2e7d32;padding:8px 20px;border-radius:30px;cursor:pointer;font-weight:bold;}
-        .tab-btn.active{background:#2e7d32;color:white;}
-        
-        .toast{position:fixed;bottom:20px;left:20px;right:20px;background:#1a1a2e;color:white;padding:12px;border-radius:10px;text-align:center;display:none;z-index:1100;}
-        .edit-form{display:none;background:#f8f9fa;padding:15px;border-radius:10px;margin-top:10px;}
-        .edit-form.show{display:block;}
-        
-        @media (max-width:600px){
-            .product-item{flex-direction:column;align-items:flex-start;}
-            .product-item .actions{width:100%;}
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f4f6fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .stat-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .order-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: 0.3s; border-left: 4px solid #3b82f6; }
+        .order-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-completed { background: #d1fae5; color: #065f46; }
+        .badge-repair { background: #dbeafe; color: #1e40af; }
+        .badge-urgent { background: #fee2e2; color: #991b1b; }
+        .btn { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 12px; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-outline { background: transparent; border: 2px solid #e5e7eb; color: #374151; }
+        .btn-outline:hover { background: #f3f4f6; }
+        .search-box { border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px 16px 10px 44px; width: 100%; outline: none; transition: 0.3s; background: white; }
+        .search-box:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.1); }
+        .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #64748b; transition: 0.3s; cursor: pointer; text-decoration: none; }
+        .sidebar-link:hover, .sidebar-link.active { background: #e0e7ff; color: #1e40af; }
+        .sidebar-link.active { background: #dbeafe; font-weight: 600; border-right: 4px solid #3b82f6; }
+        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around; padding: 8px 0; z-index: 100; }
+        .mobile-nav a { display: flex; flex-direction: column; align-items: center; color: #94a3b8; text-decoration: none; font-size: 10px; padding: 4px 12px; border-radius: 12px; transition: 0.3s; }
+        .mobile-nav a.active { color: #3b82f6; background: #eff6ff; }
+        .mobile-nav a .material-symbols-outlined { font-size: 24px; }
+        @media (min-width: 768px) { .mobile-nav { display: none; } }
+        .loading { text-align: center; padding: 40px; color: #94a3b8; }
+        .loading .spinner { border: 4px solid #e5e7eb; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .toast { position: fixed; bottom: 100px; right: 20px; background: #1e293b; color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 200; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .refresh-btn { background: #3b82f6; color: white; padding: 10px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .refresh-btn:hover { background: #2563eb; }
+        .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .login-box{max-width:380px;margin:80px auto;background:#fff;border-radius:20px;padding:40px 30px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.08);}
+        .login-box h2{font-size:24px;font-weight:700;color:#1a1a1a;}
+        .login-box p{font-size:14px;color:#888;margin:8px 0 24px;}
+        .google-btn{background:#fff;border:1px solid #e0e0e0;padding:14px;border-radius:12px;width:100%;cursor:pointer;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:0.15s;}
+        .google-btn:hover{background:#f5f5f5;}
+        .login-error{color:#e74c3c;font-size:13px;margin-top:10px;display:none;}
     </style>
 </head>
 <body>
 
-<div id="adminApp">
-    <!-- Login Screen - Google Sign In -->
-    <div id="loginScreen" style="display:flex;">
-        <div class="login-box">
-            <div class="logo">🔐</div>
-            <h2>Admin Panel</h2>
-            <p>Sign in to manage your products</p>
-            
-            <!-- Google Sign In Button -->
-            <button class="google-btn" onclick="loginWithGoogle()">
-                <svg width="24" height="24" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                Sign in with Google
-            </button>
-            
-            <div class="divider">or</div>
-            
-            <!-- Email Login (Backup) -->
-            <input type="email" id="adminEmail" class="email-input" placeholder="Admin Email" value="abhishekbainsla363@gmail.com">
-            <input type="password" id="adminPassword" class="email-input" placeholder="Password">
-            <button class="email-btn" onclick="adminLogin()">Sign in with Email</button>
-            
-            <div id="loginError" class="login-error"></div>
-        </div>
-    </div>
-
-    <!-- Dashboard -->
-    <div id="dashboardScreen" style="display:none;">
-        <div class="header">
-            <div>
-                <h1><i class="fas fa-tools"></i> DS Zone Admin</h1>
-                <p style="font-size:12px; opacity:0.8;">Manage Products & Categories</p>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                <span class="user-email" id="userEmailDisplay">admin@email.com</span>
-                <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Store</a>
-                <button class="logout-btn" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-            </div>
-        </div>
-
-        <div class="admin-container">
-            <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('products')"><i class="fas fa-box"></i> Products</button>
-                <button class="tab-btn" onclick="switchTab('add')"><i class="fas fa-plus"></i> Add Product</button>
-            </div>
-
-            <!-- Products List -->
-            <div id="productsTab" class="card">
-                <h3><i class="fas fa-list"></i> All Products</h3>
-                <div id="productList" class="product-list"></div>
-            </div>
-
-            <!-- Add Product Form -->
-            <div id="addTab" class="card" style="display:none;">
-                <h3><i class="fas fa-plus-circle"></i> Add New Product</h3>
-                <form id="addProductForm">
-                    <div class="form-group">
-                        <label>Product Name *</label>
-                        <input type="text" id="prodName" placeholder="e.g., Ace Hill 35W Charger" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select id="prodCategory" required>
-                            <option value="charger">Charger</option>
-                            <option value="cable">Cable</option>
-                            <option value="earbuds">Earbuds</option>
-                            <option value="headphone">Headphone</option>
-                            <option value="speaker">Speaker</option>
-                            <option value="memorycard">Memory Card</option>
-                            <option value="pendrive">Pendrive</option>
-                            <option value="neckband">Neckband</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Price (₹) *</label>
-                        <input type="number" id="prodPrice" placeholder="e.g., 599" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Old Price (₹) - Optional</label>
-                        <input type="number" id="prodOldPrice" placeholder="e.g., 999">
-                    </div>
-                    <div class="form-group">
-                        <label>Image URLs (comma separated) *</label>
-                        <input type="text" id="prodImages" placeholder="https://i.ibb.co/xxx.png, https://i.ibb.co/yyy.png" required>
-                        <small style="color:#999;">पहली image main image होगी</small>
-                    </div>
-                    <div class="form-group">
-                        <label>Description *</label>
-                        <textarea id="prodDesc" placeholder="Product description..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Features (one per line)</label>
-                        <textarea id="prodFeatures" placeholder="Fast Charging&#10;Durable Design&#10;Made in India"></textarea>
-                    </div>
-                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Add Product</button>
-                </form>
-            </div>
-        </div>
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="loginScreen">
+    <div class="login-box">
+        <div style="font-size:48px;">📦</div>
+        <h2>DS Zone Admin</h2>
+        <p>Manage your orders & repairs</p>
+        <button class="google-btn" onclick="loginWithGoogle()">
+            <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            Sign in with Google
+        </button>
+        <div id="loginError" class="login-error"></div>
     </div>
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- ========== DASHBOARD (Hidden until login) ========== -->
+<div id="dashboardScreen" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 hidden md:block p-4 z-50">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">D</div>
+            <h1 class="text-xl font-bold text-gray-800">DS Zone</h1>
+        </div>
+        <nav class="space-y-1">
+            <a href="#" class="sidebar-link active" onclick="showPage('dashboard')">
+                <span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+            <a href="#" class="sidebar-link" onclick="showPage('orders')">
+                <span class="material-symbols-outlined">shopping_bag</span> Orders
+            </a>
+            <a href="#" class="sidebar-link" onclick="showPage('repairs')">
+                <span class="material-symbols-outlined">build</span> Repairs
+            </a>
+            <a href="#" class="sidebar-link" onclick="showPage('customers')">
+                <span class="material-symbols-outlined">people</span> Customers
+            </a>
+            <a href="#" class="sidebar-link" onclick="showPage('activity')">
+                <span class="material-symbols-outlined">notifications</span> Activity
+            </a>
+        </nav>
+        <div class="absolute bottom-6 left-4 right-4 pt-4 border-t border-gray-200">
+            <div class="flex items-center gap-3 px-2">
+                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">A</div>
+                <div>
+                    <p class="font-semibold text-sm">Admin</p>
+                    <p class="text-xs text-gray-500" id="userEmailDisplay">admin@dszone.shop</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="mt-3 w-full text-left text-sm text-red-500 hover:text-red-700 font-medium">Logout</button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="md:ml-64 p-4 md:p-8 pb-24 md:pb-8 min-h-screen">
+
+        <!-- TOP BAR -->
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800" id="pageTitle">📊 Dashboard</h2>
+                <p class="text-sm text-gray-500" id="pageSub">Real orders from your website</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="loadOrders()" class="refresh-btn" id="refreshBtn">
+                    <span class="material-symbols-outlined text-[20px]">refresh</span> Refresh
+                </button>
+                <span class="material-symbols-outlined text-gray-500 cursor-pointer hover:text-gray-700" onclick="logout()">logout</span>
+            </div>
+        </div>
+
+        <!-- ===== DASHBOARD ===== -->
+        <div id="page-dashboard">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer">
+                <div class="stat-card"><p class="text-sm text-gray-500">📦 Total Orders</p><p class="text-2xl font-bold text-gray-800" id="totalOrders">0</p></div>
+                <div class="stat-card"><p class="text-sm text-gray-500">⏳ Pending</p><p class="text-2xl font-bold text-amber-600" id="pendingOrders">0</p></div>
+                <div class="stat-card"><p class="text-sm text-gray-500">💰 Revenue</p><p class="text-2xl font-bold text-green-600" id="totalRevenue">₹0</p></div>
+                <div class="stat-card"><p class="text-sm text-gray-500">📅 Today</p><p class="text-2xl font-bold text-blue-600" id="todayOrders">0</p></div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-lg">🕐 Recent Orders</h3>
+                    <button onclick="showPage('orders')" class="text-sm text-blue-600 hover:text-blue-800">View All →</button>
+                </div>
+                <div id="recentOrdersList"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+            </div>
+        </div>
+
+        <!-- ===== ORDERS ===== -->
+        <div id="page-orders" style="display:none;">
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <div class="flex-1 relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                    <input type="text" id="searchInput" class="search-box" placeholder="Search by Name, Product, ID..." oninput="filterOrders()">
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-1">
+                    <button class="btn btn-primary" onclick="filterByStatus('all')">All</button>
+                    <button class="btn btn-outline" onclick="filterByStatus('Pending')">Pending</button>
+                    <button class="btn btn-outline" onclick="filterByStatus('Shipped')">Shipped</button>
+                    <button class="btn btn-outline" onclick="filterByStatus('Completed')">Completed</button>
+                    <button class="btn btn-outline" onclick="filterByStatus('Cancelled')">Cancelled</button>
+                </div>
+            </div>
+            <div id="ordersList"><div class="loading"><div class="spinner"></div>Loading orders...</div></div>
+        </div>
+
+        <!-- ===== REPAIRS ===== -->
+        <div id="page-repairs" style="display:none;">
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 class="font-semibold text-lg mb-4">🔧 Repair Bookings</h3>
+                <div id="repairsList"><div class="loading"><div class="spinner"></div>Loading repairs...</div></div>
+            </div>
+        </div>
+
+        <!-- ===== CUSTOMERS ===== -->
+        <div id="page-customers" style="display:none;">
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 class="font-semibold text-lg mb-4">👥 Customers</h3>
+                <div id="customersList"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+            </div>
+        </div>
+
+        <!-- ===== ACTIVITY ===== -->
+        <div id="page-activity" style="display:none;">
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 class="font-semibold text-lg mb-4">🔔 Activity</h3>
+                <div id="activityList"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MOBILE NAV -->
+    <nav class="mobile-nav">
+        <a href="#" class="active" onclick="showPage('dashboard')">
+            <span class="material-symbols-outlined">dashboard</span> Home
+        </a>
+        <a href="#" onclick="showPage('orders')">
+            <span class="material-symbols-outlined">shopping_bag</span> Orders
+        </a>
+        <a href="#" onclick="showPage('repairs')">
+            <span class="material-symbols-outlined">build</span> Repairs
+        </a>
+        <a href="#" onclick="showPage('customers')">
+            <span class="material-symbols-outlined">people</span> Customers
+        </a>
+    </nav>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast" style="display:none;"></div>
 
 <script>
     // ==================== FIREBASE ====================
@@ -185,253 +224,388 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    let currentUser = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
+    let allOrders = [];
+    let allRepairs = [];
+    let currentFilter = 'all';
+    let currentSearch = '';
     
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 2500);
-    }
-    
-    // ==================== GOOGLE SIGN IN ====================
+    // ==================== AUTH ====================
     async function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        
         try {
-            const result = await auth.signInWithPopup(provider);
-            const user = result.user;
-            
-            // Check if email is admin
-            if(user.email !== ADMIN_EMAIL) {
-                showToast("❌ Unauthorized: Only admin can access");
+            const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+            if(result.user.email !== ADMIN_EMAIL) {
                 await auth.signOut();
-                document.getElementById('loginError').innerText = "❌ Unauthorized: Only admin can access";
+                document.getElementById('loginError').innerText = "❌ Unauthorized! Only admin can access.";
                 document.getElementById('loginError').style.display = 'block';
                 return;
             }
-            
-            currentUser = user;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('userEmailDisplay').innerText = result.user.email;
+            loadOrders();
+            loadRepairs();
+            if (Notification.permission === "default") Notification.requestPermission();
+        } catch(e) {
+            document.getElementById('loginError').innerText = "❌ " + e.message;
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+    
+    auth.onAuthStateChanged(user => {
+        if(user && user.email === ADMIN_EMAIL) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboardScreen').style.display = 'block';
             document.getElementById('userEmailDisplay').innerText = user.email;
-            loadProducts();
-            showToast("✅ Welcome Admin!");
-            
-        } catch(e) {
-            document.getElementById('loginError').innerText = "❌ " + e.message;
-            document.getElementById('loginError').style.display = 'block';
+            loadOrders();
+            loadRepairs();
         }
-    }
+    });
     
-    // ==================== EMAIL LOGIN (Backup) ====================
-    async function adminLogin() {
-        const email = document.getElementById('adminEmail').value.trim();
-        const password = document.getElementById('adminPassword').value;
-        
-        if(email !== ADMIN_EMAIL) {
-            document.getElementById('loginError').innerText = "❌ Unauthorized: Only admin can access";
-            document.getElementById('loginError').style.display = 'block';
-            return;
-        }
-        
-        try {
-            await auth.signInWithEmailAndPassword(email, password);
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'block';
-            document.getElementById('userEmailDisplay').innerText = email;
-            loadProducts();
-        } catch(e) {
-            document.getElementById('loginError').innerText = "❌ " + e.message;
-            document.getElementById('loginError').style.display = 'block';
-        }
-    }
-    
-    function adminLogout() {
+    function logout() {
         auth.signOut();
-        currentUser = null;
         document.getElementById('dashboardScreen').style.display = 'none';
         document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('adminPassword').value = '';
         showToast("Logged out");
     }
     
-    auth.onAuthStateChanged((user) => {
-        if(user && user.email === ADMIN_EMAIL) {
-            currentUser = user;
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'block';
-            document.getElementById('userEmailDisplay').innerText = user.email;
-            loadProducts();
-        } else if(user && user.email !== ADMIN_EMAIL) {
-            auth.signOut();
-            document.getElementById('loginError').innerText = "❌ Unauthorized: Only admin can access";
-            document.getElementById('loginError').style.display = 'block';
+    // ==================== NOTIFICATION ====================
+    function sendNotification(order) {
+        if (Notification.permission === "granted") {
+            new Notification("🛒 New Order!", {
+                body: `Customer: ${order.customerName || order.name}\nTotal: ₹${order.total || 'N/A'}`,
+                icon: "https://i.imgur.com/8FkqJpR.jpg"
+            });
         }
-    });
-    
-    // ==================== TABS ====================
-    function switchTab(tab) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        if(tab === 'products') {
-            document.getElementById('productsTab').style.display = 'block';
-            document.getElementById('addTab').style.display = 'none';
-            document.querySelector('.tab-btn').classList.add('active');
-        } else {
-            document.getElementById('productsTab').style.display = 'none';
-            document.getElementById('addTab').style.display = 'block';
-            document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        }
+        showToast(`🔔 New order from ${order.customerName || order.name}`);
+        try {
+            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+            audio.play();
+        } catch(e) {}
     }
     
-    // ==================== LOAD PRODUCTS ====================
-    async function loadProducts() {
-        const container = document.getElementById('productList');
-        container.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Loading products...</div>';
-        
-        try {
-            const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
-            if(snapshot.empty) {
-                container.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">No products yet. Add your first product!</div>';
-                return;
+    // ==================== LOAD ORDERS ====================
+    function loadOrders() {
+        db.collection('orders').orderBy('date', 'desc').onSnapshot((snapshot) => {
+            let orders = [];
+            snapshot.forEach(doc => {
+                let data = doc.data();
+                data.docId = doc.id;
+                data.isRepair = false;
+                orders.push(data);
+            });
+            
+            // Check for new orders
+            if(allOrders.length > 0 && orders.length > allOrders.length) {
+                const newOrder = orders[0];
+                if(newOrder) sendNotification(newOrder);
             }
             
-            let html = '';
+            allOrders = orders;
+            updateAllUI();
+        }, (error) => {
+            console.log("Orders error:", error);
+        });
+    }
+    
+    // ==================== LOAD REPAIRS ====================
+    function loadRepairs() {
+        db.collection('repairs').orderBy('date', 'desc').onSnapshot((snapshot) => {
+            let repairs = [];
             snapshot.forEach(doc => {
-                const p = doc.data();
-                html += `
-                    <div class="product-item" id="product-${doc.id}">
-                        <div class="info">
-                            <div class="name">${p.name}</div>
-                            <div class="price">₹${p.price} ${p.oldPrice ? `<span style="text-decoration:line-through;color:#999;font-size:12px;">₹${p.oldPrice}</span>` : ''}</div>
-                            <div class="category">${p.category}</div>
+                let data = doc.data();
+                data.docId = doc.id;
+                data.isRepair = true;
+                repairs.push(data);
+            });
+            allRepairs = repairs;
+            updateAllUI();
+        }, (error) => {
+            console.log("Repairs error:", error);
+        });
+    }
+    
+    // ==================== UPDATE STATUS ====================
+    async function updateStatus(docId, type) {
+        const newStatus = document.getElementById(`status-${docId}`).value;
+        try {
+            if(type === 'order') {
+                await db.collection('orders').doc(docId).update({ status: newStatus });
+            } else {
+                await db.collection('repairs').doc(docId).update({ status: newStatus });
+            }
+            showToast("✅ Status updated to " + newStatus);
+        } catch(e) {
+            showToast("❌ Error: " + e.message);
+        }
+    }
+    
+    // ==================== UPDATE ALL UI ====================
+    function updateAllUI() {
+        updateStats();
+        renderOrders(allOrders.slice(0, 5), 'recentOrdersList');
+        renderOrders(allOrders, 'ordersList');
+        renderRepairs(allRepairs, 'repairsList');
+        updateCustomers();
+        updateActivity();
+        applyFilters();
+    }
+    
+    // ==================== STATS ====================
+    function updateStats() {
+        const total = allOrders.length + allRepairs.length;
+        const pending = allOrders.filter(o => o.status === 'Pending').length + allRepairs.filter(r => r.status === 'Pending').length;
+        const revenue = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+        const today = allOrders.filter(o => {
+            if (!o.date) return false;
+            return o.date.startsWith(new Date().toISOString().split('T')[0]);
+        }).length;
+        
+        document.getElementById('totalOrders').textContent = total;
+        document.getElementById('pendingOrders').textContent = pending;
+        document.getElementById('totalRevenue').textContent = '₹' + revenue.toFixed(0);
+        document.getElementById('todayOrders').textContent = today;
+    }
+    
+    // ==================== RENDER ORDERS ====================
+    function renderOrders(orderList, containerId, limit = 0) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        let list = orderList || [];
+        if (limit > 0) list = list.slice(0, limit);
+        
+        if (list.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400">😴 No orders yet</div>`;
+            return;
+        }
+        
+        container.innerHTML = list.map(o => {
+            const statusClass = o.status === 'Pending' ? 'badge-pending' : 
+                               o.status === 'Shipped' ? 'badge-repair' : 
+                               o.status === 'Completed' ? 'badge-completed' : 'badge-urgent';
+            const statusLabel = o.status || 'Pending';
+            
+            return `
+                <div class="order-card border-l-4 ${o.status === 'Pending' ? 'border-amber-500' : o.status === 'Completed' ? 'border-green-500' : o.status === 'Shipped' ? 'border-blue-500' : 'border-red-500'}">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 flex-wrap mb-2">
+                                <span class="text-xs font-bold text-gray-400">${o.orderId || 'ORD-' + o.docId}</span>
+                                <span class="badge ${statusClass}">${statusLabel}</span>
+                            </div>
+                            <h4 class="font-bold text-gray-800 text-lg">${o.customerName || o.name || 'Unknown'}</h4>
+                            <p class="text-sm text-gray-600">${o.items ? o.items.substring(0, 60) + '...' : (o.deviceFaults ? o.deviceFaults.substring(0, 60) + '...' : 'No items')}</p>
+                            <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
+                                <span><span class="material-symbols-outlined text-[16px] align-middle">call</span> ${o.customerPhone || o.phone || 'N/A'}</span>
+                                <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${new Date(o.date).toLocaleString()}</span>
+                                <span class="font-bold text-green-600">₹${o.total || '0'}</span>
+                            </div>
                         </div>
-                        <div class="actions">
-                            <button class="btn-edit" onclick="editProduct('${doc.id}')"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn-danger" onclick="deleteProduct('${doc.id}')"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <div class="edit-form" id="edit-${doc.id}">
-                        <div class="form-group"><label>Name</label><input type="text" id="edit-name-${doc.id}" value="${p.name}"></div>
-                        <div class="form-group"><label>Category</label>
-                            <select id="edit-cat-${doc.id}">
-                                <option value="charger" ${p.category==='charger'?'selected':''}>Charger</option>
-                                <option value="cable" ${p.category==='cable'?'selected':''}>Cable</option>
-                                <option value="earbuds" ${p.category==='earbuds'?'selected':''}>Earbuds</option>
-                                <option value="headphone" ${p.category==='headphone'?'selected':''}>Headphone</option>
-                                <option value="speaker" ${p.category==='speaker'?'selected':''}>Speaker</option>
-                                <option value="memorycard" ${p.category==='memorycard'?'selected':''}>Memory Card</option>
-                                <option value="pendrive" ${p.category==='pendrive'?'selected':''}>Pendrive</option>
-                                <option value="neckband" ${p.category==='neckband'?'selected':''}>Neckband</option>
+                        <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
+                            <select id="status-${o.docId}" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                                <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                             </select>
+                            <button onclick="updateStatus('${o.docId}', 'order')" class="btn btn-success text-xs">Update</button>
                         </div>
-                        <div class="form-group"><label>Price (₹)</label><input type="number" id="edit-price-${doc.id}" value="${p.price}"></div>
-                        <div class="form-group"><label>Old Price</label><input type="number" id="edit-oldprice-${doc.id}" value="${p.oldPrice || ''}"></div>
-                        <div class="form-group"><label>Images (comma separated)</label><input type="text" id="edit-images-${doc.id}" value="${p.images ? p.images.join(', ') : ''}"></div>
-                        <div class="form-group"><label>Description</label><textarea id="edit-desc-${doc.id}">${p.desc || ''}</textarea></div>
-                        <div class="form-group"><label>Features (one per line)</label><textarea id="edit-features-${doc.id}">${p.features ? p.features.join('\n') : ''}</textarea></div>
-                        <button class="btn-primary" onclick="saveEdit('${doc.id}')"><i class="fas fa-save"></i> Save Changes</button>
-                        <button onclick="document.getElementById('edit-${doc.id}').classList.remove('show')" style="background:#ccc;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;margin-left:10px;">Cancel</button>
                     </div>
-                `;
-            });
-            container.innerHTML = html;
-        } catch(e) {
-            container.innerHTML = '<div style="text-align:center; padding:20px; color:#e74c3c;">Error loading products</div>';
-            console.log(e);
-        }
+                </div>
+            `;
+        }).join('');
     }
     
-    // ==================== ADD PRODUCT ====================
-    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // ==================== RENDER REPAIRS ====================
+    function renderRepairs(repairList, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
         
-        const name = document.getElementById('prodName').value.trim();
-        const category = document.getElementById('prodCategory').value;
-        const price = parseInt(document.getElementById('prodPrice').value);
-        const oldPrice = document.getElementById('prodOldPrice').value ? parseInt(document.getElementById('prodOldPrice').value) : null;
-        const images = document.getElementById('prodImages').value.split(',').map(s => s.trim()).filter(s => s);
-        const desc = document.getElementById('prodDesc').value.trim();
-        const features = document.getElementById('prodFeatures').value.split('\n').filter(s => s.trim());
-        
-        if(!name || !price || !desc || images.length === 0) {
-            showToast("❌ Please fill all required fields!");
+        if (repairList.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400">🔧 No repair bookings yet</div>`;
             return;
         }
         
-        try {
-            await db.collection('products').add({
-                name,
-                category,
-                price,
-                oldPrice,
-                images,
-                desc,
-                features,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            showToast("✅ Product added successfully!");
-            document.getElementById('addProductForm').reset();
-            loadProducts();
-            switchTab('products');
-        } catch(e) {
-            showToast("❌ Error adding product: " + e.message);
+        container.innerHTML = repairList.map(r => {
+            return `
+                <div class="order-card border-l-4 border-purple-500">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 flex-wrap mb-2">
+                                <span class="text-xs font-bold text-gray-400">${r.repairId || 'REP-' + r.docId}</span>
+                                <span class="badge badge-repair">${r.status || 'Pending'}</span>
+                            </div>
+                            <h4 class="font-bold text-gray-800 text-lg">${r.customerName || 'Unknown'}</h4>
+                            <p class="text-sm text-gray-600"><strong>Device:</strong> ${r.deviceType || ''} ${r.deviceBrand || ''} ${r.deviceModel || ''}</p>
+                            <p class="text-sm text-gray-600"><strong>Issue:</strong> ${r.deviceFaults || 'Not specified'}</p>
+                            <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
+                                <span><span class="material-symbols-outlined text-[16px] align-middle">call</span> ${r.customerPhone || 'N/A'}</span>
+                                <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${new Date(r.date).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
+                            <select id="status-${r.docId}" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                                <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="In Progress" ${r.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="Completed" ${r.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option value="Cancelled" ${r.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                            <button onclick="updateStatus('${r.docId}', 'repair')" class="btn btn-success text-xs">Update</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ==================== FILTERS ====================
+    function filterOrders() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        currentSearch = search;
+        applyFilters();
+    }
+    
+    function filterByStatus(status) {
+        currentFilter = status;
+        document.querySelectorAll('#page-orders .btn-outline, #page-orders .btn-primary').forEach(b => {
+            b.className = 'btn btn-outline';
+        });
+        if (event && event.target) {
+            event.target.className = 'btn btn-primary';
         }
+        applyFilters();
+    }
+    
+    function applyFilters() {
+        let filtered = allOrders;
+        if (currentFilter !== 'all') {
+            filtered = filtered.filter(o => o.status === currentFilter);
+        }
+        if (currentSearch) {
+            filtered = filtered.filter(o => 
+                (o.customerName || '').toLowerCase().includes(currentSearch) ||
+                (o.name || '').toLowerCase().includes(currentSearch) ||
+                (o.orderId || '').toLowerCase().includes(currentSearch) ||
+                (o.items || '').toLowerCase().includes(currentSearch)
+            );
+        }
+        renderOrders(filtered, 'ordersList');
+    }
+    
+    // ==================== CUSTOMERS ====================
+    function updateCustomers() {
+        const container = document.getElementById('customersList');
+        const allItems = [...allOrders, ...allRepairs];
+        
+        if (allItems.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400">No customers yet</div>`;
+            return;
+        }
+        
+        const customerMap = new Map();
+        allItems.forEach(o => {
+            const name = o.customerName || o.name || 'Unknown';
+            const phone = o.customerPhone || o.phone || '';
+            const key = phone || name;
+            if (customerMap.has(key)) {
+                customerMap.get(key).orders += 1;
+            } else {
+                customerMap.set(key, { name, phone, orders: 1 });
+            }
+        });
+        
+        const customers = Array.from(customerMap.values());
+        container.innerHTML = customers.map(c => `
+            <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">${(c.name || 'U')[0]}</div>
+                    <div>
+                        <p class="font-semibold text-gray-800">${c.name}</p>
+                        <p class="text-sm text-gray-500">${c.phone}</p>
+                    </div>
+                </div>
+                <span class="text-sm text-gray-400">${c.orders} order${c.orders > 1 ? 's' : ''}</span>
+            </div>
+        `).join('');
+    }
+    
+    // ==================== ACTIVITY ====================
+    function updateActivity() {
+        const container = document.getElementById('activityList');
+        const allItems = [...allOrders, ...allRepairs];
+        
+        if (allItems.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400">No activity yet</div>`;
+            return;
+        }
+        
+        const activities = allItems.slice(0, 10).map(o => ({
+            icon: o.isRepair ? '🔧' : '📱',
+            text: o.isRepair ? `${o.customerName || 'Unknown'} booked a repair for ${o.deviceType || 'device'}` : `${o.customerName || 'Unknown'} ordered ${o.items ? o.items.substring(0, 30) : 'products'}`,
+            time: new Date(o.date).toLocaleString()
+        }));
+        
+        container.innerHTML = activities.map(a => `
+            <div class="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
+                <span class="text-2xl">${a.icon}</span>
+                <div class="flex-1">
+                    <p class="text-sm text-gray-800">${a.text}</p>
+                    <p class="text-xs text-gray-400">${a.time}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // ==================== PAGE NAVIGATION ====================
+    function showPage(page) {
+        document.querySelectorAll('[id^="page-"]').forEach(el => el.style.display = 'none');
+        const target = document.getElementById('page-' + page);
+        if (target) target.style.display = 'block';
+        
+        const titles = {
+            dashboard: ['📊 Dashboard', 'Real orders from your website'],
+            orders: ['🛒 Orders', 'Manage all customer orders'],
+            repairs: ['🔧 Repairs', 'Manage repair bookings'],
+            customers: ['👥 Customers', 'All customers'],
+            activity: ['🔔 Activity', 'Recent activities']
+        };
+        document.getElementById('pageTitle').textContent = titles[page]?.[0] || 'Dashboard';
+        document.getElementById('pageSub').textContent = titles[page]?.[1] || '';
+        
+        document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.sidebar-link').forEach(el => {
+            if (el.textContent.trim().toLowerCase().includes(page)) el.classList.add('active');
+        });
+        
+        document.querySelectorAll('.mobile-nav a').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.mobile-nav a').forEach(el => {
+            if (el.textContent.trim().toLowerCase().includes(page)) el.classList.add('active');
+        });
+        
+        if (page === 'dashboard') {
+            renderOrders(allOrders.slice(0, 5), 'recentOrdersList');
+            updateStats();
+        }
+        if (page === 'orders') applyFilters();
+        if (page === 'repairs') renderRepairs(allRepairs, 'repairsList');
+        if (page === 'customers') updateCustomers();
+        if (page === 'activity') updateActivity();
+    }
+    
+    // ==================== TOAST ====================
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => toast.style.display = 'none', 4000);
+    }
+    
+    // ==================== INIT ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        showPage('dashboard');
     });
-    
-    // ==================== EDIT PRODUCT ====================
-    function editProduct(docId) {
-        const form = document.getElementById(`edit-${docId}`);
-        if(form) {
-            form.classList.toggle('show');
-        }
-    }
-    
-    async function saveEdit(docId) {
-        const name = document.getElementById(`edit-name-${docId}`).value.trim();
-        const category = document.getElementById(`edit-cat-${docId}`).value;
-        const price = parseInt(document.getElementById(`edit-price-${docId}`).value);
-        const oldPrice = document.getElementById(`edit-oldprice-${docId}`).value ? parseInt(document.getElementById(`edit-oldprice-${docId}`).value) : null;
-        const images = document.getElementById(`edit-images-${docId}`).value.split(',').map(s => s.trim()).filter(s => s);
-        const desc = document.getElementById(`edit-desc-${docId}`).value.trim();
-        const features = document.getElementById(`edit-features-${docId}`).value.split('\n').filter(s => s.trim());
-        
-        if(!name || !price || !desc || images.length === 0) {
-            showToast("❌ Please fill all required fields!");
-            return;
-        }
-        
-        try {
-            await db.collection('products').doc(docId).update({
-                name,
-                category,
-                price,
-                oldPrice,
-                images,
-                desc,
-                features
-            });
-            showToast("✅ Product updated!");
-            document.getElementById(`edit-${docId}`).classList.remove('show');
-            loadProducts();
-        } catch(e) {
-            showToast("❌ Error updating: " + e.message);
-        }
-    }
-    
-    // ==================== DELETE PRODUCT ====================
-    async function deleteProduct(docId) {
-        if(!confirm("Are you sure you want to delete this product?")) return;
-        try {
-            await db.collection('products').doc(docId).delete();
-            showToast("✅ Product deleted!");
-            loadProducts();
-        } catch(e) {
-            showToast("❌ Error deleting: " + e.message);
-        }
-    }
 </script>
 
 </body>
