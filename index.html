@@ -132,6 +132,7 @@
         .status-cancelled{background:#e74c3c;color:white;}
         .cancel-order-btn{background:#e74c3c;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:10px;}
         .repair-item{background:#f8f9fa;border-radius:10px;padding:10px;margin-bottom:10px;border-left:4px solid #ff9800;}
+        .otp-badge{background:#2e7d32;color:white;padding:2px 8px;border-radius:15px;font-size:10px;font-weight:bold;display:inline-block;margin-left:6px;}
         
         .cancel-reason-modal .reason-options{display:flex;flex-direction:column;gap:8px;margin:12px 0;}
         .reason-option{display:flex;align-items:center;gap:8px;padding:10px;background:#f0f4f0;border-radius:8px;cursor:pointer;}
@@ -140,6 +141,12 @@
         .reason-option label{flex:1;cursor:pointer;font-size:13px;}
         .other-reason-input{margin-top:8px;}
         .other-reason-input input{width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;}
+        
+        /* OTP Display */
+        .otp-code{font-size:24px;font-weight:bold;letter-spacing:4px;color:#2e7d32;background:#e8f5e9;padding:8px 16px;border-radius:10px;display:inline-block;margin:5px 0;font-family:monospace;}
+        .cancelled-by{font-size:11px;color:#999;margin-top:4px;}
+        .cancelled-by .admin{color:#e74c3c;}
+        .cancelled-by .customer{color:#f39c12;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -326,6 +333,11 @@
     let selectedCancelReason = "";
     let selectedCancelItemType = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
+    
+    // ==================== GENERATE OTP ====================
+    function generateOTP() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
     
     // ==================== ACE HILL PRODUCTS ====================
     let products = [
@@ -587,11 +599,11 @@
             let itemsList = cart.map(i=>`- ${i.name}: ₹${i.price} x ${i.quantity}`).join('\n');
             const total = getTotal();
             const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
-            const orderData = { orderId, date: new Date().toISOString(), type: "product_order", customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0], items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment], utr: utr || "COD", status: "Pending" };
+            const orderData = { orderId, date: new Date().toISOString(), type: "product_order", customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0], items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment], utr: utr || "COD", status: "Pending", deliveryOTP: generateOTP() };
             await db.collection("orders").add(orderData);
-            const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName, customer_phone: "Not provided", order_items: itemsList, order_total: `₹${total}`, payment_method: paymentNames[selectedPayment], utr_number: utr || "COD", order_date: new Date().toLocaleString(), order_type: "Product Order", action_type: "NEW ORDER" };
+            const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName, customer_phone: "Not provided", order_items: itemsList, order_total: `₹${total}`, payment_method: paymentNames[selectedPayment], utr_number: utr || "COD", order_date: new Date().toLocaleString(), order_type: "Product Order", action_type: "NEW ORDER", delivery_otp: orderData.deliveryOTP };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-            showToast("✅ Order placed!");
+            showToast("✅ Order placed! Delivery OTP: " + orderData.deliveryOTP);
             cart = []; saveCart(); closeModal(); updateCartCount();
         } catch(e){ showToast("Error: " + e.message); }
         finally { showGlobalLoading(false); }
@@ -664,17 +676,17 @@
             if(selectedCancelItemType === 'order') {
                 const orderDoc = await db.collection("orders").doc(pendingCancelOrderId).get();
                 const orderData = orderDoc.data();
-                await db.collection("orders").doc(pendingCancelOrderId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString() });
-                const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName || "Customer", customer_phone: "Not provided", order_items: orderData.items || "Order items", order_total: orderData.total || "N/A", payment_method: orderData.paymentMethod || "N/A", utr_number: orderData.utr || "COD", order_date: new Date().toLocaleString(), order_type: "Order Cancelled", action_type: "CANCELLED", cancel_reason: finalReason };
+                await db.collection("orders").doc(pendingCancelOrderId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString(), cancelledBy: "Customer" });
+                const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName || "Customer", customer_phone: "Not provided", order_items: orderData.items || "Order items", order_total: orderData.total || "N/A", payment_method: orderData.paymentMethod || "N/A", utr_number: orderData.utr || "COD", order_date: new Date().toLocaleString(), order_type: "Order Cancelled", action_type: "CANCELLED", cancel_reason: finalReason, cancelled_by: "Customer" };
                 await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-                showToast("✅ Order cancelled!");
+                showToast("✅ Order cancelled by Customer!");
             } else if(selectedCancelItemType === 'repair') {
                 const repairDoc = await db.collection("repairs").doc(pendingCancelRepairId).get();
                 const repairData = repairDoc.data();
-                await db.collection("repairs").doc(pendingCancelRepairId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString() });
-                const templateParams = { to_email: ADMIN_EMAIL, customer_name: repairData.customerName || "Customer", customer_phone: repairData.customerPhone || "N/A", device_type: repairData.deviceType || "N/A", device_brand: repairData.deviceBrand || "N/A", device_model: repairData.deviceModel || "N/A", device_faults: repairData.deviceFaults || "N/A", order_date: new Date().toLocaleString(), order_type: "Repair Cancelled", action_type: "CANCELLED", cancel_reason: finalReason };
+                await db.collection("repairs").doc(pendingCancelRepairId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString(), cancelledBy: "Customer" });
+                const templateParams = { to_email: ADMIN_EMAIL, customer_name: repairData.customerName || "Customer", customer_phone: repairData.customerPhone || "N/A", device_type: repairData.deviceType || "N/A", device_brand: repairData.deviceBrand || "N/A", device_model: repairData.deviceModel || "N/A", device_faults: repairData.deviceFaults || "N/A", order_date: new Date().toLocaleString(), order_type: "Repair Cancelled", action_type: "CANCELLED", cancel_reason: finalReason, cancelled_by: "Customer" };
                 await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-                showToast("✅ Repair cancelled!");
+                showToast("✅ Repair cancelled by Customer!");
             }
             closeCancelReasonModal();
             showOrderHistory();
@@ -703,19 +715,53 @@
                     if(item.status === 'Shipped') statusClass = 'status-shipped';
                     else if(item.status === 'Completed') statusClass = 'status-completed';
                     else if(item.status === 'Cancelled') statusClass = 'status-cancelled';
-                    html += `<div class="order-item"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;"><strong>🛒 ${item.orderId}</strong><span class="order-status ${statusClass}">${item.status || 'Pending'}</span></div>
-                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div><div style="font-size:12px; margin:8px 0;">${item.items?.replace(/\n/g,'<br>') || ''}</div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;"><span><strong>Total: ₹${item.total}</strong></span><span>💳 ${item.paymentMethod}</span></div>
-                        ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Reason: ${item.cancelReason}</div>` : ''}
-                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}</div>`;
+                    
+                    let cancelInfo = "";
+                    if(item.status === 'Cancelled') {
+                        const by = item.cancelledBy || 'Unknown';
+                        const icon = by === 'Admin' ? '👑' : '👤';
+                        const label = by === 'Admin' ? 'Admin' : 'Customer';
+                        cancelInfo = `<div style="font-size:11px; color:#e74c3c; margin-top:4px;">❌ Cancelled by ${icon} ${label}</div>`;
+                        if(item.cancelReason) cancelInfo += `<div style="font-size:10px; color:#999;">Reason: ${item.cancelReason}</div>`;
+                    }
+                    
+                    html += `<div class="order-item"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
+                        <strong>🛒 ${item.orderId} <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span></strong>
+                        <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
+                    </div>
+                    ${cancelInfo}
+                    <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
+                    <div style="font-size:12px; margin:8px 0;">${item.items?.replace(/\n/g,'<br>') || ''}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                        <span><strong>Total: ₹${item.total}</strong></span>
+                        <span>💳 ${item.paymentMethod}</span>
+                    </div>
+                    ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
+                </div>`;
                 } else {
                     let statusClass = 'status-pending';
                     if(item.status === 'Cancelled') statusClass = 'status-cancelled';
-                    html += `<div class="repair-item"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;"><strong>🔧 ${item.repairId}</strong><span class="order-status ${statusClass}">${item.status || 'Pending'}</span></div>
-                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div><div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
-                        <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div><div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
-                        ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Reason: ${item.cancelReason}</div>` : ''}
-                        ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}</div>`;
+                    
+                    let cancelInfo = "";
+                    if(item.status === 'Cancelled') {
+                        const by = item.cancelledBy || 'Unknown';
+                        const icon = by === 'Admin' ? '👑' : '👤';
+                        const label = by === 'Admin' ? 'Admin' : 'Customer';
+                        cancelInfo = `<div style="font-size:11px; color:#e74c3c; margin-top:4px;">❌ Cancelled by ${icon} ${label}</div>`;
+                        if(item.cancelReason) cancelInfo += `<div style="font-size:10px; color:#999;">Reason: ${item.cancelReason}</div>`;
+                    }
+                    
+                    html += `<div class="repair-item"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
+                        <strong>🔧 ${item.repairId} <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span></strong>
+                        <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
+                    </div>
+                    ${cancelInfo}
+                    <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
+                    <div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
+                    <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div>
+                    <div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
+                    ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}
+                </div>`;
                 }
             });
             document.getElementById('orderHistoryList').innerHTML = html;
@@ -740,12 +786,13 @@
         showGlobalLoading(true);
         try {
             const repairId = "REP" + Date.now() + Math.floor(Math.random()*1000);
-            const repairData = { repairId, date: new Date().toISOString(), type: "repair", customerEmail: currentUser.email, customerName: name, customerPhone: phone, customerAddress: address, deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending" };
+            const otp = generateOTP();
+            const repairData = { repairId, date: new Date().toISOString(), type: "repair", customerEmail: currentUser.email, customerName: name, customerPhone: phone, customerAddress: address, deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending", deliveryOTP: otp };
             await db.collection("repairs").add(repairData);
-            const templateParams = { to_email: ADMIN_EMAIL, customer_name: name, customer_phone: phone, customer_address: address, device_type: deviceType, device_brand: deviceBrand, device_model: deviceModel, device_faults: deviceFaults, order_date: new Date().toLocaleString(), order_type: "Repair Booking", action_type: "NEW REPAIR" };
+            const templateParams = { to_email: ADMIN_EMAIL, customer_name: name, customer_phone: phone, customer_address: address, device_type: deviceType, device_brand: deviceBrand, device_model: deviceModel, device_faults: deviceFaults, order_date: new Date().toLocaleString(), order_type: "Repair Booking", action_type: "NEW REPAIR", delivery_otp: otp };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             checkForNewRepair(repairData);
-            showToast("✅ Repair request sent! We'll contact you soon.");
+            showToast("✅ Repair request sent! OTP: " + otp);
             document.getElementById('repairForm').reset();
         } catch(e){ showToast("Error: " + e.message); }
         finally { showGlobalLoading(false); }
@@ -755,9 +802,9 @@
     function checkForNewRepair(repairData) {
         try { const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3'); audio.play(); } catch(e) {}
         if (Notification.permission === "granted") {
-            new Notification("🔧 New Repair Booking!", { body: `Customer: ${repairData.customerName}\nPhone: ${repairData.customerPhone}\nDevice: ${repairData.deviceType} - ${repairData.deviceBrand}`, icon: "https://i.imgur.com/8FkqJpR.jpg" });
+            new Notification("🔧 New Repair Booking!", { body: `Customer: ${repairData.customerName}\nOTP: ${repairData.deliveryOTP}`, icon: "https://i.imgur.com/8FkqJpR.jpg" });
         } else if (Notification.permission !== "denied") { Notification.requestPermission(); }
-        setTimeout(() => { showToast(`🔔 NEW BOOKING! ${repairData.customerName} - ${repairData.deviceType}`); }, 1000);
+        setTimeout(() => { showToast(`🔔 NEW BOOKING! ${repairData.customerName} - OTP: ${repairData.deliveryOTP}`); }, 1000);
     }
     
     function listenForNewBookings() {
