@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DS Zone - Admin Panel</title>
+    <title>DS Zone - Admin Panel (Real Orders)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
     <style>
@@ -43,6 +43,9 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .toast { position: fixed; bottom: 100px; right: 20px; background: #1e293b; color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 200; animation: slideUp 0.4s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .refresh-btn { background: #3b82f6; color: white; padding: 10px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .refresh-btn:hover { background: #2563eb; }
+        .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -85,13 +88,15 @@
 <main class="md:ml-64 p-4 md:p-8 pb-24 md:pb-8 min-h-screen">
 
     <!-- TOP BAR -->
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
         <div>
             <h2 class="text-2xl font-bold text-gray-800" id="pageTitle">📊 Dashboard</h2>
-            <p class="text-sm text-gray-500" id="pageSub">Real-time store overview</p>
+            <p class="text-sm text-gray-500" id="pageSub">Real orders from your website</p>
         </div>
         <div class="flex items-center gap-4">
-            <span class="material-symbols-outlined text-gray-500 cursor-pointer hover:text-gray-700">notifications</span>
+            <button onclick="fetchRealOrders()" class="refresh-btn" id="refreshBtn">
+                <span class="material-symbols-outlined text-[20px]">refresh</span> Refresh Data
+            </button>
             <span class="material-symbols-outlined text-gray-500 cursor-pointer hover:text-gray-700">logout</span>
         </div>
     </div>
@@ -112,7 +117,9 @@
                 <h3 class="font-semibold text-lg">🕐 Recent Orders</h3>
                 <button onclick="showPage('orders')" class="text-sm text-blue-600 hover:text-blue-800">View All →</button>
             </div>
-            <div id="recentOrdersList"></div>
+            <div id="recentOrdersList">
+                <div class="loading"><div class="spinner"></div>Loading real orders...</div>
+            </div>
         </div>
     </div>
 
@@ -133,14 +140,18 @@
         </div>
 
         <!-- Orders List -->
-        <div id="ordersList" class="space-y-4"></div>
+        <div id="ordersList">
+            <div class="loading"><div class="spinner"></div>Loading real orders...</div>
+        </div>
     </div>
 
     <!-- ===== CUSTOMERS PAGE ===== -->
     <div id="page-customers" style="display:none;">
         <div class="bg-white rounded-2xl p-6 shadow-sm">
             <h3 class="font-semibold text-lg mb-4">👥 All Customers</h3>
-            <div id="customersList"></div>
+            <div id="customersList">
+                <div class="loading"><div class="spinner"></div>Loading customers...</div>
+            </div>
         </div>
     </div>
 
@@ -148,7 +159,9 @@
     <div id="page-activity" style="display:none;">
         <div class="bg-white rounded-2xl p-6 shadow-sm">
             <h3 class="font-semibold text-lg mb-4">🔔 Recent Activity</h3>
-            <div id="activityList"></div>
+            <div id="activityList">
+                <div class="loading"><div class="spinner"></div>Loading activity...</div>
+            </div>
         </div>
     </div>
 
@@ -183,29 +196,91 @@
 
 <!-- ========== JAVASCRIPT ========== -->
 <script>
-    // ===== SAMPLE DATA (यहाँ तुम्हारा Real Data आएगा) =====
-    let orders = [
-        { id: '#REP-20485', customer: 'Rahul Sharma', phone: '9876543210', product: 'iPhone 15 Pro', issue: 'Screen Cracked', price: 599, qty: 1, total: 599, status: 'repair', date: '2026-06-17 14:30', urgent: true },
-        { id: '#REP-20489', customer: 'Priya Patel', phone: '8765432109', product: 'Samsung Galaxy S24', issue: 'Battery Drain', price: 899, qty: 1, total: 899, status: 'pending', date: '2026-06-17 12:15', urgent: false },
-        { id: '#REP-20477', customer: 'Amit Kumar', phone: '7654321098', product: 'Google Pixel 8', issue: 'OS Boot Loop', price: 699, qty: 1, total: 699, status: 'completed', date: '2026-06-16 18:45', urgent: false },
-        { id: '#REP-20492', customer: 'Sneha Reddy', phone: '6543210987', product: 'iPad Air M2', issue: 'Port Not Working', price: 1299, qty: 1, total: 1299, status: 'pending', date: '2026-06-17 09:20', urgent: true },
-        { id: '#REP-20501', customer: 'Vikram Singh', phone: '5432109876', product: 'OnePlus 12', issue: 'Camera Glitch', price: 749, qty: 1, total: 749, status: 'repair', date: '2026-06-16 22:10', urgent: false },
-        { id: '#REP-20512', customer: 'Neha Gupta', phone: '4321098765', product: 'MacBook Air', issue: 'Battery Replacement', price: 2499, qty: 1, total: 2499, status: 'pending', date: '2026-06-17 08:00', urgent: false },
-    ];
-
+    // ===== GOOGLE SHEETS API CONFIG =====
+    // ⚠️ IMPORTANT: अपनी Google Sheet की Web App URL यहाँ डालो!
+    // यह URL तुम्हें Google Apps Script से मिलेगा
+    const GOOGLE_SHEETS_API_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+    
+    // ===== REAL ORDERS (Google Sheet से आएंगे) =====
+    let orders = [];
     let currentFilter = 'all';
     let currentSearch = '';
+    let isLoading = false;
+
+    // ===== FETCH REAL ORDERS FROM GOOGLE SHEET =====
+    async function fetchRealOrders() {
+        const btn = document.getElementById('refreshBtn');
+        if (isLoading) return;
+        
+        isLoading = true;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">refresh</span> Loading...';
+        
+        try {
+            // Google Sheet से Data Fetch करो
+            const response = await fetch(GOOGLE_SHEETS_API_URL + '?action=getOrders');
+            const data = await response.json();
+            
+            if (data && data.length > 0) {
+                // Google Sheet के Columns: 
+                // [ID, Customer, Phone, Address, Product, Price, Qty, Total, Date, Status]
+                orders = data.map((row, index) => ({
+                    id: row[0] || '#ORD-' + String(index + 1).padStart(5, '0'),
+                    customer: row[1] || 'Unknown',
+                    phone: row[2] || 'N/A',
+                    address: row[3] || 'N/A',
+                    product: row[4] || 'Unknown Product',
+                    price: parseFloat(row[5]) || 0,
+                    qty: parseInt(row[6]) || 1,
+                    total: parseFloat(row[7]) || 0,
+                    date: row[8] || new Date().toLocaleString(),
+                    status: (row[9] || 'pending').toLowerCase(),
+                    urgent: false // Optional: कॉलम डालो तो use करो
+                }));
+                
+                showToast('✅ ' + orders.length + ' real orders loaded from Google Sheet!');
+            } else {
+                orders = [];
+                showToast('📭 No orders found in Google Sheet');
+            }
+            
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            showToast('❌ Error loading orders. Check API URL.');
+            // अगर API नहीं चल रहा तो Sample Data नहीं डाल रहे — बस खाली दिखाएँगे
+            orders = [];
+        }
+        
+        isLoading = false;
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">refresh</span> Refresh Data';
+        
+        // सारे UI Update करो
+        updateAllUI();
+    }
+
+    // ===== UPDATE ALL UI =====
+    function updateAllUI() {
+        updateStats();
+        renderOrders(orders.slice(0, 5), 'recentOrdersList');
+        applyFilters();
+        updateCustomers();
+        updateActivity();
+    }
 
     // ===== UPDATE STATS =====
     function updateStats() {
         const total = orders.length;
         const pending = orders.filter(o => o.status === 'pending' || o.status === 'repair').length;
-        const revenue = orders.reduce((sum, o) => sum + o.total, 0);
-        const today = orders.filter(o => o.date.startsWith('2026-06-17')).length;
+        const revenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+        const today = orders.filter(o => {
+            if (!o.date) return false;
+            return o.date.startsWith(new Date().toISOString().split('T')[0]);
+        }).length;
         
         document.getElementById('totalOrders').textContent = total;
         document.getElementById('pendingOrders').textContent = pending;
-        document.getElementById('totalRevenue').textContent = '₹' + revenue;
+        document.getElementById('totalRevenue').textContent = '₹' + revenue.toFixed(0);
         document.getElementById('todayOrders').textContent = today;
     }
 
@@ -217,8 +292,8 @@
         let list = orderList;
         if (limit > 0) list = list.slice(0, limit);
         
-        if (list.length === 0) {
-            container.innerHTML = `<div class="text-center py-8 text-gray-400">😴 No orders found</div>`;
+        if (!list || list.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400">😴 No real orders yet. Customers will appear here when they order from your website.</div>`;
             return;
         }
         
@@ -241,12 +316,12 @@
                                 ${statusBadge}
                             </div>
                             <h4 class="font-bold text-gray-800 text-lg">${o.product}</h4>
-                            <p class="text-sm text-gray-600">${o.issue}</p>
+                            <p class="text-sm text-gray-600">${o.address ? o.address.substring(0, 50) + '...' : 'No address'}</p>
                             <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">person</span> ${o.customer}</span>
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">call</span> <a href="tel:${o.phone}" class="text-blue-600 hover:underline">${o.phone}</a></span>
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${o.date}</span>
-                                <span class="font-bold text-green-600">₹${o.total}</span>
+                                <span class="font-bold text-green-600">₹${o.total || (o.price * o.qty)}</span>
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
@@ -268,11 +343,12 @@
 
     function filterByStatus(status) {
         currentFilter = status;
-        // Update button styles
         document.querySelectorAll('#page-orders .btn-outline, #page-orders .btn-primary').forEach(b => {
             b.className = 'btn btn-outline';
         });
-        event.target.className = 'btn btn-primary';
+        if (event && event.target) {
+            event.target.className = 'btn btn-primary';
+        }
         applyFilters();
     }
 
@@ -283,9 +359,9 @@
         }
         if (currentSearch) {
             filtered = filtered.filter(o => 
-                o.customer.toLowerCase().includes(currentSearch) ||
-                o.product.toLowerCase().includes(currentSearch) ||
-                o.id.toLowerCase().includes(currentSearch)
+                (o.customer || '').toLowerCase().includes(currentSearch) ||
+                (o.product || '').toLowerCase().includes(currentSearch) ||
+                (o.id || '').toLowerCase().includes(currentSearch)
             );
         }
         renderOrders(filtered, 'ordersList');
@@ -296,9 +372,7 @@
         const order = orders.find(o => o.id === id);
         if (!order) return;
         order.status = order.status === 'completed' ? 'pending' : 'completed';
-        updateStats();
-        applyFilters();
-        renderOrders(orders.slice(0, 5), 'recentOrdersList');
+        updateAllUI();
         showToast('✅ Order ' + id + ' updated to ' + order.status);
     }
 
@@ -306,22 +380,25 @@
     function deleteOrder(id) {
         if (!confirm('Delete order ' + id + '?')) return;
         orders = orders.filter(o => o.id !== id);
-        updateStats();
-        applyFilters();
-        renderOrders(orders.slice(0, 5), 'recentOrdersList');
+        updateAllUI();
         showToast('🗑️ Order ' + id + ' deleted');
     }
 
     // ===== ACTIVITY LOG =====
     function updateActivity() {
-        const activities = [
-            { icon: '📱', text: 'iPhone 15 Pro repair completed by Tech David', time: '12 minutes ago' },
-            { icon: '🛍️', text: 'New accessory order #ORD-8921 received', time: '45 minutes ago' },
-            { icon: '👤', text: 'New customer Priya Patel registered', time: '2 hours ago' },
-            { icon: '⚠️', text: 'Inventory alert: MacBook Air Batteries low', time: '4 hours ago' },
-            { icon: '💾', text: 'Weekly backup completed successfully', time: '6 hours ago' },
-        ];
-        document.getElementById('activityList').innerHTML = activities.map(a => `
+        const container = document.getElementById('activityList');
+        if (!orders || orders.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400">No recent activity</div>`;
+            return;
+        }
+        
+        const activities = orders.slice(0, 10).map(o => ({
+            icon: '📱',
+            text: `${o.product} ordered by ${o.customer}`,
+            time: o.date || 'Just now'
+        }));
+        
+        container.innerHTML = activities.map(a => `
             <div class="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
                 <span class="text-2xl">${a.icon}</span>
                 <div class="flex-1">
@@ -334,13 +411,30 @@
 
     // ===== CUSTOMERS LIST =====
     function updateCustomers() {
-        const customers = [...new Map(orders.map(o => [o.phone, { name: o.customer, phone: o.phone, orders: 1 }]))].map(([key, val]) => val);
-        document.getElementById('customersList').innerHTML = customers.map(c => `
+        const container = document.getElementById('customersList');
+        if (!orders || orders.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400">No customers yet</div>`;
+            return;
+        }
+        
+        const customerMap = new Map();
+        orders.forEach(o => {
+            if (o.phone) {
+                if (customerMap.has(o.phone)) {
+                    customerMap.get(o.phone).orders += 1;
+                } else {
+                    customerMap.set(o.phone, { name: o.customer, phone: o.phone, orders: 1 });
+                }
+            }
+        });
+        
+        const customers = Array.from(customerMap.values());
+        container.innerHTML = customers.map(c => `
             <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">${c.name[0]}</div>
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">${(c.name || 'U')[0]}</div>
                     <div>
-                        <p class="font-semibold text-gray-800">${c.name}</p>
+                        <p class="font-semibold text-gray-800">${c.name || 'Unknown'}</p>
                         <p class="text-sm text-gray-500">${c.phone}</p>
                     </div>
                 </div>
@@ -354,20 +448,18 @@
         const toast = document.getElementById('toast');
         toast.textContent = msg;
         toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 3000);
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => toast.style.display = 'none', 4000);
     }
 
     // ===== PAGE NAVIGATION =====
     function showPage(page) {
-        // Hide all pages
         document.querySelectorAll('[id^="page-"]').forEach(el => el.style.display = 'none');
-        // Show selected
         const target = document.getElementById('page-' + page);
         if (target) target.style.display = 'block';
         
-        // Update title
         const titles = {
-            dashboard: ['📊 Dashboard', 'Real-time store overview'],
+            dashboard: ['📊 Dashboard', 'Real orders from your website'],
             orders: ['🛒 Orders', 'Manage all customer orders'],
             customers: ['👥 Customers', 'All registered customers'],
             activity: ['🔔 Activity', 'Recent store activities'],
@@ -376,36 +468,30 @@
         document.getElementById('pageTitle').textContent = titles[page]?.[0] || 'Dashboard';
         document.getElementById('pageSub').textContent = titles[page]?.[1] || '';
         
-        // Update sidebar
         document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.sidebar-link').forEach(el => {
             if (el.textContent.trim().toLowerCase().includes(page)) el.classList.add('active');
         });
         
-        // Update mobile nav
         document.querySelectorAll('.mobile-nav a').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.mobile-nav a').forEach(el => {
             if (el.textContent.trim().toLowerCase().includes(page)) el.classList.add('active');
         });
         
-        // Refresh data
-        if (page === 'orders') applyFilters();
         if (page === 'dashboard') {
             renderOrders(orders.slice(0, 5), 'recentOrdersList');
             updateStats();
         }
+        if (page === 'orders') applyFilters();
         if (page === 'customers') updateCustomers();
         if (page === 'activity') updateActivity();
     }
 
-    // ===== INIT =====
+    // ===== AUTO-LOAD ON START =====
     document.addEventListener('DOMContentLoaded', function() {
-        updateStats();
-        renderOrders(orders.slice(0, 5), 'recentOrdersList');
-        applyFilters();
-        updateCustomers();
-        updateActivity();
         showPage('dashboard');
+        // पहली बार Real Data Load करो
+        fetchRealOrders();
     });
 </script>
 
