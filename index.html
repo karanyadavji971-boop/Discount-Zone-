@@ -24,9 +24,18 @@
         .logout-btn{background:#ff6b35;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;}
         .order-history-btn{background:#ff9800;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;}
         
-        /* Support Button - Floating */
-        .support-float{position:fixed;bottom:100px;left:20px;background:#25D366;color:white;padding:12px 18px;border-radius:50px;z-index:150;box-shadow:0 4px 12px rgba(0,0,0,0.2);cursor:pointer;font-weight:bold;display:flex;align-items:center;gap:8px;font-size:14px;text-decoration:none;border:none;}
-        .support-float:hover{background:#128C7E;}
+        /* Floating Support Button - Right Side Unique Design */
+        .support-float{position:fixed;bottom:100px;right:20px;z-index:150;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;animation:float-bounce 3s ease-in-out infinite;}
+        @keyframes float-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+        .support-ring{width:65px;height:65px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 25px rgba(37,211,102,0.5);position:relative;transition:0.3s;}
+        .support-ring:hover{transform:scale(1.08);box-shadow:0 8px 35px rgba(37,211,102,0.7);}
+        .support-ring .pulse-ring{position:absolute;width:100%;height:100%;border-radius:50%;border:2px solid rgba(37,211,102,0.3);animation:pulse-ring 2s ease-out infinite;}
+        .support-ring .pulse-ring:nth-child(2){animation-delay:0.5s;}
+        .support-ring i{font-size:28px;color:white;z-index:2;}
+        .support-label{background:rgba(0,0,0,0.75);color:white;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.5px;white-space:nowrap;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);}
+        .support-badge{position:absolute;top:-5px;right:-5px;background:#ff4444;color:white;font-size:9px;padding:2px 6px;border-radius:20px;font-weight:bold;animation:badge-pulse 1.5s infinite;}
+        @keyframes pulse-ring{0%{transform:scale(1);opacity:1;}100%{transform:scale(1.5);opacity:0;}}
+        @keyframes badge-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
         
         .booking-section{max-width:600px;margin:20px auto;background:white;border-radius:20px;padding:25px;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
         .booking-section h2{color:#2e7d32;margin-bottom:20px;text-align:center;font-size:22px;}
@@ -115,9 +124,15 @@
     </div>
 </div>
 
-<!-- Floating Support Button -->
-<a href="tel:9711678678" class="support-float">
-    <i class="fas fa-phone-alt"></i> Call / WhatsApp
+<!-- Floating Support Button - RIGHT SIDE with Unique Design -->
+<a href="tel:9711678678" class="support-float" id="supportBtn">
+    <div class="support-ring">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <i class="fas fa-phone-alt"></i>
+        <span class="support-badge">24/7</span>
+    </div>
+    <span class="support-label"><i class="fas fa-headset"></i> Call / WhatsApp</span>
 </a>
 
 <!-- Global Loading Overlay -->
@@ -646,7 +661,7 @@
             };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             
-            // Check for new repair booking alert
+            // New booking alert
             checkForNewRepair(repairData);
             
             showToast("✅ Repair request sent! We'll contact you soon.");
@@ -656,15 +671,12 @@
     });
     
     // ==================== NEW BOOKING ALERT SYSTEM ====================
-    // This function checks for new bookings and shows real-time alert
     function checkForNewRepair(repairData) {
-        // Play notification sound (optional)
         try {
             const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
             audio.play();
         } catch(e) {}
         
-        // Show browser notification if permitted
         if (Notification.permission === "granted") {
             new Notification("🔧 New Repair Booking!", {
                 body: `Customer: ${repairData.customerName}\nPhone: ${repairData.customerPhone}\nDevice: ${repairData.deviceType} - ${repairData.deviceBrand}`,
@@ -674,18 +686,13 @@
             Notification.requestPermission();
         }
         
-        // Also show a toast alert on page
         setTimeout(() => {
             showToast(`🔔 NEW BOOKING! ${repairData.customerName} - ${repairData.deviceType}`);
         }, 1000);
     }
     
-    // ==================== REAL-TIME BOOKING MONITOR ====================
-    // This listens for new repair bookings and shows instant alert
     function listenForNewBookings() {
         if (!currentUser) return;
-        
-        // Listen for new documents in the 'repairs' collection
         db.collection("repairs")
             .where("status", "==", "Pending")
             .orderBy("date", "desc")
@@ -694,7 +701,6 @@
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
                         const data = change.doc.data();
-                        // Only alert if it's a new booking and not from current user
                         if (data.customerEmail !== currentUser.email) {
                             checkForNewRepair(data);
                         }
@@ -715,12 +721,10 @@
     renderProducts();
     loadCart();
     
-    // Request notification permission
     if (Notification.permission === "default") {
         Notification.requestPermission();
     }
     
-    // Start listening for new bookings after auth
     auth.onAuthStateChanged((user) => {
         if (user) {
             listenForNewBookings();
