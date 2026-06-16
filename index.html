@@ -23,8 +23,8 @@
         .user-name{background:#1b5e20;color:white;padding:4px 10px;border-radius:25px;font-size:11px;}
         .logout-btn{background:#ff6b35;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;}
         .order-history-btn{background:#ff9800;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:11px;}
+        .admin-panel-btn{background:#1a1a2e;color:white;border:none;padding:4px 10px;border-radius:20px;cursor:pointer;font-size:10px;}
         
-        /* Support Button */
         .support-float{position:fixed;bottom:100px;right:20px;z-index:150;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;animation:float-bounce 3s ease-in-out infinite;}
         @keyframes float-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
         .support-ring{width:65px;height:65px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 25px rgba(37,211,102,0.5);position:relative;transition:0.3s;}
@@ -37,7 +37,7 @@
         @keyframes pulse-ring{0%{transform:scale(1);opacity:1;}100%{transform:scale(1.5);opacity:0;}}
         @keyframes badge-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
         
-        /* Slider Section */
+        /* Slider */
         .slider-section{max-width:1200px;margin:20px auto;padding:0 20px;position:relative;}
         .slider-container{overflow:hidden;border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,0.1);position:relative;background:white;}
         .slider-track{display:flex;transition:transform 0.5s ease-in-out;will-change:transform;}
@@ -50,7 +50,6 @@
         .slider-dots{display:flex;justify-content:center;gap:10px;padding:12px 0;position:absolute;bottom:0;left:0;right:0;z-index:5;}
         .slider-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:0.3s;border:1px solid #ddd;}
         .slider-dot.active{background:#2e7d32;transform:scale(1.2);border-color:#2e7d32;}
-        .slider-dot:hover{background:#2e7d32;}
         .slider-arrow-label{position:absolute;top:10px;right:15px;background:rgba(0,0,0,0.6);color:white;padding:4px 12px;border-radius:20px;font-size:11px;z-index:5;}
         
         .booking-section{max-width:600px;margin:20px auto;background:white;border-radius:20px;padding:25px;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
@@ -74,6 +73,18 @@
         .service-card{background:#1b5e20;padding:12px;border-radius:12px;text-align:center;}
         .service-card i{font-size:24px;margin-bottom:6px;display:block;}
         .service-card span{font-size:12px;}
+        
+        /* Admin Panel */
+        .admin-panel{background:white;border-radius:20px;padding:20px;margin:20px auto;max-width:600px;box-shadow:0 5px 20px rgba(0,0,0,0.1);display:none;}
+        .admin-panel h3{color:#2e7d32;margin-bottom:15px;text-align:center;}
+        .admin-panel input,.admin-panel textarea,.admin-panel select{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;}
+        .admin-panel textarea{height:60px;resize:vertical;}
+        .admin-panel .add-product-btn{background:#2e7d32;color:white;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;}
+        .admin-panel .add-product-btn:hover{background:#1b5e20;}
+        .admin-panel .product-list-admin{margin-top:15px;}
+        .admin-panel .product-list-admin .admin-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #eee;}
+        .admin-panel .product-list-admin .admin-item .name{font-weight:500;}
+        .admin-panel .product-list-admin .admin-item .del-btn{background:#e74c3c;color:white;border:none;padding:4px 10px;border-radius:15px;cursor:pointer;}
         
         .products-section{max-width:1200px;margin:30px auto;padding:0 20px;}
         .products-section h3{color:#2e7d32;margin-bottom:18px;font-size:20px;text-align:center;}
@@ -166,6 +177,7 @@
     <div><h1><i class="fas fa-tools"></i> DS Zone Repair</h1><p>Fast, Reliable & Affordable Mobile Repair</p></div>
     <div class="header-right">
         <div id="authSection"><button class="login-btn" onclick="showLoginModal()"><i class="fas fa-user"></i> Login</button></div>
+        <button class="admin-panel-btn" onclick="toggleAdminPanel()"><i class="fas fa-plus-circle"></i> Admin</button>
         <div class="cart-icon" onclick="showCartModal()">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-count" id="cartCount">0</span>
@@ -173,7 +185,7 @@
     </div>
 </div>
 
-<!-- Support Button -->
+<!-- Support -->
 <a href="tel:9711678678" class="support-float">
     <div class="support-ring">
         <div class="pulse-ring"></div>
@@ -184,22 +196,22 @@
     <span class="support-label"><i class="fas fa-headset"></i> Call / WhatsApp</span>
 </a>
 
-<!-- Global Loading -->
+<!-- Loading -->
 <div id="globalLoading" class="global-loading">
     <div class="spinner"></div>
     <p>⏳ Please Wait...</p>
 </div>
 
-<!-- ==================== SLIDER SECTION ==================== -->
+<!-- ==================== SLIDER ==================== -->
 <div class="slider-section">
     <div class="slider-container">
         <div class="slider-track" id="sliderTrack">
             <div class="slider-slide"><img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800" alt="Screen Repair"></div>
             <div class="slider-slide"><img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=800" alt="Battery Replacement"></div>
-            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800" alt="Charging Port Repair"></div>
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1621829844885-15e81304869f?w=800" alt="Charging Port"></div>
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800" alt="Body Change"></div>
             <div class="slider-slide"><img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=800" alt="Water Damage"></div>
-            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800" alt="Speaker Repair"></div>
-            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=800" alt="Dead Phone Repair"></div>
+            <div class="slider-slide"><img src="https://images.unsplash.com/photo-1621829844885-15e81304869f?w=800" alt="Any Problem"></div>
         </div>
         <div class="slider-arrow-label">🔧 Mobile Repair Services</div>
         <button class="slider-btn prev" onclick="moveSlider(-1)">❮</button>
@@ -240,7 +252,25 @@
         <div class="service-card"><i class="fas fa-plug"></i><span>⚡ Charging Port</span></div>
         <div class="service-card"><i class="fas fa-tint"></i><span>💧 Water Damage</span></div>
         <div class="service-card"><i class="fas fa-volume-up"></i><span>🔊 Speaker/Mic Repair</span></div>
-        <div class="service-card"><i class="fas fa-microchip"></i><span>🔧 Dead Phone Repair</span></div>
+        <div class="service-card"><i class="fas fa-microchip"></i><span>🔧 Any Problem Fix</span></div>
+    </div>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+    <h3><i class="fas fa-plus-circle"></i> Admin - Add New Product</h3>
+    <input type="text" id="prodName" placeholder="Product Name *">
+    <input type="text" id="prodPrice" placeholder="Price ₹ *">
+    <input type="text" id="prodOldPrice" placeholder="Old Price ₹ (optional)">
+    <input type="text" id="prodCategory" placeholder="Category (e.g., earbuds, charger)">
+    <textarea id="prodDesc" placeholder="Product Description *"></textarea>
+    <input type="text" id="prodImages" placeholder="Image URLs (comma separated) *">
+    <textarea id="prodFeatures" placeholder="Features (one per line)"></textarea>
+    <button class="add-product-btn" onclick="addProduct()"><i class="fas fa-save"></i> Add Product</button>
+    
+    <div class="product-list-admin" id="productListAdmin">
+        <h4 style="margin:15px 0 10px; color:#2e7d32;">Your Products</h4>
+        <div id="adminProductList"></div>
     </div>
 </div>
 
@@ -251,7 +281,7 @@
     <div class="products-grid" id="productsGrid"></div>
 </div>
 
-<!-- Product Detail Page -->
+<!-- Product Detail -->
 <div class="product-detail-page" id="productDetailPage">
     <div class="detail-header">
         <h2 id="detailPageTitle">Product</h2>
@@ -265,23 +295,17 @@
             <div class="detail-thumbnails" id="detailThumbnails"></div>
         </div>
         <div class="detail-title" id="detailName"></div>
-        <div>
-            <span class="detail-price" id="detailPrice"></span>
-            <span class="detail-old-price" id="detailOldPrice"></span>
-        </div>
+        <div><span class="detail-price" id="detailPrice"></span><span class="detail-old-price" id="detailOldPrice"></span></div>
         <div class="detail-desc" id="detailDesc"></div>
         <div class="detail-features" id="detailFeatures"></div>
         <button class="detail-add-btn" onclick="addToCartFromDetail()"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-        <div class="similar-products">
-            <h3><i class="fas fa-tags"></i> Similar Products</h3>
-            <div class="similar-grid" id="similarProducts"></div>
-        </div>
+        <div class="similar-products"><h3><i class="fas fa-tags"></i> Similar Products</h3><div class="similar-grid" id="similarProducts"></div></div>
     </div>
 </div>
 
 <footer><p>© 2026 DS Zone Repair | Mobile Repair & Accessories Store</p></footer>
 
-<!-- Login Modal -->
+<!-- Modals -->
 <div id="loginModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeLoginModal()">&times;</span>
@@ -290,12 +314,10 @@
         <div class="form-group"><input type="password" id="loginPassword" placeholder="Password"></div>
         <button class="book-btn" onclick="loginWithEmail()" style="margin-bottom:8px;">Login</button>
         <button class="book-btn" style="background:#2e7d32;" onclick="signUpWithEmail()">Create New Account</button>
-        <hr style="margin:12px 0;">
-        <button class="book-btn" style="background:#4285f4;" onclick="loginWithGoogle()"><i class="fab fa-google"></i> Sign in with Google</button>
+        <hr style="margin:12px 0;"><button class="book-btn" style="background:#4285f4;" onclick="loginWithGoogle()"><i class="fab fa-google"></i> Sign in with Google</button>
     </div>
 </div>
 
-<!-- Order History -->
 <div id="historyModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeHistoryModal()">&times;</span>
@@ -304,35 +326,20 @@
     </div>
 </div>
 
-<!-- Cancel Reason Modal -->
 <div id="cancelReasonModal" class="modal cancel-reason-modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeCancelReasonModal()">&times;</span>
         <h3><i class="fas fa-question-circle"></i> Cancel Order Reason</h3>
-        <p style="margin-bottom:12px; color:#666; font-size:13px;">Please tell us why you want to cancel this order:</p>
+        <p style="margin-bottom:12px; color:#666; font-size:13px;">Please tell us why you want to cancel:</p>
         <div class="reason-options" id="reasonOptions">
-            <div class="reason-option" onclick="selectReason(this, 'Changed my mind')">
-                <input type="radio" name="cancelReason" value="Changed my mind"> <label>🤔 Changed my mind</label>
-            </div>
-            <div class="reason-option" onclick="selectReason(this, 'Found better price elsewhere')">
-                <input type="radio" name="cancelReason" value="Found better price elsewhere"> <label>💰 Found better price elsewhere</label>
-            </div>
-            <div class="reason-option" onclick="selectReason(this, 'Delivery time too long')">
-                <input type="radio" name="cancelReason" value="Delivery time too long"> <label>⏰ Delivery time too long</label>
-            </div>
-            <div class="reason-option" onclick="selectReason(this, 'Accidental order')">
-                <input type="radio" name="cancelReason" value="Accidental order"> <label>😅 Accidental order</label>
-            </div>
-            <div class="reason-option" onclick="selectReason(this, 'Technical issue with payment')">
-                <input type="radio" name="cancelReason" value="Technical issue with payment"> <label>💳 Technical issue with payment</label>
-            </div>
-            <div class="reason-option" onclick="selectReason(this, 'Other')">
-                <input type="radio" name="cancelReason" value="Other"> <label>📝 Other (please specify)</label>
-            </div>
+            <div class="reason-option" onclick="selectReason(this, 'Changed my mind')"><input type="radio" name="cancelReason" value="Changed my mind"><label>🤔 Changed my mind</label></div>
+            <div class="reason-option" onclick="selectReason(this, 'Found better price elsewhere')"><input type="radio" name="cancelReason" value="Found better price elsewhere"><label>💰 Found better price elsewhere</label></div>
+            <div class="reason-option" onclick="selectReason(this, 'Delivery time too long')"><input type="radio" name="cancelReason" value="Delivery time too long"><label>⏰ Delivery time too long</label></div>
+            <div class="reason-option" onclick="selectReason(this, 'Accidental order')"><input type="radio" name="cancelReason" value="Accidental order"><label>😅 Accidental order</label></div>
+            <div class="reason-option" onclick="selectReason(this, 'Technical issue with payment')"><input type="radio" name="cancelReason" value="Technical issue with payment"><label>💳 Technical issue with payment</label></div>
+            <div class="reason-option" onclick="selectReason(this, 'Other')"><input type="radio" name="cancelReason" value="Other"><label>📝 Other</label></div>
         </div>
-        <div id="otherReasonDiv" class="other-reason-input" style="display:none;">
-            <input type="text" id="otherReasonText" placeholder="Please specify your reason...">
-        </div>
+        <div id="otherReasonDiv" class="other-reason-input" style="display:none;"><input type="text" id="otherReasonText" placeholder="Please specify..."></div>
         <button class="book-btn" onclick="confirmCancel()" style="margin-top:12px; background:#e74c3c;">Confirm Cancellation</button>
         <button class="book-btn" onclick="closeCancelReasonModal()" style="margin-top:8px; background:#666;">Go Back</button>
     </div>
@@ -417,83 +424,79 @@
     let selectedCancelReason = "";
     let selectedCancelItemType = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
-    const SUPPORT_NUMBER = "9711678678";
     
     // ==================== PRODUCTS ====================
     let products = [
-        { 
-            id: 1, 
-            name: "Wireless Bluetooth Earbuds", 
-            price: 899, 
-            oldPrice: 1299,
-            category: "earbuds", 
-            images: [
-                "https://i.imgur.com/8FkqJpR.jpg",
-                "https://i.imgur.com/T7gY4QG.jpg",
-                "https://i.imgur.com/wWnF8gH.jpg"
-            ], 
-            desc: "Premium wireless earbuds with deep bass, 20hr battery life, Bluetooth 5.3.",
-            features: ["Bluetooth 5.3", "20hr Battery Life", "Deep Bass", "Noise Cancellation", "Fast Charging"]
-        },
-        { 
-            id: 2, 
-            name: "20W Fast Charger", 
-            price: 399, 
-            oldPrice: 599,
-            category: "charger", 
-            images: [
-                "https://i.imgur.com/wWnF8gH.jpg",
-                "https://i.imgur.com/NqXj7Zt.jpg"
-            ], 
-            desc: "20W fast charger with Type-C port. Compatible with all smartphones.",
-            features: ["20W Fast Charging", "Type-C Port", "Overcharge Protection", "Compact Design"]
-        },
-        { 
-            id: 3, 
-            name: "Over-Ear Bluetooth Headphones", 
-            price: 1299, 
-            oldPrice: 1999,
-            category: "headphone", 
-            images: [
-                "https://i.imgur.com/5cYbKpR.jpg",
-                "https://i.imgur.com/8FkqJpR.jpg"
-            ], 
-            desc: "Over-ear headphones with soft cushion, 30hr battery, foldable design.",
-            features: ["30hr Battery", "Foldable Design", "Soft Cushion", "Deep Bass", "Built-in Mic"]
-        },
-        { 
-            id: 4, 
-            name: "Portable Bluetooth Speaker", 
-            price: 999, 
-            oldPrice: 1499,
-            category: "speaker", 
-            images: [
-                "https://i.imgur.com/T7gY4QG.jpg",
-                "https://i.imgur.com/NqXj7Zt.jpg"
-            ], 
-            desc: "10W portable speaker with RGB lights, 8hr playtime, IPX5 water resistant.",
-            features: ["RGB Lights", "8hr Playtime", "IPX5 Water Resistant", "TWS Pairing", "Rich Bass"]
-        },
-        { 
-            id: 5, 
-            name: "64GB MicroSD Card", 
-            price: 499, 
-            oldPrice: 799,
-            category: "memorycard", 
-            images: [
-                "https://i.imgur.com/NqXj7Zt.jpg",
-                "https://i.imgur.com/wWnF8gH.jpg"
-            ], 
-            desc: "Class 10 high-speed memory card for phones, tablets, cameras.",
-            features: ["64GB Storage", "Class 10 Speed", "Waterproof", "Temperature Proof", "5 Year Warranty"]
-        }
+        { id: 1, name: "Wireless Bluetooth Earbuds", price: 899, oldPrice: 1299, category: "earbuds", images: ["https://i.imgur.com/8FkqJpR.jpg","https://i.imgur.com/T7gY4QG.jpg","https://i.imgur.com/wWnF8gH.jpg"], desc: "Premium wireless earbuds with deep bass, 20hr battery life.", features: ["Bluetooth 5.3", "20hr Battery", "Deep Bass", "Noise Cancellation"] },
+        { id: 2, name: "20W Fast Charger", price: 399, oldPrice: 599, category: "charger", images: ["https://i.imgur.com/wWnF8gH.jpg","https://i.imgur.com/NqXj7Zt.jpg"], desc: "20W fast charger with Type-C port. Compatible with all smartphones.", features: ["20W Fast Charging", "Type-C Port", "Overcharge Protection"] },
+        { id: 3, name: "Over-Ear Bluetooth Headphones", price: 1299, oldPrice: 1999, category: "headphone", images: ["https://i.imgur.com/5cYbKpR.jpg","https://i.imgur.com/8FkqJpR.jpg"], desc: "Over-ear headphones with soft cushion, 30hr battery.", features: ["30hr Battery", "Foldable", "Soft Cushion", "Deep Bass"] },
+        { id: 4, name: "Portable Bluetooth Speaker", price: 999, oldPrice: 1499, category: "speaker", images: ["https://i.imgur.com/T7gY4QG.jpg","https://i.imgur.com/NqXj7Zt.jpg"], desc: "10W portable speaker with RGB lights, 8hr playtime.", features: ["RGB Lights", "8hr Playtime", "IPX5", "TWS Pairing"] },
+        { id: 5, name: "64GB MicroSD Card", price: 499, oldPrice: 799, category: "memorycard", images: ["https://i.imgur.com/NqXj7Zt.jpg","https://i.imgur.com/wWnF8gH.jpg"], desc: "Class 10 high-speed memory card.", features: ["64GB", "Class 10", "Waterproof", "5 Year Warranty"] }
     ];
     
     let detailCurrentIndex = 0;
     let detailProductId = null;
     
-    function showGlobalLoading(show) {
-        document.getElementById('globalLoading').style.display = show ? 'flex' : 'none';
+    function showGlobalLoading(show) { document.getElementById('globalLoading').style.display = show ? 'flex' : 'none'; }
+    
+    // ==================== ADMIN ====================
+    function toggleAdminPanel() {
+        const panel = document.getElementById('adminPanel');
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        renderAdminProductList();
+    }
+    
+    function renderAdminProductList() {
+        const container = document.getElementById('adminProductList');
+        container.innerHTML = products.map(p => `
+            <div class="admin-item">
+                <span class="name">${p.name}</span>
+                <span>₹${p.price}</span>
+                <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
+            </div>
+        `).join('');
+    }
+    
+    function deleteProduct(productId) {
+        if(confirm("Are you sure you want to delete this product?")) {
+            products = products.filter(p => p.id !== productId);
+            saveProducts();
+            renderAdminProductList();
+            renderProducts();
+            renderCategories();
+            showToast("✅ Product deleted!");
+        }
+    }
+    
+    function saveProducts() {
+        localStorage.setItem('dsZoneProducts', JSON.stringify(products));
+    }
+    
+    function loadProducts() {
+        const saved = localStorage.getItem('dsZoneProducts');
+        if(saved) { try { const parsed = JSON.parse(saved); if(parsed && parsed.length > 0) products = parsed; } catch(e) {} }
+    }
+    
+    function addProduct() {
+        const name = document.getElementById('prodName').value.trim();
+        const price = parseFloat(document.getElementById('prodPrice').value);
+        const oldPrice = parseFloat(document.getElementById('prodOldPrice').value) || price * 1.3;
+        const category = document.getElementById('prodCategory').value.trim() || 'uncategorized';
+        const desc = document.getElementById('prodDesc').value.trim();
+        const images = document.getElementById('prodImages').value.split(',').map(s => s.trim()).filter(s => s);
+        const features = document.getElementById('prodFeatures').value.split('\n').filter(s => s.trim());
+        if(!name || !price || !desc || images.length === 0) { showToast("Please fill all required fields!"); return; }
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        products.push({ id: newId, name, price, oldPrice, category, images, desc, features });
+        saveProducts();
+        renderProducts();
+        renderCategories();
+        renderAdminProductList();
+        showToast("✅ Product added!");
+        document.getElementById('prodName').value = ''; document.getElementById('prodPrice').value = '';
+        document.getElementById('prodOldPrice').value = ''; document.getElementById('prodCategory').value = '';
+        document.getElementById('prodDesc').value = ''; document.getElementById('prodImages').value = '';
+        document.getElementById('prodFeatures').value = '';
     }
     
     // ==================== CART ====================
@@ -510,10 +513,9 @@
         if(existing) existing.quantity++;
         else cart.push({...product, quantity:1});
         saveCart();
-        showToast(`✅ ${product.name} added to cart!`);
+        showToast(`✅ ${product.name} added!`);
         closeDetailPage();
     }
-    
     function addToCartFromDetail() { if(detailProductId !== null) addToCart(detailProductId); }
     function removeFromCart(index) { cart.splice(index,1); saveCart(); if(document.getElementById('cartModal').style.display==='flex') updateCartModal(); showToast("Item removed"); }
     function updateQuantity(index, change) {
@@ -531,7 +533,6 @@
         products.forEach(p => { if(!categories.includes(p.category)) categories.push(p.category); });
         container.innerHTML = categories.map(cat => `<button class="category-btn ${currentCategory===cat?'active':''}" onclick="filterByCategory('${cat}')">${cat.charAt(0).toUpperCase() + cat.slice(1)}</button>`).join('');
     }
-    
     let currentCategory = "all";
     function filterByCategory(cat) { currentCategory = cat; renderCategories(); renderProducts(); }
     
@@ -548,7 +549,7 @@
         `).join('');
     }
     
-    // ==================== DETAIL PAGE ====================
+    // ==================== DETAIL ====================
     function openDetailPage(productId) {
         const product = products.find(p => p.id === productId);
         if(!product) return;
@@ -564,28 +565,18 @@
         let featuresHtml = `<h4>✨ Product Features:</h4><ul>`;
         if(product.features && product.features.length > 0) {
             product.features.forEach(f => { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> ${f}</li>`; });
-        } else { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> Premium quality product</li>`; }
+        } else { featuresHtml += `<li><i class="fas fa-check"></i> Premium quality product</li>`; }
         featuresHtml += `</ul>`;
         document.getElementById('detailFeatures').innerHTML = featuresHtml;
         
         const thumbContainer = document.getElementById('detailThumbnails');
-        thumbContainer.innerHTML = product.images.map((img, idx) => `
-            <img class="detail-thumb ${idx===0?'active':''}" src="${img}" onclick="changeDetailImageTo(${idx})" onerror="this.src='https://via.placeholder.com/65'">
-        `).join('');
+        thumbContainer.innerHTML = product.images.map((img, idx) => `<img class="detail-thumb ${idx===0?'active':''}" src="${img}" onclick="changeDetailImageTo(${idx})" onerror="this.src='https://via.placeholder.com/65'">`).join('');
         
         const similarContainer = document.getElementById('similarProducts');
         const similar = products.filter(p => p.id !== productId && p.category === product.category).slice(0,4);
-        if(similar.length === 0) {
-            similarContainer.innerHTML = `<p style="color:#999; grid-column:1/-1; text-align:center;">No similar products found</p>`;
-        } else {
-            similarContainer.innerHTML = similar.map(p => `
-                <div class="similar-card" onclick="openDetailPage(${p.id})">
-                    <img src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/80'">
-                    <div class="name">${p.name}</div>
-                    <div class="price">₹${p.price}</div>
-                </div>
-            `).join('');
-        }
+        if(similar.length === 0) { similarContainer.innerHTML = `<p style="color:#999; grid-column:1/-1; text-align:center;">No similar products</p>`; }
+        else { similarContainer.innerHTML = similar.map(p => `<div class="similar-card" onclick="openDetailPage(${p.id})"><img src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/80'"><div class="name">${p.name}</div><div class="price">₹${p.price}</div></div>`).join(''); }
+        
         document.getElementById('productDetailPage').style.display = 'block';
         document.body.style.overflow = 'hidden';
         window.scrollTo(0,0);
@@ -595,8 +586,7 @@
     function changeDetailImage(direction) {
         const product = products.find(p => p.id === detailProductId);
         if(!product) return;
-        const total = product.images.length;
-        detailCurrentIndex = (detailCurrentIndex + direction + total) % total;
+        detailCurrentIndex = (detailCurrentIndex + direction + product.images.length) % product.images.length;
         updateDetailImage(product);
     }
     function changeDetailImageTo(index) {
@@ -607,9 +597,7 @@
     }
     function updateDetailImage(product) {
         document.getElementById('detailMainImage').src = product.images[detailCurrentIndex];
-        document.querySelectorAll('.detail-thumb').forEach((el, idx) => {
-            el.classList.toggle('active', idx === detailCurrentIndex);
-        });
+        document.querySelectorAll('.detail-thumb').forEach((el, idx) => { el.classList.toggle('active', idx === detailCurrentIndex); });
     }
     
     // ==================== CART MODAL ====================
@@ -617,28 +605,15 @@
         if(cart.length===0){ showToast("Cart empty!"); closeModal(); return; }
         let html = "";
         cart.forEach((item,idx) => {
-            html += `<div class="cart-item">
-                <img class="cart-item-img" src="${item.images[0] || 'https://i.imgur.com/8FkqJpR.jpg'}" onerror="this.src='https://via.placeholder.com/40'">
-                <div class="cart-item-details">
-                    <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">₹${item.price} x ${item.quantity}</div>
-                    <div class="cart-item-quantity">
-                        <button onclick="updateQuantity(${idx}, -1)">-</button>
-                        <span>${item.quantity}</span>
-                        <button onclick="updateQuantity(${idx}, 1)">+</button>
-                        <button class="remove-cart-item" onclick="removeFromCart(${idx})">✕</button>
-                    </div>
-                </div>
-                <div style="font-weight:bold;">₹${item.price * item.quantity}</div>
-            </div>`;
+            html += `<div class="cart-item"><img class="cart-item-img" src="${item.images[0] || 'https://i.imgur.com/8FkqJpR.jpg'}" onerror="this.src='https://via.placeholder.com/40'">
+                <div class="cart-item-details"><div class="cart-item-name">${item.name}</div><div class="cart-item-price">₹${item.price} x ${item.quantity}</div>
+                <div class="cart-item-quantity"><button onclick="updateQuantity(${idx}, -1)">-</button><span>${item.quantity}</span><button onclick="updateQuantity(${idx}, 1)">+</button>
+                <button class="remove-cart-item" onclick="removeFromCart(${idx})">✕</button></div></div><div style="font-weight:bold;">₹${item.price * item.quantity}</div></div>`;
         });
         const subtotal = getCartSubtotal();
         const delivery = getDeliveryCharge();
-        html += `<div style="border-top:2px solid #ddd; padding-top:10px;">
-            <div>Subtotal: ₹${subtotal}</div>
-            <div>Delivery: ${delivery===0 ? 'Free' : '₹'+delivery}</div>
-            <div style="font-size:18px; font-weight:bold; margin-top:8px;">Total: ₹${subtotal+delivery}</div>
-        </div>`;
+        html += `<div style="border-top:2px solid #ddd; padding-top:10px;"><div>Subtotal: ₹${subtotal}</div><div>Delivery: ${delivery===0 ? 'Free' : '₹'+delivery}</div>
+            <div style="font-size:18px; font-weight:bold; margin-top:8px;">Total: ₹${subtotal+delivery}</div></div>`;
         document.getElementById('orderSummary').innerHTML = html;
         document.getElementById('deliveryChargeDisplay').innerHTML = delivery===0 ? '🎉 Free Delivery!' : `🚚 Delivery: ₹${delivery} (Free above ₹1000)`;
     }
@@ -674,27 +649,11 @@
             let itemsList = cart.map(i=>`- ${i.name}: ₹${i.price} x ${i.quantity}`).join('\n');
             const total = getTotal();
             const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
-            const orderData = {
-                orderId, date: new Date().toISOString(), type: "product_order",
-                customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0],
-                items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment],
-                utr: utr || "COD", status: "Pending"
-            };
+            const orderData = { orderId, date: new Date().toISOString(), type: "product_order", customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0], items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment], utr: utr || "COD", status: "Pending" };
             await db.collection("orders").add(orderData);
-            const templateParams = {
-                to_email: ADMIN_EMAIL,
-                customer_name: orderData.customerName,
-                customer_phone: "Not provided",
-                order_items: itemsList,
-                order_total: `₹${total}`,
-                payment_method: paymentNames[selectedPayment],
-                utr_number: utr || "COD",
-                order_date: new Date().toLocaleString(),
-                order_type: "Product Order",
-                action_type: "NEW ORDER"
-            };
+            const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName, customer_phone: "Not provided", order_items: itemsList, order_total: `₹${total}`, payment_method: paymentNames[selectedPayment], utr_number: utr || "COD", order_date: new Date().toLocaleString(), order_type: "Product Order", action_type: "NEW ORDER" };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-            showToast("✅ Order placed successfully!");
+            showToast("✅ Order placed!");
             cart = []; saveCart(); closeModal(); updateCartCount();
         } catch(e){ showToast("Error: " + e.message); }
         finally { showGlobalLoading(false); }
@@ -706,37 +665,28 @@
     function updateUI() {
         if(currentUser){
             let name = currentUser.displayName || currentUser.email.split('@')[0];
-            document.getElementById('authSection').innerHTML = `<div class="user-info">
-                <span class="user-name"><i class="fas fa-user-circle"></i> ${name}</span>
-                <button class="order-history-btn" onclick="showOrderHistory()"><i class="fas fa-history"></i> Orders</button>
-                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-            </div>`;
-        } else {
-            document.getElementById('authSection').innerHTML = `<button class="login-btn" onclick="showLoginModal()"><i class="fas fa-user"></i> Login</button>`;
-        }
+            document.getElementById('authSection').innerHTML = `<div class="user-info"><span class="user-name"><i class="fas fa-user-circle"></i> ${name}</span><button class="order-history-btn" onclick="showOrderHistory()"><i class="fas fa-history"></i> Orders</button><button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div>`;
+        } else { document.getElementById('authSection').innerHTML = `<button class="login-btn" onclick="showLoginModal()"><i class="fas fa-user"></i> Login</button>`; }
     }
     
     async function loginWithEmail() {
         const email = document.getElementById('loginEmail').value;
         const pwd = document.getElementById('loginPassword').value;
         showGlobalLoading(true);
-        try { await auth.signInWithEmailAndPassword(email, pwd); showToast("Login successful!"); closeLoginModal(); } 
-        catch(e){ showToast(e.message); }
+        try { await auth.signInWithEmailAndPassword(email, pwd); showToast("Login success!"); closeLoginModal(); } catch(e){ showToast(e.message); }
         finally { showGlobalLoading(false); }
     }
     async function signUpWithEmail() {
         const email = document.getElementById('loginEmail').value;
         const pwd = document.getElementById('loginPassword').value;
         showGlobalLoading(true);
-        try { await auth.createUserWithEmailAndPassword(email, pwd); showToast("Account created!"); closeLoginModal(); } 
-        catch(e){ showToast(e.message); }
+        try { await auth.createUserWithEmailAndPassword(email, pwd); showToast("Account created!"); closeLoginModal(); } catch(e){ showToast(e.message); }
         finally { showGlobalLoading(false); }
     }
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         showGlobalLoading(true);
-        try { await auth.signInWithPopup(provider); showToast("Google login success!"); closeLoginModal(); } 
-        catch(e){ showToast(e.message); }
+        try { await auth.signInWithPopup(provider); showToast("Google login success!"); closeLoginModal(); } catch(e){ showToast(e.message); }
         finally { showGlobalLoading(false); }
     }
     function logout() { auth.signOut(); showToast("Logged out"); cart = []; saveCart(); updateCartCount(); }
@@ -757,18 +707,14 @@
         pendingCancelRepairId = orderId;
         selectedCancelItemType = type;
         selectedCancelReason = "";
-        document.querySelectorAll('.reason-option').forEach(opt => {
-            opt.classList.remove('selected');
-            const radio = opt.querySelector('input');
-            if(radio) radio.checked = false;
-        });
+        document.querySelectorAll('.reason-option').forEach(opt => { opt.classList.remove('selected'); const radio = opt.querySelector('input'); if(radio) radio.checked = false; });
         document.getElementById('otherReasonDiv').style.display = 'none';
         document.getElementById('otherReasonText').value = "";
         document.getElementById('cancelReasonModal').style.display = 'flex';
     }
     
     async function confirmCancel() {
-        if(!selectedCancelReason) { showToast("Please select a reason for cancellation"); return; }
+        if(!selectedCancelReason) { showToast("Please select a reason"); return; }
         let finalReason = selectedCancelReason;
         if(selectedCancelReason === 'Other') {
             const otherText = document.getElementById('otherReasonText').value.trim();
@@ -781,44 +727,20 @@
                 const orderDoc = await db.collection("orders").doc(pendingCancelOrderId).get();
                 const orderData = orderDoc.data();
                 await db.collection("orders").doc(pendingCancelOrderId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString() });
-                const templateParams = {
-                    to_email: ADMIN_EMAIL,
-                    customer_name: orderData.customerName || "Customer",
-                    customer_phone: "Not provided",
-                    order_items: orderData.items || "Order items",
-                    order_total: orderData.total || "N/A",
-                    payment_method: orderData.paymentMethod || "N/A",
-                    utr_number: orderData.utr || "COD",
-                    order_date: new Date().toLocaleString(),
-                    order_type: "Order Cancelled",
-                    action_type: "CANCELLED",
-                    cancel_reason: finalReason
-                };
+                const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName || "Customer", customer_phone: "Not provided", order_items: orderData.items || "Order items", order_total: orderData.total || "N/A", payment_method: orderData.paymentMethod || "N/A", utr_number: orderData.utr || "COD", order_date: new Date().toLocaleString(), order_type: "Order Cancelled", action_type: "CANCELLED", cancel_reason: finalReason };
                 await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-                showToast("✅ Order cancelled successfully!");
+                showToast("✅ Order cancelled!");
             } else if(selectedCancelItemType === 'repair') {
                 const repairDoc = await db.collection("repairs").doc(pendingCancelRepairId).get();
                 const repairData = repairDoc.data();
                 await db.collection("repairs").doc(pendingCancelRepairId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString() });
-                const templateParams = {
-                    to_email: ADMIN_EMAIL,
-                    customer_name: repairData.customerName || "Customer",
-                    customer_phone: repairData.customerPhone || "N/A",
-                    device_type: repairData.deviceType || "N/A",
-                    device_brand: repairData.deviceBrand || "N/A",
-                    device_model: repairData.deviceModel || "N/A",
-                    device_faults: repairData.deviceFaults || "N/A",
-                    order_date: new Date().toLocaleString(),
-                    order_type: "Repair Cancelled",
-                    action_type: "CANCELLED",
-                    cancel_reason: finalReason
-                };
+                const templateParams = { to_email: ADMIN_EMAIL, customer_name: repairData.customerName || "Customer", customer_phone: repairData.customerPhone || "N/A", device_type: repairData.deviceType || "N/A", device_brand: repairData.deviceBrand || "N/A", device_model: repairData.deviceModel || "N/A", device_faults: repairData.deviceFaults || "N/A", order_date: new Date().toLocaleString(), order_type: "Repair Cancelled", action_type: "CANCELLED", cancel_reason: finalReason };
                 await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-                showToast("✅ Repair booking cancelled successfully!");
+                showToast("✅ Repair cancelled!");
             }
             closeCancelReasonModal();
             showOrderHistory();
-        } catch(e) { showToast("Error cancelling: " + e.message); }
+        } catch(e) { showToast("Error: " + e.message); }
         finally { showGlobalLoading(false); }
     }
     
@@ -843,41 +765,24 @@
                     if(item.status === 'Shipped') statusClass = 'status-shipped';
                     else if(item.status === 'Completed') statusClass = 'status-completed';
                     else if(item.status === 'Cancelled') statusClass = 'status-cancelled';
-                    html += `<div class="order-item">
-                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
-                            <strong>🛒 ${item.orderId}</strong>
-                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
-                        </div>
-                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
-                        <div style="font-size:12px; margin:8px 0;">${item.items?.replace(/\n/g,'<br>') || ''}</div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                            <span><strong>Total: ₹${item.total}</strong></span>
-                            <span>💳 ${item.paymentMethod}</span>
-                        </div>
-                        ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Cancellation Reason: ${item.cancelReason}</div>` : ''}
-                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
-                    </div>`;
+                    html += `<div class="order-item"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;"><strong>🛒 ${item.orderId}</strong><span class="order-status ${statusClass}">${item.status || 'Pending'}</span></div>
+                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div><div style="font-size:12px; margin:8px 0;">${item.items?.replace(/\n/g,'<br>') || ''}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;"><span><strong>Total: ₹${item.total}</strong></span><span>💳 ${item.paymentMethod}</span></div>
+                        ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Reason: ${item.cancelReason}</div>` : ''}
+                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}</div>`;
                 } else {
                     let statusClass = 'status-pending';
                     if(item.status === 'Cancelled') statusClass = 'status-cancelled';
-                    html += `<div class="repair-item">
-                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
-                            <strong>🔧 ${item.repairId}</strong>
-                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
-                        </div>
-                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
-                        <div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
-                        <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div>
-                        <div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
-                        <div style="margin-top:5px;"><strong>Address:</strong> ${item.customerAddress || 'Not provided'}</div>
-                        ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Cancellation Reason: ${item.cancelReason}</div>` : ''}
-                        ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}
-                    </div>`;
+                    html += `<div class="repair-item"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;"><strong>🔧 ${item.repairId}</strong><span class="order-status ${statusClass}">${item.status || 'Pending'}</span></div>
+                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div><div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
+                        <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div><div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
+                        ${item.cancelReason ? `<div style="font-size:11px; color:#e74c3c; margin-top:5px;">📝 Reason: ${item.cancelReason}</div>` : ''}
+                        ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}</div>`;
                 }
             });
             document.getElementById('orderHistoryList').innerHTML = html;
             document.getElementById('historyModal').style.display = 'flex';
-        } catch(e){ showToast("Error loading orders: " + e.message); }
+        } catch(e){ showToast("Error: " + e.message); }
         finally { showGlobalLoading(false); }
     }
     
@@ -897,25 +802,9 @@
         showGlobalLoading(true);
         try {
             const repairId = "REP" + Date.now() + Math.floor(Math.random()*1000);
-            const repairData = {
-                repairId, date: new Date().toISOString(), type: "repair",
-                customerEmail: currentUser.email, customerName: name, customerPhone: phone, customerAddress: address,
-                deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending"
-            };
+            const repairData = { repairId, date: new Date().toISOString(), type: "repair", customerEmail: currentUser.email, customerName: name, customerPhone: phone, customerAddress: address, deviceType, deviceBrand, deviceModel, deviceFaults, status: "Pending" };
             await db.collection("repairs").add(repairData);
-            const templateParams = {
-                to_email: ADMIN_EMAIL,
-                customer_name: name,
-                customer_phone: phone,
-                customer_address: address,
-                device_type: deviceType,
-                device_brand: deviceBrand,
-                device_model: deviceModel,
-                device_faults: deviceFaults,
-                order_date: new Date().toLocaleString(),
-                order_type: "Repair Booking",
-                action_type: "NEW REPAIR"
-            };
+            const templateParams = { to_email: ADMIN_EMAIL, customer_name: name, customer_phone: phone, customer_address: address, device_type: deviceType, device_brand: deviceBrand, device_model: deviceModel, device_faults: deviceFaults, order_date: new Date().toLocaleString(), order_type: "Repair Booking", action_type: "NEW REPAIR" };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
             checkForNewRepair(repairData);
             showToast("✅ Repair request sent! We'll contact you soon.");
@@ -926,15 +815,9 @@
     
     // ==================== NOTIFICATIONS ====================
     function checkForNewRepair(repairData) {
-        try {
-            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
-            audio.play();
-        } catch(e) {}
+        try { const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3'); audio.play(); } catch(e) {}
         if (Notification.permission === "granted") {
-            new Notification("🔧 New Repair Booking!", {
-                body: `Customer: ${repairData.customerName}\nPhone: ${repairData.customerPhone}\nDevice: ${repairData.deviceType} - ${repairData.deviceBrand}`,
-                icon: "https://i.imgur.com/8FkqJpR.jpg"
-            });
+            new Notification("🔧 New Repair Booking!", { body: `Customer: ${repairData.customerName}\nPhone: ${repairData.customerPhone}\nDevice: ${repairData.deviceType} - ${repairData.deviceBrand}`, icon: "https://i.imgur.com/8FkqJpR.jpg" });
         } else if (Notification.permission !== "denied") { Notification.requestPermission(); }
         setTimeout(() => { showToast(`🔔 NEW BOOKING! ${repairData.customerName} - ${repairData.deviceType}`); }, 1000);
     }
@@ -958,6 +841,7 @@
     function showToast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2500); }
     
     initSlider();
+    loadProducts();
     loadCart();
     if (Notification.permission === "default") Notification.requestPermission();
     auth.onAuthStateChanged((user) => { if (user) listenForNewBookings(); });
