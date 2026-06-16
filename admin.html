@@ -22,6 +22,7 @@
         .badge-completed { background: #d1fae5; color: #065f46; }
         .badge-repair { background: #dbeafe; color: #1e40af; }
         .badge-urgent { background: #fee2e2; color: #991b1b; }
+        .badge-cancelled { background: #f3f4f6; color: #6b7280; }
         .btn { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 12px; border: none; cursor: pointer; transition: 0.3s; }
         .btn-primary { background: #3b82f6; color: white; }
         .btn-primary:hover { background: #2563eb; }
@@ -31,6 +32,8 @@
         .btn-danger:hover { background: #dc2626; }
         .btn-outline { background: transparent; border: 2px solid #e5e7eb; color: #374151; }
         .btn-outline:hover { background: #f3f4f6; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-warning:hover { background: #d97706; }
         .search-box { border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px 16px 10px 44px; width: 100%; outline: none; transition: 0.3s; background: white; }
         .search-box:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.1); }
         .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #64748b; transition: 0.3s; cursor: pointer; text-decoration: none; }
@@ -55,6 +58,12 @@
         .google-btn{background:#fff;border:1px solid #e0e0e0;padding:14px;border-radius:12px;width:100%;cursor:pointer;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:0.15s;}
         .google-btn:hover{background:#f5f5f5;}
         .login-error{color:#e74c3c;font-size:13px;margin-top:10px;display:none;}
+        .order-detail-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:300;padding:20px;}
+        .order-detail-content{background:white;border-radius:20px;padding:30px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;}
+        .customer-item{cursor:pointer;transition:0.2s;padding:10px;border-radius:10px;}
+        .customer-item:hover{background:#f3f4f6;}
+        .cancel-reason{background:#fef2f2;padding:10px;border-radius:10px;border-left:4px solid #ef4444;margin:10px 0;font-size:13px;}
+        .cancel-by{font-size:12px;color:#6b7280;margin-top:4px;}
     </style>
 </head>
 <body>
@@ -73,7 +82,7 @@
     </div>
 </div>
 
-<!-- ========== DASHBOARD (Hidden until login) ========== -->
+<!-- ========== DASHBOARD ========== -->
 <div id="dashboardScreen" style="display:none;">
 
     <!-- SIDEBAR -->
@@ -207,6 +216,17 @@
     </nav>
 </div>
 
+<!-- ========== ORDER DETAIL MODAL ========== -->
+<div id="orderDetailModal" class="order-detail-modal">
+    <div class="order-detail-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold" id="modalCustomerName">Customer Orders</h3>
+            <button onclick="closeOrderDetail()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        </div>
+        <div id="modalOrderList"></div>
+    </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast" class="toast" style="display:none;"></div>
 
@@ -295,7 +315,6 @@
                 orders.push(data);
             });
             
-            // Check for new orders
             if(allOrders.length > 0 && orders.length > allOrders.length) {
                 const newOrder = orders[0];
                 if(newOrder) sendNotification(newOrder);
@@ -326,8 +345,7 @@
     }
     
     // ==================== UPDATE STATUS ====================
-    async function updateStatus(docId, type) {
-        const newStatus = document.getElementById(`status-${docId}`).value;
+    async function updateStatus(docId, type, newStatus) {
         try {
             if(type === 'order') {
                 await db.collection('orders').doc(docId).update({ status: newStatus });
@@ -335,6 +353,44 @@
                 await db.collection('repairs').doc(docId).update({ status: newStatus });
             }
             showToast("✅ Status updated to " + newStatus);
+        } catch(e) {
+            showToast("❌ Error: " + e.message);
+        }
+    }
+    
+    // ==================== CANCEL ORDER (Admin) ====================
+    async function adminCancelOrder(docId, type) {
+        if(!confirm("Are you sure you want to cancel this order?")) return;
+        try {
+            const cancelReason = prompt("Reason for cancellation (optional):");
+            const data = {
+                status: "Cancelled",
+                cancelledBy: "Admin",
+                cancelledAt: new Date().toISOString(),
+                cancelReason: cancelReason || "Cancelled by Admin"
+            };
+            
+            if(type === 'order') {
+                await db.collection('orders').doc(docId).update(data);
+            } else {
+                await db.collection('repairs').doc(docId).update(data);
+            }
+            showToast("✅ Order cancelled by Admin");
+        } catch(e) {
+            showToast("❌ Error: " + e.message);
+        }
+    }
+    
+    // ==================== DELETE ORDER ====================
+    async function deleteOrder(docId, type) {
+        if(!confirm("Are you sure you want to permanently delete this order?")) return;
+        try {
+            if(type === 'order') {
+                await db.collection('orders').doc(docId).delete();
+            } else {
+                await db.collection('repairs').doc(docId).delete();
+            }
+            showToast("🗑️ Order deleted permanently");
         } catch(e) {
             showToast("❌ Error: " + e.message);
         }
@@ -354,7 +410,7 @@
     // ==================== STATS ====================
     function updateStats() {
         const total = allOrders.length + allRepairs.length;
-        const pending = allOrders.filter(o => o.status === 'Pending').length + allRepairs.filter(r => r.status === 'Pending').length;
+        const pending = allOrders.filter(o => o.status === 'Pending' || o.status === 'Shipped').length + allRepairs.filter(r => r.status === 'Pending' || r.status === 'In Progress').length;
         const revenue = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
         const today = allOrders.filter(o => {
             if (!o.date) return false;
@@ -383,19 +439,30 @@
         container.innerHTML = list.map(o => {
             const statusClass = o.status === 'Pending' ? 'badge-pending' : 
                                o.status === 'Shipped' ? 'badge-repair' : 
-                               o.status === 'Completed' ? 'badge-completed' : 'badge-urgent';
+                               o.status === 'Completed' ? 'badge-completed' : 'badge-cancelled';
             const statusLabel = o.status || 'Pending';
             
+            const cancelInfo = o.cancelledBy ? `
+                <div class="cancel-reason">
+                    <strong>❌ Cancelled</strong>
+                    <div>Reason: ${o.cancelReason || 'N/A'}</div>
+                    <div class="cancel-by">${o.cancelledBy === 'Admin' ? '👑 Cancelled by Admin' : '👤 Cancelled by Customer'} at ${new Date(o.cancelledAt).toLocaleString()}</div>
+                </div>
+            ` : '';
+            
             return `
-                <div class="order-card border-l-4 ${o.status === 'Pending' ? 'border-amber-500' : o.status === 'Completed' ? 'border-green-500' : o.status === 'Shipped' ? 'border-blue-500' : 'border-red-500'}">
+                <div class="order-card border-l-4 ${o.status === 'Pending' ? 'border-amber-500' : o.status === 'Completed' ? 'border-green-500' : o.status === 'Shipped' ? 'border-blue-500' : o.status === 'Cancelled' ? 'border-gray-400' : 'border-red-500'}">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 flex-wrap mb-2">
                                 <span class="text-xs font-bold text-gray-400">${o.orderId || 'ORD-' + o.docId}</span>
                                 <span class="badge ${statusClass}">${statusLabel}</span>
+                                ${o.cancelledBy === 'Admin' ? '<span class="badge badge-urgent">Cancelled by Admin</span>' : ''}
+                                ${o.cancelledBy === 'Customer' ? '<span class="badge badge-pending">Cancelled by Customer</span>' : ''}
                             </div>
                             <h4 class="font-bold text-gray-800 text-lg">${o.customerName || o.name || 'Unknown'}</h4>
                             <p class="text-sm text-gray-600">${o.items ? o.items.substring(0, 60) + '...' : (o.deviceFaults ? o.deviceFaults.substring(0, 60) + '...' : 'No items')}</p>
+                            ${cancelInfo}
                             <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">call</span> ${o.customerPhone || o.phone || 'N/A'}</span>
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${new Date(o.date).toLocaleString()}</span>
@@ -409,12 +476,19 @@
                                 <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
                                 <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                             </select>
-                            <button onclick="updateStatus('${o.docId}', 'order')" class="btn btn-success text-xs">Update</button>
+                            <button onclick="updateStatusFromSelect('${o.docId}', 'order')" class="btn btn-success text-xs">Update</button>
+                            <button onclick="adminCancelOrder('${o.docId}', 'order')" class="btn btn-warning text-xs">Cancel</button>
+                            <button onclick="deleteOrder('${o.docId}', 'order')" class="btn btn-danger text-xs">Delete</button>
                         </div>
                     </div>
                 </div>
             `;
         }).join('');
+    }
+    
+    function updateStatusFromSelect(docId, type) {
+        const newStatus = document.getElementById(`status-${docId}`).value;
+        updateStatus(docId, type, newStatus);
     }
     
     // ==================== RENDER REPAIRS ====================
@@ -428,17 +502,32 @@
         }
         
         container.innerHTML = repairList.map(r => {
+            const statusClass = r.status === 'Pending' ? 'badge-pending' : 
+                               r.status === 'In Progress' ? 'badge-repair' : 
+                               r.status === 'Completed' ? 'badge-completed' : 'badge-cancelled';
+            
+            const cancelInfo = r.cancelledBy ? `
+                <div class="cancel-reason">
+                    <strong>❌ Cancelled</strong>
+                    <div>Reason: ${r.cancelReason || 'N/A'}</div>
+                    <div class="cancel-by">${r.cancelledBy === 'Admin' ? '👑 Cancelled by Admin' : '👤 Cancelled by Customer'}</div>
+                </div>
+            ` : '';
+            
             return `
                 <div class="order-card border-l-4 border-purple-500">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 flex-wrap mb-2">
                                 <span class="text-xs font-bold text-gray-400">${r.repairId || 'REP-' + r.docId}</span>
-                                <span class="badge badge-repair">${r.status || 'Pending'}</span>
+                                <span class="badge ${statusClass}">${r.status || 'Pending'}</span>
+                                ${r.cancelledBy === 'Admin' ? '<span class="badge badge-urgent">Cancelled by Admin</span>' : ''}
+                                ${r.cancelledBy === 'Customer' ? '<span class="badge badge-pending">Cancelled by Customer</span>' : ''}
                             </div>
                             <h4 class="font-bold text-gray-800 text-lg">${r.customerName || 'Unknown'}</h4>
                             <p class="text-sm text-gray-600"><strong>Device:</strong> ${r.deviceType || ''} ${r.deviceBrand || ''} ${r.deviceModel || ''}</p>
                             <p class="text-sm text-gray-600"><strong>Issue:</strong> ${r.deviceFaults || 'Not specified'}</p>
+                            ${cancelInfo}
                             <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">call</span> ${r.customerPhone || 'N/A'}</span>
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${new Date(r.date).toLocaleString()}</span>
@@ -451,7 +540,9 @@
                                 <option value="Completed" ${r.status === 'Completed' ? 'selected' : ''}>Completed</option>
                                 <option value="Cancelled" ${r.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                             </select>
-                            <button onclick="updateStatus('${r.docId}', 'repair')" class="btn btn-success text-xs">Update</button>
+                            <button onclick="updateStatusFromSelect('${r.docId}', 'repair')" class="btn btn-success text-xs">Update</button>
+                            <button onclick="adminCancelOrder('${r.docId}', 'repair')" class="btn btn-warning text-xs">Cancel</button>
+                            <button onclick="deleteOrder('${r.docId}', 'repair')" class="btn btn-danger text-xs">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -503,21 +594,37 @@
             return;
         }
         
+        // Group by customer
         const customerMap = new Map();
         allItems.forEach(o => {
             const name = o.customerName || o.name || 'Unknown';
             const phone = o.customerPhone || o.phone || '';
             const key = phone || name;
             if (customerMap.has(key)) {
-                customerMap.get(key).orders += 1;
+                const data = customerMap.get(key);
+                data.orders.push(o);
+                data.totalOrders += 1;
+                data.totalSpent += (o.total || 0);
             } else {
-                customerMap.set(key, { name, phone, orders: 1 });
+                customerMap.set(key, {
+                    name: name,
+                    phone: phone,
+                    orders: [o],
+                    totalOrders: 1,
+                    totalSpent: (o.total || 0)
+                });
             }
         });
         
-        const customers = Array.from(customerMap.values());
+        // Sort by most recent order
+        const customers = Array.from(customerMap.values()).sort((a,b) => {
+            const aDate = a.orders[0]?.date || 0;
+            const bDate = b.orders[0]?.date || 0;
+            return new Date(bDate) - new Date(aDate);
+        });
+        
         container.innerHTML = customers.map(c => `
-            <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+            <div class="customer-item flex items-center justify-between py-3 border-b border-gray-100 last:border-0" onclick="showCustomerOrders('${c.name}')">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">${(c.name || 'U')[0]}</div>
                     <div>
@@ -525,9 +632,50 @@
                         <p class="text-sm text-gray-500">${c.phone}</p>
                     </div>
                 </div>
-                <span class="text-sm text-gray-400">${c.orders} order${c.orders > 1 ? 's' : ''}</span>
+                <div class="text-right">
+                    <span class="text-sm font-semibold text-gray-800">${c.totalOrders} orders</span>
+                    <p class="text-sm text-green-600">₹${c.totalSpent}</p>
+                </div>
             </div>
         `).join('');
+    }
+    
+    // ==================== SHOW CUSTOMER ORDERS ====================
+    function showCustomerOrders(customerName) {
+        const allItems = [...allOrders, ...allRepairs];
+        const customerOrders = allItems.filter(o => (o.customerName || o.name) === customerName);
+        customerOrders.sort((a,b) => new Date(b.date) - new Date(a.date));
+        
+        document.getElementById('modalCustomerName').innerHTML = `${customerName} (${customerOrders.length} orders)`;
+        
+        const container = document.getElementById('modalOrderList');
+        container.innerHTML = customerOrders.map(o => {
+            const isRepair = o.isRepair || false;
+            const statusClass = o.status === 'Pending' ? 'badge-pending' : 
+                               o.status === 'Completed' ? 'badge-completed' : 
+                               o.status === 'Shipped' ? 'badge-repair' : 'badge-cancelled';
+            
+            return `
+                <div class="border-b border-gray-100 py-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs font-bold text-gray-400">${isRepair ? '🔧' : '🛒'} ${o.orderId || o.repairId || 'Order'}</span>
+                            <span class="badge ${statusClass}">${o.status || 'Pending'}</span>
+                        </div>
+                        <span class="text-sm font-bold text-green-600">₹${o.total || '0'}</span>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-1">${o.items ? o.items.substring(0, 80) + '...' : (o.deviceFaults || 'No items')}</div>
+                    <div class="text-xs text-gray-400 mt-1">${new Date(o.date).toLocaleString()}</div>
+                    ${o.cancelledBy ? `<div class="text-xs text-red-500 mt-1">Cancelled by ${o.cancelledBy}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+        
+        document.getElementById('orderDetailModal').style.display = 'flex';
+    }
+    
+    function closeOrderDetail() {
+        document.getElementById('orderDetailModal').style.display = 'none';
     }
     
     // ==================== ACTIVITY ====================
@@ -540,11 +688,17 @@
             return;
         }
         
-        const activities = allItems.slice(0, 10).map(o => ({
-            icon: o.isRepair ? '🔧' : '📱',
-            text: o.isRepair ? `${o.customerName || 'Unknown'} booked a repair for ${o.deviceType || 'device'}` : `${o.customerName || 'Unknown'} ordered ${o.items ? o.items.substring(0, 30) : 'products'}`,
-            time: new Date(o.date).toLocaleString()
-        }));
+        const activities = allItems.slice(0, 10).map(o => {
+            const isCancelled = o.status === 'Cancelled';
+            const cancelledBy = o.cancelledBy || '';
+            const icon = o.isRepair ? '🔧' : '📱';
+            const text = isCancelled 
+                ? `${o.customerName || 'Unknown'} order cancelled ${cancelledBy ? 'by ' + cancelledBy : ''}`
+                : (o.isRepair 
+                    ? `${o.customerName || 'Unknown'} booked a repair for ${o.deviceType || 'device'}`
+                    : `${o.customerName || 'Unknown'} ordered products`);
+            return { icon, text, time: new Date(o.date).toLocaleString() };
+        });
         
         container.innerHTML = activities.map(a => `
             <div class="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
