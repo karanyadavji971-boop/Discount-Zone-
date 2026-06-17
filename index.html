@@ -70,6 +70,8 @@
         .product-img{width:100%;height:110px;object-fit:contain;}
         .product-name{font-size:13px;font-weight:500;margin:6px 0;}
         .product-price{color:#2e7d32;font-size:15px;font-weight:bold;}
+        .product-old-price{font-size:11px;color:#999;text-decoration:line-through;margin-left:6px;}
+        .product-discount{display:inline-block;background:#ff6b35;color:white;font-size:9px;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:bold;}
         .outofstock-badge{background:#e74c3c;color:white;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;}
         .soldout-btn{background:#ccc;color:#666;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:not-allowed;font-size:12px;}
         .add-cart-btn{background:#ff9800;color:white;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:pointer;font-weight:500;font-size:12px;}
@@ -90,6 +92,7 @@
         .detail-title{font-size:20px;font-weight:bold;margin:12px 0 6px;}
         .detail-price{font-size:24px;color:#2e7d32;font-weight:bold;}
         .detail-old-price{font-size:14px;color:#999;text-decoration:line-through;margin-left:8px;}
+        .detail-discount{display:inline-block;background:#ff6b35;color:white;font-size:12px;padding:2px 10px;border-radius:15px;margin-left:8px;font-weight:bold;}
         .detail-desc{color:#555;margin:12px 0;line-height:1.6;font-size:14px;}
         .detail-features{background:#f0f4f0;padding:12px;border-radius:10px;margin:12px 0;}
         .detail-features h4{margin-bottom:6px;color:#2e7d32;font-size:14px;}
@@ -146,7 +149,6 @@
         .cancelled-by .admin{color:#e74c3c;}
         .cancelled-by .customer{color:#f39c12;}
         
-        /* Customer details form in cart */
         .customer-details-box{background:#e8f5e9;padding:15px;border-radius:10px;margin:10px 0;border:2px solid #2e7d32;}
         .customer-details-box h4{color:#2e7d32;margin-bottom:10px;}
         .customer-details-box label{font-weight:600;font-size:13px;display:block;margin-bottom:4px;color:#333;}
@@ -241,7 +243,7 @@
             <div class="detail-thumbnails" id="detailThumbnails"></div>
         </div>
         <div class="detail-title" id="detailName"></div>
-        <div><span class="detail-price" id="detailPrice"></span><span class="detail-old-price" id="detailOldPrice"></span></div>
+        <div><span class="detail-price" id="detailPrice"></span><span class="detail-old-price" id="detailOldPrice"></span><span class="detail-discount" id="detailDiscount"></span></div>
         <div class="detail-desc" id="detailDesc"></div>
         <div class="detail-features" id="detailFeatures"></div>
         <button class="detail-add-btn" onclick="addToCartFromDetail()"><i class="fas fa-cart-plus"></i> Add to Cart</button>
@@ -300,7 +302,6 @@
         <span class="close-modal-btn" onclick="closeModal()">&times;</span>
         <h3><i class="fas fa-shopping-cart"></i> Your Cart</h3>
         
-        <!-- CUSTOMER DETAILS FORM - NEW -->
         <div class="customer-details-box">
             <h4>📋 Delivery Details</h4>
             <div>
@@ -362,13 +363,13 @@
     let selectedCancelItemType = null;
     const ADMIN_EMAIL = "abhishekbainsla363@gmail.com";
     
-    // ==================== GENERATE OTP ====================
     function generateOTP() {
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
     
-    // ==================== ACE HILL PRODUCTS ====================
+    // ==================== ALL 9 PRODUCTS WITH UPDATED PRICES ====================
     let products = [
+        // ===== ACE HILL PRODUCTS =====
         {
             id: "ACE-CHARGER-35W-001",
             name: "Ace Hill 35W Quick Charge Dash Charger",
@@ -471,8 +472,110 @@
                 "Tangle-Free",
                 "1 Meter Length"
             ]
+        },
+        
+        // ===== UBON J38 ARMY EDITION - ₹999 =====
+        {
+            id: "UBON-J38-ARMY-001",
+            name: "UBON Black J38 Army Edition Truly Wireless Earbuds",
+            price: 999,
+            oldPrice: 1799,
+            category: "earbuds",
+            images: [
+                "https://i.ibb.co/C5n7q1qC/Chat-GPT-Image-Jun-17-2026-08-46-12-PM.png"
+            ],
+            desc: "UBON Black J38 Army Edition Truly Wireless Earbuds - Battle Ready Sound! Unleash powerful sound with the UBON J38 Army Edition TWS Earbuds. Designed in a rugged military camouflage finish, these earbuds combine aggressive style with pro-level audio performance.",
+            features: [
+                "🎵 Big Daddy Bass - Deep, thumping bass for music, movies & gaming",
+                "🔋 36 Hours Playtime - Long-lasting battery for all-day use",
+                "⏳ 360 Hours Standby - Ready whenever you need them",
+                "📶 Bluetooth 5.4 - Ultra-stable connection with low latency",
+                "🎤 Silicone MIC - Crystal clear calling with noise reduction",
+                "📡 10 Meters Wireless Range",
+                "⚡ Type-C Fast Charging - Quick power-ups",
+                "🔋 Battery: 30mAh (Earbuds) + 200mAh (Case)"
+            ]
+        },
+        
+        // ===== UBON J31 FREEDOM SERIES - ₹999 =====
+        {
+            id: "UBON-J31-FREEDOM-001",
+            name: "UBON Black J31 Freedom Series Truly Wireless Earbuds",
+            price: 999,
+            oldPrice: 1799,
+            category: "earbuds",
+            images: [
+                "https://i.ibb.co/Mx690MHF/Chat-GPT-Image-Jun-17-2026-08-47-33-PM.png"
+            ],
+            desc: "UBON Black J31 Freedom Series TWS Earbuds – Freedom Ka Naya Style! Experience ultimate freedom with the UBON J31 Freedom Series Earbuds. Featuring a sleek silver finish, premium design, and powerful performance, these earbuds are perfect for daily use, calls, music, and gaming.",
+            features: [
+                "🔋 40 Hours Playtime (at moderate volume)",
+                "⏳ 400 Hours Standby Time – Extremely long battery life",
+                "🎤 Built-in ENC – Environmental Noise Cancellation for clear calls",
+                "🗣️ Voice Assistant Support – Google/Siri ready",
+                "📶 Bluetooth 5.3 – Fast & stable connection",
+                "🎵 Hi-Fi Stereo Sound – Rich, immersive audio experience",
+                "📡 10 Meters Wireless Range",
+                "⚡ Type-C Fast Charging",
+                "🔋 Battery: 30mAh (Earbuds) + 200mAh (Case)",
+                "💨 Lightweight & Comfort Fit – Perfect for long wear"
+            ]
+        },
+        
+        // ===== UBON HP-705 BEAST HEADPHONES - ₹999 =====
+        {
+            id: "UBON-HP705-BEAST-001",
+            name: "UBON Black HP-705 Beast Wireless Headphones",
+            price: 999,
+            oldPrice: 1799,
+            category: "headphones",
+            images: [
+                "https://i.ibb.co/M5DfSCYG/Jun-17-2026-08-54-58-PM.png"
+            ],
+            desc: "UBON Black HP-705 Beast Wireless Headphones – Born To Be Free! Unleash the beast within with the UBON HP-705 Beast Over-Ear Headphones. Featuring a bold blue finish, powerful bass, and premium comfort, these wireless headphones are designed for those who demand freedom and thumping sound.",
+            features: [
+                "🎵 Big Daddy Bass – Powerful, deep bass for an immersive audio experience",
+                "🔋 30 Hours Playtime (at moderate volume)",
+                "📶 Bluetooth 5.4 – Fast pairing and stable wireless connection",
+                "💨 Ultra Light Weight – Comfortable for long listening sessions",
+                "☁️ Soft Cushion Comfort – Premium ear cushions for all-day wear",
+                "🔄 Foldable Design – Easy to carry and store",
+                "🎤 Built-in Microphone – Clear calling on the go"
+            ]
+        },
+        
+        // ===== UBON PB-SX302 POWER BANK - ₹1999 =====
+        {
+            id: "UBON-PB-SX302-001",
+            name: "UBON Premium PB-SX302 – 25W 30000mAh Power Bank",
+            price: 1999,
+            oldPrice: 3249,
+            category: "powerbank",
+            images: [
+                "https://i.ibb.co/LdWWLWC8/Chat-GPT-Image-Jun-17-2026-08-52-23-PM.png"
+            ],
+            desc: "UBON Premium PB-SX302 – 25W 30000mAh Power Bank. True 30000mAh capacity with 25W Super Fast Charging (Power Delivery). LED display shows battery percentage and charging speed. Dual Input (Type-C + Micro USB) and Dual Output (USB + Type-C) for simultaneous charging.",
+            features: [
+                "🔋 True Capacity: 30000mAh (real 30000mAh capacity)",
+                "⚡ 25W Super Fast Charging (Power Delivery)",
+                "📊 LED Display – Battery percentage + charging speed dikhta hai",
+                "🔌 Dual Input: Type-C + Micro USB (V8)",
+                "🔌 Dual Output: USB + Type-C (dono se saath mein charge kar sakte ho)",
+                "⚡ PD + QC Fast Charging support",
+                "🛡️ Multi Protection (Smart Chip) – Overcharge, short-circuit, temperature protection",
+                "✨ Premium Build – Brushed metal finish + leather strap for easy carry"
+            ]
         }
     ];
+    
+    const categoryNames = {
+        'all': 'All',
+        'charger': 'Chargers',
+        'cable': 'Cables',
+        'earbuds': 'Earbuds',
+        'headphones': 'Headphones',
+        'powerbank': 'Power Banks'
+    };
     
     let detailCurrentIndex = 0;
     let detailProductId = null;
@@ -511,7 +614,9 @@
         const container = document.getElementById('categoryTabs');
         let categories = ['all'];
         products.forEach(p => { if(!categories.includes(p.category)) categories.push(p.category); });
-        container.innerHTML = categories.map(cat => `<button class="category-btn ${currentCategory===cat?'active':''}" onclick="filterByCategory('${cat}')">${cat.charAt(0).toUpperCase() + cat.slice(1)}</button>`).join('');
+        container.innerHTML = categories.map(cat => 
+            `<button class="category-btn ${currentCategory===cat?'active':''}" onclick="filterByCategory('${cat}')">${categoryNames[cat] || cat.charAt(0).toUpperCase() + cat.slice(1)}</button>`
+        ).join('');
     }
     let currentCategory = "all";
     function filterByCategory(cat) { currentCategory = cat; renderCategories(); renderProducts(); }
@@ -519,14 +624,20 @@
     function renderProducts() {
         const container = document.getElementById('productsGrid');
         let filtered = currentCategory==='all' ? products : products.filter(p=>p.category===currentCategory);
-        container.innerHTML = filtered.map(p => `
+        container.innerHTML = filtered.map(p => {
+            const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+            return `
             <div class="product-card" onclick="openDetailModal('${p.id}')">
                 <img class="product-img" src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/120'">
                 <div class="product-name">${p.name}</div>
-                <div class="product-price">₹${p.price}</div>
+                <div>
+                    <span class="product-price">₹${p.price}</span>
+                    ${p.oldPrice ? `<span class="product-old-price">₹${p.oldPrice}</span>` : ''}
+                    ${discount > 0 ? `<span class="product-discount">${discount}% OFF</span>` : ''}
+                </div>
                 <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('${p.id}')"><i class="fas fa-cart-plus"></i> Add to Cart</button>
             </div>
-        `).join('');
+        `}).join('');
     }
     
     // ==================== DETAIL POPUP ====================
@@ -539,6 +650,9 @@
         document.getElementById('detailName').innerHTML = product.name;
         document.getElementById('detailPrice').innerHTML = `₹${product.price}`;
         document.getElementById('detailOldPrice').innerHTML = product.oldPrice ? `₹${product.oldPrice}` : '';
+        const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
+        document.getElementById('detailDiscount').innerHTML = discount > 0 ? `${discount}% OFF` : '';
+        
         document.getElementById('detailDesc').innerHTML = product.desc;
         
         let featuresHtml = `<h4>✨ Features:</h4><ul>`;
@@ -603,7 +717,6 @@
         document.getElementById('utrSection').style.display='none'; 
         document.querySelectorAll('.payment-btn').forEach(b=>b.classList.remove('selected')); 
         document.getElementById('cartModal').style.display='flex';
-        // Reset customer details fields
         document.getElementById('orderName').value = '';
         document.getElementById('orderPhone').value = '';
         document.getElementById('orderAddress').value = '';
@@ -626,9 +739,8 @@
         }
     }
     
-    // ==================== PLACE ORDER WITH CUSTOMER DETAILS ====================
+    // ==================== PLACE ORDER ====================
     async function placeOrder() {
-        // Get customer details
         const customerName = document.getElementById('orderName')?.value.trim();
         const customerPhone = document.getElementById('orderPhone')?.value.trim();
         const customerAddress = document.getElementById('orderAddress')?.value.trim();
@@ -636,8 +748,6 @@
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
         if(cart.length===0){ showToast("Cart empty!"); return; }
         if(!selectedPayment){ showToast("Select payment method"); return; }
-        
-        // Validate customer details
         if(!customerName){ showToast("Please enter your full name"); return; }
         if(!customerPhone || customerPhone.length < 10){ showToast("Please enter valid phone number (10+ digits)"); return; }
         if(!customerAddress){ showToast("Please enter your delivery address"); return; }
@@ -653,7 +763,6 @@
             const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
             const otp = generateOTP();
             
-            // Order data with customer details
             const orderData = { 
                 orderId, 
                 date: new Date().toISOString(), 
@@ -672,7 +781,6 @@
             
             await db.collection("orders").add(orderData);
             
-            // Email with customer details
             const templateParams = { 
                 to_email: ADMIN_EMAIL, 
                 customer_name: customerName,
@@ -695,7 +803,6 @@
             closeModal(); 
             updateCartCount();
             
-            // Reset form
             document.getElementById('orderName').value = '';
             document.getElementById('orderPhone').value = '';
             document.getElementById('orderAddress').value = '';
