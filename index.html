@@ -65,17 +65,42 @@
         .category-btn.active{background:#2e7d32;color:white;}
         .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
         @media (min-width:768px){.products-grid{grid-template-columns:repeat(4,1fr);}}
-        .product-card{background:white;border-radius:12px;padding:12px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:0.2s;}
-        .product-card:hover{transform:translateY(-3px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}
-        .product-img{width:100%;height:110px;object-fit:contain;}
-        .product-name{font-size:13px;font-weight:500;margin:6px 0;}
-        .product-price{color:#2e7d32;font-size:15px;font-weight:bold;}
-        .product-old-price{font-size:11px;color:#999;text-decoration:line-through;margin-left:6px;}
-        .product-discount{display:inline-block;background:#ff6b35;color:white;font-size:9px;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:bold;}
-        .outofstock-badge{background:#e74c3c;color:white;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;}
-        .soldout-btn{background:#ccc;color:#666;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:not-allowed;font-size:12px;}
-        .add-cart-btn{background:#ff9800;color:white;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:pointer;font-weight:500;font-size:12px;}
-        .add-cart-btn:hover{background:#fb641b;}
+        
+        /* ===== PRODUCT CARD STYLES ===== */
+        .product-card{background:white;border-radius:12px;padding:12px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:all 0.3s ease;position:relative;overflow:hidden;border-top:3px solid #2e7d32;}
+        .product-card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,0,0,0.15);}
+        .product-card:active{transform:scale(0.95);}
+        .product-card .product-img{width:100%;height:110px;object-fit:contain;transition:transform 0.3s;}
+        .product-card:hover .product-img{transform:scale(1.05);}
+        .product-card .product-name{font-size:13px;font-weight:600;margin:6px 0;color:#1a1a1a;}
+        .product-card .product-price{color:#2e7d32;font-size:15px;font-weight:bold;}
+        .product-card .product-old-price{font-size:11px;color:#999;text-decoration:line-through;margin-left:6px;}
+        .product-card .product-discount{display:inline-block;background:#ff6b35;color:white;font-size:9px;padding:1px 8px;border-radius:10px;margin-left:4px;font-weight:bold;}
+        .product-card .add-cart-btn{background:#ff9800;color:white;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:pointer;font-weight:500;font-size:12px;transition:all 0.3s;}
+        .product-card .add-cart-btn:hover{background:#fb641b;transform:scale(1.02);}
+        
+        /* Category Badge */
+        .category-badge{position:absolute;top:8px;left:8px;color:white;font-size:9px;padding:2px 10px;border-radius:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;z-index:2;}
+        
+        /* Click Effect - Active State */
+        .product-card.active-card{transform:scale(0.96);box-shadow:0 0 0 3px #2e7d32,0 8px 25px rgba(46,125,50,0.3);}
+        .product-card.active-card .product-img{transform:scale(0.98);}
+        
+        /* Category Colors */
+        .cat-charger{border-top-color:#e67e22 !important;}
+        .cat-charger .category-badge{background:#e67e22;}
+        .cat-earbuds{border-top-color:#8e44ad !important;}
+        .cat-earbuds .category-badge{background:#8e44ad;}
+        .cat-headphones{border-top-color:#2ecc71 !important;}
+        .cat-headphones .category-badge{background:#2ecc71;}
+        .cat-powerbank{border-top-color:#e74c3c !important;}
+        .cat-powerbank .category-badge{background:#e74c3c;}
+        .cat-cable{border-top-color:#3498db !important;}
+        .cat-cable .category-badge{background:#3498db;}
+        
+        /* Click Ripple Effect */
+        .ripple{position:absolute;border-radius:50%;background:rgba(46,125,50,0.3);transform:scale(0);animation:ripple-anim 0.6s linear;pointer-events:none;}
+        @keyframes ripple-anim{to{transform:scale(4);opacity:0;}}
         
         .detail-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:1000;overflow-y:auto;}
         .detail-modal-content{background:white;border-radius:20px;width:92%;max-width:500px;padding:20px;max-height:85vh;overflow-y:auto;position:relative;}
@@ -155,7 +180,6 @@
         .customer-details-box input,.customer-details-box textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:10px;font-family:inherit;}
         .customer-details-box textarea{resize:vertical;min-height:60px;}
         
-        /* Order History Item Styles */
         .order-history-card{background:white;border-radius:12px;padding:15px;margin-bottom:12px;border-left:4px solid #2e7d32;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
         .order-history-card .order-header{display:flex;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px;}
         .order-history-card .order-id{font-size:14px;font-weight:700;color:#1a1a1a;}
@@ -375,121 +399,166 @@
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
     
-    // ==================== ALL 9 PRODUCTS ====================
+    // ==================== ALL 10 PRODUCTS (FIXED ORDER) ====================
     let products = [
+        // 1. Charger - TOP
         {
             id: "ACE-CHARGER-35W-001",
             name: "Ace Hill 35W Quick Charge Dash Charger",
             price: 699,
             oldPrice: 999,
             category: "charger",
-            images: [
-                "https://i.ibb.co/HLNmg6JC/IMG-20260616-182447.png",
-                "https://i.ibb.co/xSVy5Skm/Chat-GPT-Image-Jun-16-2026-06-07-06-PM.png",
-                "https://i.ibb.co/PqFkqNk/IMG-20260616-182419.png"
-            ],
+            categoryIcon: "🔌",
+            categoryLabel: "CHARGERS",
+            catClass: "cat-charger",
+            images: ["https://i.ibb.co/HLNmg6JC/IMG-20260616-182447.png", "https://i.ibb.co/xSVy5Skm/Chat-GPT-Image-Jun-16-2026-06-07-06-PM.png"],
             desc: "35W Super Fast Charging with Qualcomm Quick Charge 4.0+.",
-            features: ["35W Super Fast Charging", "Quick Charge 4.0+", "Dash, Warp, VOOC Support", "iPhone & Android Compatible", "Smart Charging Technology", "OVP/OCP/Over Heat Protection"]
+            features: ["35W Super Fast Charging", "Quick Charge 4.0+", "Dash, Warp, VOOC Support", "iPhone & Android Compatible"]
         },
-        {
-            id: "ACE-CABLE-120W-001",
-            name: "Ace Hill Super VOOC 120W Cable",
-            price: 299,
-            oldPrice: 599,
-            category: "cable",
-            images: [
-                "https://i.ibb.co/j99Px1XJ/IMG-20260616-190919.png",
-                "https://i.ibb.co/tPDB63N3/IMG-20260616-191008.png",
-                "https://i.ibb.co/Xr7rQSxB/IMG-20260616-191105.png",
-                "https://i.ibb.co/fdLVzqHd/IMG-20260616-191155.png"
-            ],
-            desc: "120W Super VOOC fast charging cable.",
-            features: ["120W Fast Charging", "Super VOOC Support", "USB-A to Type-C", "High Speed Data Transfer", "Durable & Flexible", "1 Meter Length"]
-        },
-        {
-            id: "ACE-CABLE-PD-65W-001",
-            name: "Ace Hill 65W PD Type C to Type C Cable",
-            price: 349,
-            oldPrice: 599,
-            category: "cable",
-            images: [
-                "https://i.ibb.co/HpGvTdqZ/IMG-20260616-232011.png",
-                "https://i.ibb.co/sp3Cxqx8/IMG-20260616-232054.png"
-            ],
-            desc: "65W PD Type C to Type C fast charging cable.",
-            features: ["65W PD Fast Charging", "Quick Charge 4.0", "Type C to Type C", "iPhone/Android Compatible", "High Speed Data Transfer", "Red Braided Design"]
-        },
-        {
-            id: "ACE-CABLE-V8-001",
-            name: "Ace Hill V8 USB Data Cable",
-            price: 99,
-            oldPrice: 199,
-            category: "cable",
-            images: [
-                "https://i.ibb.co/d4DqZDG1/IMG-20260616-231336.png",
-                "https://i.ibb.co/JFqqGMHX/IMG-20260616-231508.png"
-            ],
-            desc: "V8 USB data cable with 30W fast charging.",
-            features: ["30W Fast Charging", "USB-A to V8", "High Speed Data", "Durable & Flexible", "Tangle-Free Design", "1 Meter Length"]
-        },
-        {
-            id: "ACE-CABLE-iPhone-001",
-            name: "Ace Hill iPhone Lightning USB Cable",
-            price: 99,
-            oldPrice: 249,
-            category: "cable",
-            images: [
-                "https://i.ibb.co/Ppr5PnR/IMG-20260616-231601.png",
-                "https://i.ibb.co/NgbLt99k/IMG-20260616-231646.png"
-            ],
-            desc: "iPhone Lightning USB data cable with fast charging.",
-            features: ["5V-2.5A Fast Charging", "MFi Certified", "iPhone Compatible", "Durable Braided Design", "Tangle-Free", "1 Meter Length"]
-        },
+        // 2. Earbuds J38
         {
             id: "UBON-J38-ARMY-001",
-            name: "UBON Black J38 Army Edition Truly Wireless Earbuds",
+            name: "UBON Black J38 Army Edition TWS Earbuds",
             price: 999,
             oldPrice: 1799,
             category: "earbuds",
+            categoryIcon: "🎧",
+            categoryLabel: "EARBUDS",
+            catClass: "cat-earbuds",
             images: ["https://i.ibb.co/C5n7q1qC/Chat-GPT-Image-Jun-17-2026-08-46-12-PM.png"],
-            desc: "UBON Black J38 Army Edition - Battle Ready Sound!",
-            features: ["🎵 Big Daddy Bass", "🔋 36 Hours Playtime", "📶 Bluetooth 5.4", "🎤 Silicone MIC", "⚡ Type-C Fast Charging"]
+            desc: "UBON J38 Army Edition - Battle Ready Sound!",
+            features: ["🎵 Big Daddy Bass", "🔋 36 Hours Playtime", "📶 Bluetooth 5.4", "⚡ Type-C Fast Charging"]
         },
+        // 3. Earbuds J31
         {
             id: "UBON-J31-FREEDOM-001",
-            name: "UBON Black J31 Freedom Series Truly Wireless Earbuds",
+            name: "UBON Black J31 Freedom Series TWS Earbuds",
             price: 999,
             oldPrice: 1799,
             category: "earbuds",
+            categoryIcon: "🎧",
+            categoryLabel: "EARBUDS",
+            catClass: "cat-earbuds",
             images: ["https://i.ibb.co/Mx690MHF/Chat-GPT-Image-Jun-17-2026-08-47-33-PM.png"],
             desc: "UBON J31 Freedom Series – Freedom Ka Naya Style!",
-            features: ["🔋 40 Hours Playtime", "🎤 Built-in ENC", "📶 Bluetooth 5.3", "🗣️ Voice Assistant Support", "⚡ Type-C Fast Charging"]
+            features: ["🔋 40 Hours Playtime", "🎤 Built-in ENC", "📶 Bluetooth 5.3", "🗣️ Voice Assistant Support"]
         },
+        // 4. Headphones HP-705
         {
             id: "UBON-HP705-BEAST-001",
             name: "UBON Black HP-705 Beast Wireless Headphones",
             price: 999,
             oldPrice: 1799,
             category: "headphones",
+            categoryIcon: "🎧",
+            categoryLabel: "HEADPHONES",
+            catClass: "cat-headphones",
             images: ["https://i.ibb.co/M5DfSCYG/Jun-17-2026-08-54-58-PM.png"],
             desc: "UBON HP-705 Beast – Born To Be Free!",
-            features: ["🎵 Big Daddy Bass", "🔋 30 Hours Playtime", "📶 Bluetooth 5.4", "🔄 Foldable Design", "🎤 Built-in Microphone"]
+            features: ["🎵 Big Daddy Bass", "🔋 30 Hours Playtime", "📶 Bluetooth 5.4", "🔄 Foldable Design"]
         },
+        // 5. Headphones HP-700 (NEW PRODUCT)
+        {
+            id: "UBON-HP700-HIPHOP-001",
+            name: "UBON Black HP-700 Hip-Hop Born to be Free Headphones",
+            price: 999,
+            oldPrice: 1799,
+            category: "headphones",
+            categoryIcon: "🎧",
+            categoryLabel: "HEADPHONES",
+            catClass: "cat-headphones",
+            images: ["https://i.ibb.co/4ZK2zsMS/image.jpg"],
+            desc: "UBON Black HP-700 Hip-Hop Born to be Free Headphones – Premium look wala black headphone jo specially Hip-Hop lovers ke liye banaya gaya hai heavy bass ke saath. Tiger Shroff ka favorite!",
+            features: [
+                "🎵 Big Daddy Bass – Deep & Powerful Sound",
+                "🔋 30 Hours Playtime (at moderate volume)",
+                "📶 Bluetooth v5.4 Wireless Technology",
+                "💨 Ultra Light Weight",
+                "🔄 Foldable & Portable Design",
+                "☁️ Soft Cushion Comfort",
+                "⚡ Type-C Fast Charging",
+                "🌟 Tiger Shroff - Born to be Free"
+            ]
+        },
+        // 6. Power Bank
         {
             id: "UBON-PB-SX302-001",
-            name: "UBON Premium PB-SX302 – 25W 30000mAh Power Bank",
+            name: "UBON Premium PB-SX302 30000mAh Power Bank",
             price: 1999,
             oldPrice: 3249,
             category: "powerbank",
+            categoryIcon: "🔋",
+            categoryLabel: "POWER BANKS",
+            catClass: "cat-powerbank",
             images: ["https://i.ibb.co/LdWWLWC8/Chat-GPT-Image-Jun-17-2026-08-52-23-PM.png"],
             desc: "UBON Premium PB-SX302 - 30000mAh Power Bank",
-            features: ["🔋 30000mAh Capacity", "⚡ 25W Fast Charging", "📊 LED Display", "🔌 Dual Input & Output", "🛡️ Multi Protection"]
+            features: ["🔋 30000mAh Capacity", "⚡ 25W Fast Charging", "📊 LED Display", "🔌 Dual Input & Output"]
+        },
+        // 7. Cable 120W
+        {
+            id: "ACE-CABLE-120W-001",
+            name: "Ace Hill Super VOOC 120W Cable",
+            price: 299,
+            oldPrice: 599,
+            category: "cable",
+            categoryIcon: "🔗",
+            categoryLabel: "DATA CABLES",
+            catClass: "cat-cable",
+            images: ["https://i.ibb.co/j99Px1XJ/IMG-20260616-190919.png", "https://i.ibb.co/tPDB63N3/IMG-20260616-191008.png"],
+            desc: "120W Super VOOC fast charging cable.",
+            features: ["120W Fast Charging", "Super VOOC Support", "USB-A to Type-C", "Durable & Flexible"]
+        },
+        // 8. Cable 65W
+        {
+            id: "ACE-CABLE-PD-65W-001",
+            name: "Ace Hill 65W PD Type C to Type C Cable",
+            price: 349,
+            oldPrice: 599,
+            category: "cable",
+            categoryIcon: "🔗",
+            categoryLabel: "DATA CABLES",
+            catClass: "cat-cable",
+            images: ["https://i.ibb.co/HpGvTdqZ/IMG-20260616-232011.png", "https://i.ibb.co/sp3Cxqx8/IMG-20260616-232054.png"],
+            desc: "65W PD Type C to Type C fast charging cable.",
+            features: ["65W PD Fast Charging", "Quick Charge 4.0", "Type C to Type C", "Red Braided Design"]
+        },
+        // 9. Cable V8
+        {
+            id: "ACE-CABLE-V8-001",
+            name: "Ace Hill V8 USB Data Cable",
+            price: 99,
+            oldPrice: 199,
+            category: "cable",
+            categoryIcon: "🔗",
+            categoryLabel: "DATA CABLES",
+            catClass: "cat-cable",
+            images: ["https://i.ibb.co/d4DqZDG1/IMG-20260616-231336.png", "https://i.ibb.co/JFqqGMHX/IMG-20260616-231508.png"],
+            desc: "V8 USB data cable with 30W fast charging.",
+            features: ["30W Fast Charging", "USB-A to V8", "Durable & Flexible", "1 Meter Length"]
+        },
+        // 10. Cable iPhone
+        {
+            id: "ACE-CABLE-iPhone-001",
+            name: "Ace Hill iPhone Lightning USB Cable",
+            price: 99,
+            oldPrice: 249,
+            category: "cable",
+            categoryIcon: "🔗",
+            categoryLabel: "DATA CABLES",
+            catClass: "cat-cable",
+            images: ["https://i.ibb.co/Ppr5PnR/IMG-20260616-231601.png", "https://i.ibb.co/NgbLt99k/IMG-20260616-231646.png"],
+            desc: "iPhone Lightning USB data cable with fast charging.",
+            features: ["5V-2.5A Fast Charging", "MFi Certified", "iPhone Compatible", "Durable Braided Design"]
         }
     ];
     
     const categoryNames = {
-        'all': 'All', 'charger': 'Chargers', 'cable': 'Cables',
-        'earbuds': 'Earbuds', 'headphones': 'Headphones', 'powerbank': 'Power Banks'
+        'all': 'All',
+        'charger': 'Chargers',
+        'cable': 'Data Cables',
+        'earbuds': 'Earbuds',
+        'headphones': 'Headphones',
+        'powerbank': 'Power Banks'
     };
     
     let detailCurrentIndex = 0;
@@ -536,13 +605,39 @@
     let currentCategory = "all";
     function filterByCategory(cat) { currentCategory = cat; renderCategories(); renderProducts(); }
     
+    // ===== RIPPLE EFFECT =====
+    function createRipple(e, card) {
+        const rect = card.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+        card.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    }
+    
+    // ===== CLICK EFFECT =====
+    function handleCardClick(e, productId) {
+        const card = e.currentTarget;
+        document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active-card'));
+        card.classList.add('active-card');
+        createRipple(e, card);
+        setTimeout(() => { card.classList.remove('active-card'); }, 600);
+        openDetailModal(productId);
+    }
+    
     function renderProducts() {
         const container = document.getElementById('productsGrid');
         let filtered = currentCategory==='all' ? products : products.filter(p=>p.category===currentCategory);
+        
         container.innerHTML = filtered.map(p => {
             const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+            
             return `
-            <div class="product-card" onclick="openDetailModal('${p.id}')">
+            <div class="product-card ${p.catClass}" onclick="handleCardClick(event, '${p.id}')" data-product="${p.id}">
+                <span class="category-badge">${p.categoryIcon} ${p.categoryLabel}</span>
                 <img class="product-img" src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/120'">
                 <div class="product-name">${p.name}</div>
                 <div>
@@ -782,7 +877,7 @@
     
     function closeCancelReasonModal() { document.getElementById('cancelReasonModal').style.display = 'none'; pendingCancelOrderId = null; pendingCancelRepairId = null; }
     
-    // ==================== ORDER HISTORY WITH PRODUCT IMAGES ====================
+    // ==================== ORDER HISTORY ====================
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
         showGlobalLoading(true);
@@ -811,7 +906,6 @@
                         if(item.cancelReason) cancelInfo += `<div style="font-size:10px; color:#999;">Reason: ${item.cancelReason}</div>`;
                     }
                     
-                    // ===== PARSE ORDER ITEMS WITH IMAGES =====
                     let itemsHtml = '';
                     if (item.items) {
                         if (typeof item.items === 'string') {
@@ -827,7 +921,6 @@
                                         let qtyMatch = cleanLine.match(/x\s*(\d+)/);
                                         let qtyDisplay = qtyMatch ? `x ${qtyMatch[1]}` : '';
                                         
-                                        // ===== FIND PRODUCT IMAGE =====
                                         let productImage = '';
                                         for (let p of products) {
                                             if (nameDisplay.toLowerCase().includes(p.name.toLowerCase().substring(0, 15)) || 
@@ -867,9 +960,9 @@
                         <div class="order-header">
                             <div>
                                 <span class="order-id">🛒 ${item.orderId}</span>
-                                <span class="otp-badge" style="background:#2e7d32; color:white; padding:2px 8px; border-radius:15px; font-size:10px; font-weight:bold; margin-left:6px;">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span>
+                                <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span>
                             </div>
-                            <span class="order-status ${statusClass}" style="padding:3px 12px; border-radius:20px; font-size:11px; font-weight:600;">${item.status || 'Pending'}</span>
+                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
                         </div>
                         <div class="customer-info"><strong>👤 ${item.customerName}</strong> | 📞 ${item.customerPhone || 'N/A'}</div>
                         <div class="customer-address">📍 ${item.customerAddress || 'Address not provided'}</div>
@@ -903,9 +996,9 @@
                         <div class="order-header">
                             <div>
                                 <span class="order-id">🔧 ${item.repairId}</span>
-                                <span class="otp-badge" style="background:#2e7d32; color:white; padding:2px 8px; border-radius:15px; font-size:10px; font-weight:bold; margin-left:6px;">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span>
+                                <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span>
                             </div>
-                            <span class="order-status ${statusClass}" style="padding:3px 12px; border-radius:20px; font-size:11px; font-weight:600;">${item.status || 'Pending'}</span>
+                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
                         </div>
                         <div class="customer-info"><strong>👤 ${item.customerName}</strong> | 📞 ${item.customerPhone || 'N/A'}</div>
                         <div class="customer-address">📍 ${item.customerAddress || 'Address not provided'}</div>
