@@ -75,7 +75,6 @@
         .add-cart-btn{background:#ff9800;color:white;border:none;padding:6px;border-radius:8px;width:100%;margin-top:6px;cursor:pointer;font-weight:500;font-size:12px;}
         .add-cart-btn:hover{background:#fb641b;}
         
-        /* Product Detail Popup Modal */
         .detail-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:1000;overflow-y:auto;}
         .detail-modal-content{background:white;border-radius:20px;width:92%;max-width:500px;padding:20px;max-height:85vh;overflow-y:auto;position:relative;}
         .detail-modal-content .close-modal{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;background:#2e7d32;color:white;width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;z-index:5;}
@@ -142,11 +141,17 @@
         .other-reason-input{margin-top:8px;}
         .other-reason-input input{width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;}
         
-        /* OTP Display */
         .otp-code{font-size:24px;font-weight:bold;letter-spacing:4px;color:#2e7d32;background:#e8f5e9;padding:8px 16px;border-radius:10px;display:inline-block;margin:5px 0;font-family:monospace;}
         .cancelled-by{font-size:11px;color:#999;margin-top:4px;}
         .cancelled-by .admin{color:#e74c3c;}
         .cancelled-by .customer{color:#f39c12;}
+        
+        /* Customer details form in cart */
+        .customer-details-box{background:#e8f5e9;padding:15px;border-radius:10px;margin:10px 0;border:2px solid #2e7d32;}
+        .customer-details-box h4{color:#2e7d32;margin-bottom:10px;}
+        .customer-details-box label{font-weight:600;font-size:13px;display:block;margin-bottom:4px;color:#333;}
+        .customer-details-box input,.customer-details-box textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:10px;font-family:inherit;}
+        .customer-details-box textarea{resize:vertical;min-height:60px;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -289,13 +294,32 @@
     </div>
 </div>
 
-<!-- Cart Modal -->
+<!-- ===== CART MODAL WITH CUSTOMER DETAILS ===== -->
 <div id="cartModal" class="modal">
     <div class="modal-content">
         <span class="close-modal-btn" onclick="closeModal()">&times;</span>
         <h3><i class="fas fa-shopping-cart"></i> Your Cart</h3>
+        
+        <!-- CUSTOMER DETAILS FORM - NEW -->
+        <div class="customer-details-box">
+            <h4>📋 Delivery Details</h4>
+            <div>
+                <label>Full Name *</label>
+                <input type="text" id="orderName" placeholder="Enter your full name" required>
+            </div>
+            <div>
+                <label>Phone Number *</label>
+                <input type="tel" id="orderPhone" placeholder="Enter your mobile number" required>
+            </div>
+            <div>
+                <label>Delivery Address *</label>
+                <textarea id="orderAddress" placeholder="Enter your full delivery address with landmark" rows="2" required></textarea>
+            </div>
+        </div>
+        
         <div class="order-summary" id="orderSummary"></div>
         <div id="deliveryChargeDisplay" style="background:#f0f4f0; padding:10px; border-radius:8px; margin:10px 0; text-align:center; font-weight:bold;"></div>
+        
         <h4>💳 Select Payment Method</h4>
         <div class="payment-options">
             <div class="payment-btn" onclick="selectPayment('cod', this)">💵 Cash on Delivery</div>
@@ -303,8 +327,12 @@
             <div class="payment-btn" onclick="selectPayment('gpay', this)">🔵 Google Pay</div>
             <div class="payment-btn" onclick="selectPayment('paytm', this)">🟦 Paytm</div>
         </div>
-        <div id="utrSection" style="display:none; margin-top:12px;"><input type="text" id="utrNumber" placeholder="Enter UTR/Transaction ID *" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;"></div>
-        <button class="confirm-btn" id="placeOrderBtn" onclick="placeOrder()"><i class="fas fa-check-circle"></i> Confirm Order</button>
+        <div id="utrSection" style="display:none; margin-top:12px;">
+            <input type="text" id="utrNumber" placeholder="Enter UTR/Transaction ID *" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+        </div>
+        <button class="confirm-btn" id="placeOrderBtn" onclick="placeOrder()">
+            <i class="fas fa-check-circle"></i> Confirm Order
+        </button>
     </div>
 </div>
 
@@ -568,7 +596,18 @@
         document.getElementById('deliveryChargeDisplay').innerHTML = delivery===0 ? '🎉 Free Delivery!' : `🚚 Delivery: ₹${delivery} (Free above ₹1000)`;
     }
     
-    function showCartModal() { if(cart.length===0){showToast("Cart empty!");return;} updateCartModal(); selectedPayment=null; document.getElementById('utrSection').style.display='none'; document.querySelectorAll('.payment-btn').forEach(b=>b.classList.remove('selected')); document.getElementById('cartModal').style.display='flex'; }
+    function showCartModal() { 
+        if(cart.length===0){showToast("Cart empty!");return;} 
+        updateCartModal(); 
+        selectedPayment=null; 
+        document.getElementById('utrSection').style.display='none'; 
+        document.querySelectorAll('.payment-btn').forEach(b=>b.classList.remove('selected')); 
+        document.getElementById('cartModal').style.display='flex';
+        // Reset customer details fields
+        document.getElementById('orderName').value = '';
+        document.getElementById('orderPhone').value = '';
+        document.getElementById('orderAddress').value = '';
+    }
     function closeModal() { document.getElementById('cartModal').style.display = 'none'; }
     
     function selectPayment(method, btn) {
@@ -587,24 +626,80 @@
         }
     }
     
+    // ==================== PLACE ORDER WITH CUSTOMER DETAILS ====================
     async function placeOrder() {
+        // Get customer details
+        const customerName = document.getElementById('orderName')?.value.trim();
+        const customerPhone = document.getElementById('orderPhone')?.value.trim();
+        const customerAddress = document.getElementById('orderAddress')?.value.trim();
+        
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
         if(cart.length===0){ showToast("Cart empty!"); return; }
         if(!selectedPayment){ showToast("Select payment method"); return; }
+        
+        // Validate customer details
+        if(!customerName){ showToast("Please enter your full name"); return; }
+        if(!customerPhone || customerPhone.length < 10){ showToast("Please enter valid phone number (10+ digits)"); return; }
+        if(!customerAddress){ showToast("Please enter your delivery address"); return; }
+        
         const utr = document.getElementById('utrNumber')?.value.trim();
         if(selectedPayment !== 'cod' && !utr){ showToast("Enter UTR number"); return; }
+        
         showGlobalLoading(true);
         try {
             const orderId = "ORD" + Date.now() + Math.floor(Math.random()*1000);
             let itemsList = cart.map(i=>`- ${i.name}: ₹${i.price} x ${i.quantity}`).join('\n');
             const total = getTotal();
             const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
-            const orderData = { orderId, date: new Date().toISOString(), type: "product_order", customerEmail: currentUser.email, customerName: currentUser.displayName || currentUser.email.split('@')[0], items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment], utr: utr || "COD", status: "Pending", deliveryOTP: generateOTP() };
+            const otp = generateOTP();
+            
+            // Order data with customer details
+            const orderData = { 
+                orderId, 
+                date: new Date().toISOString(), 
+                type: "product_order", 
+                customerEmail: currentUser.email, 
+                customerName: customerName,
+                customerPhone: customerPhone,
+                customerAddress: customerAddress,
+                items: itemsList, 
+                total: total, 
+                paymentMethod: paymentNames[selectedPayment], 
+                utr: utr || "COD", 
+                status: "Pending", 
+                deliveryOTP: otp 
+            };
+            
             await db.collection("orders").add(orderData);
-            const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName, customer_phone: "Not provided", order_items: itemsList, order_total: `₹${total}`, payment_method: paymentNames[selectedPayment], utr_number: utr || "COD", order_date: new Date().toLocaleString(), order_type: "Product Order", action_type: "NEW ORDER", delivery_otp: orderData.deliveryOTP };
+            
+            // Email with customer details
+            const templateParams = { 
+                to_email: ADMIN_EMAIL, 
+                customer_name: customerName,
+                customer_phone: customerPhone,
+                customer_address: customerAddress,
+                order_items: itemsList, 
+                order_total: `₹${total}`, 
+                payment_method: paymentNames[selectedPayment], 
+                utr_number: utr || "COD", 
+                order_date: new Date().toLocaleString(), 
+                order_type: "Product Order", 
+                action_type: "NEW ORDER", 
+                delivery_otp: otp 
+            };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-            showToast("✅ Order placed! Delivery OTP: " + orderData.deliveryOTP);
-            cart = []; saveCart(); closeModal(); updateCartCount();
+            
+            showToast("✅ Order placed! Delivery OTP: " + otp);
+            cart = []; 
+            saveCart(); 
+            closeModal(); 
+            updateCartCount();
+            
+            // Reset form
+            document.getElementById('orderName').value = '';
+            document.getElementById('orderPhone').value = '';
+            document.getElementById('orderAddress').value = '';
+            
         } catch(e){ showToast("Error: " + e.message); }
         finally { showGlobalLoading(false); }
     }
@@ -677,14 +772,14 @@
                 const orderDoc = await db.collection("orders").doc(pendingCancelOrderId).get();
                 const orderData = orderDoc.data();
                 await db.collection("orders").doc(pendingCancelOrderId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString(), cancelledBy: "Customer" });
-                const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName || "Customer", customer_phone: "Not provided", order_items: orderData.items || "Order items", order_total: orderData.total || "N/A", payment_method: orderData.paymentMethod || "N/A", utr_number: orderData.utr || "COD", order_date: new Date().toLocaleString(), order_type: "Order Cancelled", action_type: "CANCELLED", cancel_reason: finalReason, cancelled_by: "Customer" };
+                const templateParams = { to_email: ADMIN_EMAIL, customer_name: orderData.customerName || "Customer", customer_phone: orderData.customerPhone || "Not provided", customer_address: orderData.customerAddress || "Not provided", order_items: orderData.items || "Order items", order_total: orderData.total || "N/A", payment_method: orderData.paymentMethod || "N/A", utr_number: orderData.utr || "COD", order_date: new Date().toLocaleString(), order_type: "Order Cancelled", action_type: "CANCELLED", cancel_reason: finalReason, cancelled_by: "Customer" };
                 await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
                 showToast("✅ Order cancelled by Customer!");
             } else if(selectedCancelItemType === 'repair') {
                 const repairDoc = await db.collection("repairs").doc(pendingCancelRepairId).get();
                 const repairData = repairDoc.data();
                 await db.collection("repairs").doc(pendingCancelRepairId).update({ status: "Cancelled", cancelReason: finalReason, cancelledAt: new Date().toISOString(), cancelledBy: "Customer" });
-                const templateParams = { to_email: ADMIN_EMAIL, customer_name: repairData.customerName || "Customer", customer_phone: repairData.customerPhone || "N/A", device_type: repairData.deviceType || "N/A", device_brand: repairData.deviceBrand || "N/A", device_model: repairData.deviceModel || "N/A", device_faults: repairData.deviceFaults || "N/A", order_date: new Date().toLocaleString(), order_type: "Repair Cancelled", action_type: "CANCELLED", cancel_reason: finalReason, cancelled_by: "Customer" };
+                const templateParams = { to_email: ADMIN_EMAIL, customer_name: repairData.customerName || "Customer", customer_phone: repairData.customerPhone || "N/A", customer_address: repairData.customerAddress || "N/A", device_type: repairData.deviceType || "N/A", device_brand: repairData.deviceBrand || "N/A", device_model: repairData.deviceModel || "N/A", device_faults: repairData.deviceFaults || "N/A", order_date: new Date().toLocaleString(), order_type: "Repair Cancelled", action_type: "CANCELLED", cancel_reason: finalReason, cancelled_by: "Customer" };
                 await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
                 showToast("✅ Repair cancelled by Customer!");
             }
@@ -725,19 +820,26 @@
                         if(item.cancelReason) cancelInfo += `<div style="font-size:10px; color:#999;">Reason: ${item.cancelReason}</div>`;
                     }
                     
-                    html += `<div class="order-item"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
-                        <strong>🛒 ${item.orderId} <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span></strong>
-                        <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
-                    </div>
-                    ${cancelInfo}
-                    <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
-                    <div style="font-size:12px; margin:8px 0;">${item.items?.replace(/\n/g,'<br>') || ''}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                        <span><strong>Total: ₹${item.total}</strong></span>
-                        <span>💳 ${item.paymentMethod}</span>
-                    </div>
-                    ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
-                </div>`;
+                    html += `<div class="order-item">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
+                            <strong>🛒 ${item.orderId} <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span></strong>
+                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
+                        </div>
+                        <div style="font-size:12px; color:#555; margin:4px 0;">
+                            <strong>👤 ${item.customerName}</strong> | 📞 ${item.customerPhone || 'N/A'}
+                        </div>
+                        <div style="font-size:11px; color:#888; margin:4px 0;">
+                            📍 ${item.customerAddress || 'Address not provided'}
+                        </div>
+                        ${cancelInfo}
+                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
+                        <div style="font-size:12px; margin:8px 0;">${item.items?.replace(/\n/g,'<br>') || ''}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                            <span><strong>Total: ₹${item.total}</strong></span>
+                            <span>💳 ${item.paymentMethod}</span>
+                        </div>
+                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
+                    </div>`;
                 } else {
                     let statusClass = 'status-pending';
                     if(item.status === 'Cancelled') statusClass = 'status-cancelled';
@@ -751,17 +853,24 @@
                         if(item.cancelReason) cancelInfo += `<div style="font-size:10px; color:#999;">Reason: ${item.cancelReason}</div>`;
                     }
                     
-                    html += `<div class="repair-item"><div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
-                        <strong>🔧 ${item.repairId} <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span></strong>
-                        <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
-                    </div>
-                    ${cancelInfo}
-                    <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
-                    <div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
-                    <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div>
-                    <div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
-                    ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}
-                </div>`;
+                    html += `<div class="repair-item">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
+                            <strong>🔧 ${item.repairId} <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span></strong>
+                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
+                        </div>
+                        <div style="font-size:12px; color:#555; margin:4px 0;">
+                            <strong>👤 ${item.customerName}</strong> | 📞 ${item.customerPhone || 'N/A'}
+                        </div>
+                        <div style="font-size:11px; color:#888; margin:4px 0;">
+                            📍 ${item.customerAddress || 'Address not provided'}
+                        </div>
+                        ${cancelInfo}
+                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
+                        <div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
+                        <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div>
+                        <div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
+                        ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}
+                    </div>`;
                 }
             });
             document.getElementById('orderHistoryList').innerHTML = html;
