@@ -70,7 +70,7 @@
         .customer-item:hover{background:#f3f4f6;}
         .cancel-reason{background:#fef2f2;padding:10px;border-radius:10px;border-left:4px solid #ef4444;margin:10px 0;font-size:13px;}
         .cancel-by{font-size:12px;color:#6b7280;margin-top:4px;}
-        .otp-display{background:#f0f9ff;padding:8px 14px;border-radius:10px;border:1px solid #bae6fd;display:inline-block;font-family:monospace;font-size:18px;font-weight:bold;color:#0369a1;letter-spacing:3px;}
+        .otp-display{background:#f0f9ff;padding:6px 12px;border-radius:10px;border:1px solid #bae6fd;display:inline-block;font-family:monospace;font-size:16px;font-weight:bold;color:#0369a1;letter-spacing:3px;}
         .status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
         .status-pending{background:#fef3c7;color:#92400e;}
         .status-confirmed{background:#dbeafe;color:#1e40af;}
@@ -79,12 +79,16 @@
         .status-completed{background:#d1fae5;color:#065f46;}
         .status-cancelled{background:#f3f4f6;color:#6b7280;}
         
-        /* Customer Details Box */
         .customer-details-box{background:#f0f9ff;padding:12px;border-radius:10px;margin:8px 0;border:1px solid #bae6fd;}
         .customer-details-box .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;}
         .customer-details-box .detail-grid .full-width{grid-column:1/-1;}
         .customer-details-box strong{color:#1e293b;}
-        .customer-details-box .label{color:#475569;font-weight:500;}
+        
+        .items-box{background:#f8fafc;padding:8px 12px;border-radius:8px;margin:6px 0;border:1px solid #e2e8f0;}
+        .items-box .item-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;font-size:13px;}
+        .items-box .item-row:last-child{border-bottom:none;}
+        .items-box .item-name{color:#1e293b;}
+        .items-box .item-price{color:#059669;font-weight:600;}
     </style>
 </head>
 <body>
@@ -181,7 +185,7 @@
             <div class="flex flex-col md:flex-row gap-4 mb-6">
                 <div class="flex-1 relative">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                    <input type="text" id="searchInput" class="search-box" placeholder="Search by Name, Product, ID..." oninput="filterOrders()">
+                    <input type="text" id="searchInput" class="search-box" placeholder="Search by Name, Phone, Address, Product, ID..." oninput="filterOrders()">
                 </div>
                 <div class="flex gap-2 overflow-x-auto pb-1 flex-wrap">
                     <button class="btn btn-primary" onclick="filterByStatus('all')">All</button>
@@ -487,7 +491,39 @@
         return statusMap[status] || 'status-pending';
     }
     
-    // ==================== RENDER ORDERS WITH CUSTOMER DETAILS ====================
+    // ==================== FORMAT ITEMS PROPERLY ====================
+    function formatItems(items) {
+        if (!items) return '<div style="color:#94a3b8; font-size:13px;">No items</div>';
+        
+        if (typeof items === 'string') {
+            const lines = items.split('\n').filter(line => line.trim());
+            if (lines.length === 0) {
+                return `<div style="color:#64748b; font-size:13px;">${items}</div>`;
+            }
+            
+            let html = '<div class="items-box">';
+            lines.forEach(line => {
+                let cleanLine = line.replace(/^-\s*/, '').trim();
+                if (cleanLine) {
+                    // Try to extract price from the line
+                    let priceMatch = cleanLine.match(/₹(\d+)/);
+                    let priceDisplay = priceMatch ? `₹${priceMatch[1]}` : '';
+                    let nameDisplay = cleanLine.replace(/₹\d+(\s*x\s*\d+)?/, '').trim();
+                    
+                    html += `<div class="item-row">
+                        <span class="item-name">🛒 ${nameDisplay}</span>
+                        <span class="item-price">${priceDisplay}</span>
+                    </div>`;
+                }
+            });
+            html += '</div>';
+            return html;
+        }
+        
+        return `<div style="color:#64748b; font-size:13px;">${JSON.stringify(items)}</div>`;
+    }
+    
+    // ==================== RENDER ORDERS ====================
     function renderOrders(orderList, containerId, limit = 0) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -520,14 +556,21 @@
             const showDeliveredBtn = o.status === 'Shipped';
             const showConfirmBtn = o.status === 'Pending';
             
-            // Customer name - try multiple fields
             const customerName = o.customerName || o.name || 'N/A';
             const customerPhone = o.customerPhone || o.phone || 'N/A';
             const customerAddress = o.customerAddress || 'Not provided';
             const customerEmail = o.customerEmail || 'N/A';
             
+            const itemsHtml = formatItems(o.items);
+            const borderColor = o.status === 'Pending' ? 'border-amber-500' : 
+                               o.status === 'Confirmed' ? 'border-purple-500' : 
+                               o.status === 'Shipped' ? 'border-indigo-500' : 
+                               o.status === 'Delivered' ? 'border-cyan-500' : 
+                               o.status === 'Completed' ? 'border-green-500' : 
+                               o.status === 'Cancelled' ? 'border-gray-400' : 'border-red-500';
+            
             return `
-                <div class="order-card border-l-4 ${o.status === 'Pending' ? 'border-amber-500' : o.status === 'Confirmed' ? 'border-purple-500' : o.status === 'Shipped' ? 'border-indigo-500' : o.status === 'Delivered' ? 'border-cyan-500' : o.status === 'Completed' ? 'border-green-500' : o.status === 'Cancelled' ? 'border-gray-400' : 'border-red-500'}">
+                <div class="order-card border-l-4 ${borderColor}">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 flex-wrap mb-2">
@@ -537,7 +580,7 @@
                                 ${o.cancelledBy ? (o.cancelledBy === 'Admin' ? '<span class="badge badge-urgent">Cancelled by Admin</span>' : '<span class="badge badge-pending">Cancelled by Customer</span>') : ''}
                             </div>
                             
-                            <!-- ===== CUSTOMER DETAILS - SHOW FULL INFO ===== -->
+                            <!-- CUSTOMER DETAILS -->
                             <div class="customer-details-box">
                                 <div class="detail-grid">
                                     <div><strong>👤 Name:</strong> ${customerName}</div>
@@ -547,11 +590,16 @@
                                 </div>
                             </div>
                             
-                            <p class="text-sm text-gray-600">${o.items ? o.items.substring(0, 80) + '...' : 'No items'}</p>
+                            <!-- ORDER ITEMS -->
+                            <div style="margin:8px 0;">
+                                <div style="font-weight:600; font-size:13px; color:#1e293b; margin-bottom:4px;">📦 Order Items:</div>
+                                ${itemsHtml}
+                            </div>
+                            
                             ${cancelHtml}
                             <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${new Date(o.date).toLocaleString()}</span>
-                                <span class="font-bold text-green-600">₹${o.total || '0'}</span>
+                                <span class="font-bold text-green-600 text-base">₹${o.total || '0'}</span>
                                 <span>💳 ${o.paymentMethod || 'N/A'}</span>
                             </div>
                         </div>
@@ -581,7 +629,7 @@
         updateStatus(docId, type, newStatus);
     }
     
-    // ==================== RENDER REPAIRS WITH CUSTOMER DETAILS ====================
+    // ==================== RENDER REPAIRS ====================
     function renderRepairs(repairList, containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -610,14 +658,19 @@
             const showDeliveredBtn = r.status === 'Shipped';
             const showConfirmBtn = r.status === 'Pending';
             
-            // Customer details
             const customerName = r.customerName || 'N/A';
             const customerPhone = r.customerPhone || 'N/A';
             const customerAddress = r.customerAddress || 'Not provided';
             const customerEmail = r.customerEmail || 'N/A';
             
+            const borderColor = r.status === 'Pending' ? 'border-amber-500' : 
+                               r.status === 'Confirmed' ? 'border-purple-500' : 
+                               r.status === 'Shipped' ? 'border-indigo-500' : 
+                               r.status === 'Delivered' ? 'border-cyan-500' : 
+                               r.status === 'Completed' ? 'border-green-500' : 'border-gray-400';
+            
             return `
-                <div class="order-card border-l-4 ${r.status === 'Pending' ? 'border-amber-500' : r.status === 'Confirmed' ? 'border-purple-500' : r.status === 'Shipped' ? 'border-indigo-500' : r.status === 'Delivered' ? 'border-cyan-500' : r.status === 'Completed' ? 'border-green-500' : 'border-gray-400'}">
+                <div class="order-card border-l-4 ${borderColor}">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 flex-wrap mb-2">
@@ -627,7 +680,7 @@
                                 ${r.cancelledBy ? (r.cancelledBy === 'Admin' ? '<span class="badge badge-urgent">Cancelled by Admin</span>' : '<span class="badge badge-pending">Cancelled by Customer</span>') : ''}
                             </div>
                             
-                            <!-- ===== CUSTOMER DETAILS - SHOW FULL INFO ===== -->
+                            <!-- CUSTOMER DETAILS -->
                             <div class="customer-details-box">
                                 <div class="detail-grid">
                                     <div><strong>👤 Name:</strong> ${customerName}</div>
@@ -770,9 +823,10 @@
         container.innerHTML = customerOrders.map(o => {
             const isRepair = o.isRepair || false;
             const statusClass = getStatusBadge(o.status);
-            const customerName = o.customerName || o.name || 'N/A';
-            const customerPhone = o.customerPhone || o.phone || 'N/A';
-            const customerAddress = o.customerAddress || 'Not provided';
+            const customerNameDisp = o.customerName || o.name || 'N/A';
+            const customerPhoneDisp = o.customerPhone || o.phone || 'N/A';
+            const customerAddressDisp = o.customerAddress || 'Not provided';
+            const itemsHtml = formatItems(o.items);
             
             return `
                 <div class="border-b border-gray-100 py-3">
@@ -785,12 +839,12 @@
                         <span class="text-sm font-bold text-green-600">₹${o.total || '0'}</span>
                     </div>
                     <div style="font-size:12px; color:#555; margin:4px 0;">
-                        👤 ${customerName} | 📞 ${customerPhone}
+                        👤 ${customerNameDisp} | 📞 ${customerPhoneDisp}
                     </div>
                     <div style="font-size:11px; color:#888; margin:4px 0;">
-                        📍 ${customerAddress}
+                        📍 ${customerAddressDisp}
                     </div>
-                    <div class="text-sm text-gray-600 mt-1">${o.items ? o.items.substring(0, 80) + '...' : (o.deviceFaults || 'No items')}</div>
+                    <div style="margin:4px 0; font-size:12px;">${itemsHtml}</div>
                     <div class="text-xs text-gray-400 mt-1">${new Date(o.date).toLocaleString()}</div>
                     ${o.cancelledBy ? `<div class="text-xs text-red-500 mt-1">Cancelled by ${o.cancelledBy}</div>` : ''}
                 </div>
