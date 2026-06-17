@@ -25,6 +25,7 @@
         .badge-cancelled { background: #f3f4f6; color: #6b7280; }
         .badge-confirmed { background: #dbeafe; color: #1e40af; }
         .badge-shipped { background: #ede9fe; color: #5b21b6; }
+        .badge-delivered { background: #d1fae5; color: #065f46; }
         .btn { padding: 6px 14px; border-radius: 8px; font-weight: 600; font-size: 11px; border: none; cursor: pointer; transition: 0.3s; }
         .btn-primary { background: #3b82f6; color: white; }
         .btn-primary:hover { background: #2563eb; }
@@ -74,9 +75,16 @@
         .status-pending{background:#fef3c7;color:#92400e;}
         .status-confirmed{background:#dbeafe;color:#1e40af;}
         .status-shipped{background:#ede9fe;color:#5b21b6;}
+        .status-delivered{background:#d1fae5;color:#065f46;}
         .status-completed{background:#d1fae5;color:#065f46;}
         .status-cancelled{background:#f3f4f6;color:#6b7280;}
-        .status-delivered{background:#d1fae5;color:#065f46;}
+        
+        /* Customer Details Box */
+        .customer-details-box{background:#f0f9ff;padding:12px;border-radius:10px;margin:8px 0;border:1px solid #bae6fd;}
+        .customer-details-box .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;}
+        .customer-details-box .detail-grid .full-width{grid-column:1/-1;}
+        .customer-details-box strong{color:#1e293b;}
+        .customer-details-box .label{color:#475569;font-weight:500;}
     </style>
 </head>
 <body>
@@ -479,7 +487,7 @@
         return statusMap[status] || 'status-pending';
     }
     
-    // ==================== RENDER ORDERS ====================
+    // ==================== RENDER ORDERS WITH CUSTOMER DETAILS ====================
     function renderOrders(orderList, containerId, limit = 0) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -496,7 +504,6 @@
             const statusClass = getStatusBadge(o.status);
             const statusLabel = o.status || 'Pending';
             
-            // Cancel info
             let cancelHtml = '';
             if(o.cancelledBy) {
                 const icon = o.cancelledBy === 'Admin' ? '👑' : '👤';
@@ -510,10 +517,14 @@
                 `;
             }
             
-            // Show Delivered button only if status is Shipped
             const showDeliveredBtn = o.status === 'Shipped';
-            // Show Confirm button only if status is Pending
             const showConfirmBtn = o.status === 'Pending';
+            
+            // Customer name - try multiple fields
+            const customerName = o.customerName || o.name || 'N/A';
+            const customerPhone = o.customerPhone || o.phone || 'N/A';
+            const customerAddress = o.customerAddress || 'Not provided';
+            const customerEmail = o.customerEmail || 'N/A';
             
             return `
                 <div class="order-card border-l-4 ${o.status === 'Pending' ? 'border-amber-500' : o.status === 'Confirmed' ? 'border-purple-500' : o.status === 'Shipped' ? 'border-indigo-500' : o.status === 'Delivered' ? 'border-cyan-500' : o.status === 'Completed' ? 'border-green-500' : o.status === 'Cancelled' ? 'border-gray-400' : 'border-red-500'}">
@@ -525,13 +536,23 @@
                                 ${o.deliveryOTP ? `<span class="otp-display">🔑 ${o.deliveryOTP}</span>` : ''}
                                 ${o.cancelledBy ? (o.cancelledBy === 'Admin' ? '<span class="badge badge-urgent">Cancelled by Admin</span>' : '<span class="badge badge-pending">Cancelled by Customer</span>') : ''}
                             </div>
-                            <h4 class="font-bold text-gray-800 text-lg">${o.customerName || o.name || 'Unknown'}</h4>
-                            <p class="text-sm text-gray-600">${o.items ? o.items.substring(0, 80) + '...' : (o.deviceFaults ? o.deviceFaults.substring(0, 60) + '...' : 'No items')}</p>
+                            
+                            <!-- ===== CUSTOMER DETAILS - SHOW FULL INFO ===== -->
+                            <div class="customer-details-box">
+                                <div class="detail-grid">
+                                    <div><strong>👤 Name:</strong> ${customerName}</div>
+                                    <div><strong>📞 Phone:</strong> ${customerPhone}</div>
+                                    <div class="full-width"><strong>📍 Address:</strong> ${customerAddress}</div>
+                                    ${customerEmail !== 'N/A' ? `<div class="full-width"><strong>📧 Email:</strong> ${customerEmail}</div>` : ''}
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-600">${o.items ? o.items.substring(0, 80) + '...' : 'No items'}</p>
                             ${cancelHtml}
                             <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
-                                <span><span class="material-symbols-outlined text-[16px] align-middle">call</span> ${o.customerPhone || o.phone || 'N/A'}</span>
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${new Date(o.date).toLocaleString()}</span>
                                 <span class="font-bold text-green-600">₹${o.total || '0'}</span>
+                                <span>💳 ${o.paymentMethod || 'N/A'}</span>
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
@@ -560,7 +581,7 @@
         updateStatus(docId, type, newStatus);
     }
     
-    // ==================== RENDER REPAIRS ====================
+    // ==================== RENDER REPAIRS WITH CUSTOMER DETAILS ====================
     function renderRepairs(repairList, containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -589,6 +610,12 @@
             const showDeliveredBtn = r.status === 'Shipped';
             const showConfirmBtn = r.status === 'Pending';
             
+            // Customer details
+            const customerName = r.customerName || 'N/A';
+            const customerPhone = r.customerPhone || 'N/A';
+            const customerAddress = r.customerAddress || 'Not provided';
+            const customerEmail = r.customerEmail || 'N/A';
+            
             return `
                 <div class="order-card border-l-4 ${r.status === 'Pending' ? 'border-amber-500' : r.status === 'Confirmed' ? 'border-purple-500' : r.status === 'Shipped' ? 'border-indigo-500' : r.status === 'Delivered' ? 'border-cyan-500' : r.status === 'Completed' ? 'border-green-500' : 'border-gray-400'}">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
@@ -599,12 +626,21 @@
                                 ${r.deliveryOTP ? `<span class="otp-display">🔑 ${r.deliveryOTP}</span>` : ''}
                                 ${r.cancelledBy ? (r.cancelledBy === 'Admin' ? '<span class="badge badge-urgent">Cancelled by Admin</span>' : '<span class="badge badge-pending">Cancelled by Customer</span>') : ''}
                             </div>
-                            <h4 class="font-bold text-gray-800 text-lg">${r.customerName || 'Unknown'}</h4>
+                            
+                            <!-- ===== CUSTOMER DETAILS - SHOW FULL INFO ===== -->
+                            <div class="customer-details-box">
+                                <div class="detail-grid">
+                                    <div><strong>👤 Name:</strong> ${customerName}</div>
+                                    <div><strong>📞 Phone:</strong> ${customerPhone}</div>
+                                    <div class="full-width"><strong>📍 Address:</strong> ${customerAddress}</div>
+                                    ${customerEmail !== 'N/A' ? `<div class="full-width"><strong>📧 Email:</strong> ${customerEmail}</div>` : ''}
+                                </div>
+                            </div>
+                            
                             <p class="text-sm text-gray-600"><strong>Device:</strong> ${r.deviceType || ''} ${r.deviceBrand || ''} ${r.deviceModel || ''}</p>
                             <p class="text-sm text-gray-600"><strong>Issue:</strong> ${r.deviceFaults || 'Not specified'}</p>
                             ${cancelHtml}
                             <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
-                                <span><span class="material-symbols-outlined text-[16px] align-middle">call</span> ${r.customerPhone || 'N/A'}</span>
                                 <span><span class="material-symbols-outlined text-[16px] align-middle">calendar_today</span> ${new Date(r.date).toLocaleString()}</span>
                             </div>
                         </div>
@@ -656,6 +692,8 @@
             filtered = filtered.filter(o => 
                 (o.customerName || '').toLowerCase().includes(currentSearch) ||
                 (o.name || '').toLowerCase().includes(currentSearch) ||
+                (o.customerPhone || '').toLowerCase().includes(currentSearch) ||
+                (o.customerAddress || '').toLowerCase().includes(currentSearch) ||
                 (o.orderId || '').toLowerCase().includes(currentSearch) ||
                 (o.items || '').toLowerCase().includes(currentSearch)
             );
@@ -687,6 +725,8 @@
                 customerMap.set(key, {
                     name: name,
                     phone: phone,
+                    address: o.customerAddress || '',
+                    email: o.customerEmail || '',
                     orders: [o],
                     totalOrders: 1,
                     totalSpent: (o.total || 0)
@@ -706,7 +746,8 @@
                     <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">${(c.name || 'U')[0]}</div>
                     <div>
                         <p class="font-semibold text-gray-800">${c.name}</p>
-                        <p class="text-sm text-gray-500">${c.phone}</p>
+                        <p class="text-sm text-gray-500">📞 ${c.phone}</p>
+                        ${c.address ? `<p class="text-xs text-gray-400">📍 ${c.address.substring(0, 30)}${c.address.length > 30 ? '...' : ''}</p>` : ''}
                     </div>
                 </div>
                 <div class="text-right">
@@ -729,6 +770,9 @@
         container.innerHTML = customerOrders.map(o => {
             const isRepair = o.isRepair || false;
             const statusClass = getStatusBadge(o.status);
+            const customerName = o.customerName || o.name || 'N/A';
+            const customerPhone = o.customerPhone || o.phone || 'N/A';
+            const customerAddress = o.customerAddress || 'Not provided';
             
             return `
                 <div class="border-b border-gray-100 py-3">
@@ -739,6 +783,12 @@
                             ${o.deliveryOTP ? `<span class="otp-display text-xs">🔑 ${o.deliveryOTP}</span>` : ''}
                         </div>
                         <span class="text-sm font-bold text-green-600">₹${o.total || '0'}</span>
+                    </div>
+                    <div style="font-size:12px; color:#555; margin:4px 0;">
+                        👤 ${customerName} | 📞 ${customerPhone}
+                    </div>
+                    <div style="font-size:11px; color:#888; margin:4px 0;">
+                        📍 ${customerAddress}
                     </div>
                     <div class="text-sm text-gray-600 mt-1">${o.items ? o.items.substring(0, 80) + '...' : (o.deviceFaults || 'No items')}</div>
                     <div class="text-xs text-gray-400 mt-1">${new Date(o.date).toLocaleString()}</div>
