@@ -154,6 +154,28 @@
         .customer-details-box label{font-weight:600;font-size:13px;display:block;margin-bottom:4px;color:#333;}
         .customer-details-box input,.customer-details-box textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:10px;font-family:inherit;}
         .customer-details-box textarea{resize:vertical;min-height:60px;}
+        
+        /* Order History Item Styles */
+        .order-history-card{background:white;border-radius:12px;padding:15px;margin-bottom:12px;border-left:4px solid #2e7d32;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+        .order-history-card .order-header{display:flex;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px;}
+        .order-history-card .order-id{font-size:14px;font-weight:700;color:#1a1a1a;}
+        .order-history-card .order-status{padding:3px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+        .order-history-card .customer-info{font-size:13px;color:#475569;margin:4px 0;}
+        .order-history-card .customer-address{font-size:12px;color:#94a3b8;margin:4px 0;}
+        .order-history-card .items-container{margin:10px 0;}
+        .order-history-card .items-title{font-weight:600;font-size:13px;color:#1e293b;margin-bottom:6px;}
+        .order-history-card .item-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #e2e8f0;}
+        .order-history-card .item-row:last-child{border-bottom:none;}
+        .order-history-card .item-img{width:40px;height:40px;object-fit:contain;border-radius:6px;background:white;border:1px solid #e2e8f0;flex-shrink:0;}
+        .order-history-card .item-details{flex:1;}
+        .order-history-card .item-name{font-size:13px;font-weight:500;color:#1e293b;}
+        .order-history-card .item-qty{font-size:11px;color:#94a3b8;}
+        .order-history-card .item-price{font-size:14px;font-weight:600;color:#2e7d32;}
+        .order-history-card .order-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;}
+        .order-history-card .order-total{font-size:16px;font-weight:700;color:#2e7d32;}
+        .order-history-card .order-payment{font-size:13px;color:#475569;}
+        .order-history-card .cancel-btn{margin-top:10px;background:#e74c3c;color:white;border:none;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:11px;}
+        .order-history-card .cancel-btn:hover{background:#c0392b;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -296,31 +318,19 @@
     </div>
 </div>
 
-<!-- ===== CART MODAL WITH CUSTOMER DETAILS ===== -->
+<!-- Cart Modal -->
 <div id="cartModal" class="modal">
     <div class="modal-content">
         <span class="close-modal-btn" onclick="closeModal()">&times;</span>
         <h3><i class="fas fa-shopping-cart"></i> Your Cart</h3>
-        
         <div class="customer-details-box">
             <h4>📋 Delivery Details</h4>
-            <div>
-                <label>Full Name *</label>
-                <input type="text" id="orderName" placeholder="Enter your full name" required>
-            </div>
-            <div>
-                <label>Phone Number *</label>
-                <input type="tel" id="orderPhone" placeholder="Enter your mobile number" required>
-            </div>
-            <div>
-                <label>Delivery Address *</label>
-                <textarea id="orderAddress" placeholder="Enter your full delivery address with landmark" rows="2" required></textarea>
-            </div>
+            <div><label>Full Name *</label><input type="text" id="orderName" placeholder="Enter your full name" required></div>
+            <div><label>Phone Number *</label><input type="tel" id="orderPhone" placeholder="Enter your mobile number" required></div>
+            <div><label>Delivery Address *</label><textarea id="orderAddress" placeholder="Enter your full delivery address with landmark" rows="2" required></textarea></div>
         </div>
-        
         <div class="order-summary" id="orderSummary"></div>
         <div id="deliveryChargeDisplay" style="background:#f0f4f0; padding:10px; border-radius:8px; margin:10px 0; text-align:center; font-weight:bold;"></div>
-        
         <h4>💳 Select Payment Method</h4>
         <div class="payment-options">
             <div class="payment-btn" onclick="selectPayment('cod', this)">💵 Cash on Delivery</div>
@@ -331,9 +341,7 @@
         <div id="utrSection" style="display:none; margin-top:12px;">
             <input type="text" id="utrNumber" placeholder="Enter UTR/Transaction ID *" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
         </div>
-        <button class="confirm-btn" id="placeOrderBtn" onclick="placeOrder()">
-            <i class="fas fa-check-circle"></i> Confirm Order
-        </button>
+        <button class="confirm-btn" id="placeOrderBtn" onclick="placeOrder()"><i class="fas fa-check-circle"></i> Confirm Order</button>
     </div>
 </div>
 
@@ -367,9 +375,8 @@
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
     
-    // ==================== ALL 9 PRODUCTS WITH UPDATED PRICES ====================
+    // ==================== ALL 9 PRODUCTS ====================
     let products = [
-        // ===== ACE HILL PRODUCTS =====
         {
             id: "ACE-CHARGER-35W-001",
             name: "Ace Hill 35W Quick Charge Dash Charger",
@@ -381,15 +388,8 @@
                 "https://i.ibb.co/xSVy5Skm/Chat-GPT-Image-Jun-16-2026-06-07-06-PM.png",
                 "https://i.ibb.co/PqFkqNk/IMG-20260616-182419.png"
             ],
-            desc: "35W Super Fast Charging with Qualcomm Quick Charge 4.0+. Supports Dash Charge, Warp Charge, VOOC. Compatible with iPhone & Android.",
-            features: [
-                "35W Super Fast Charging",
-                "Quick Charge 4.0+",
-                "Dash, Warp, VOOC Support",
-                "iPhone & Android Compatible",
-                "Smart Charging Technology",
-                "OVP/OCP/Over Heat Protection"
-            ]
+            desc: "35W Super Fast Charging with Qualcomm Quick Charge 4.0+.",
+            features: ["35W Super Fast Charging", "Quick Charge 4.0+", "Dash, Warp, VOOC Support", "iPhone & Android Compatible", "Smart Charging Technology", "OVP/OCP/Over Heat Protection"]
         },
         {
             id: "ACE-CABLE-120W-001",
@@ -403,15 +403,8 @@
                 "https://i.ibb.co/Xr7rQSxB/IMG-20260616-191105.png",
                 "https://i.ibb.co/fdLVzqHd/IMG-20260616-191155.png"
             ],
-            desc: "120W Super VOOC fast charging cable. USB-A to Type-C. Supports VOOC, SuperVOOC, DASH, WARP, DART, FLASH, TURBO protocols.",
-            features: [
-                "120W Fast Charging",
-                "Super VOOC Support",
-                "USB-A to Type-C",
-                "High Speed Data Transfer",
-                "Durable & Flexible",
-                "1 Meter Length"
-            ]
+            desc: "120W Super VOOC fast charging cable.",
+            features: ["120W Fast Charging", "Super VOOC Support", "USB-A to Type-C", "High Speed Data Transfer", "Durable & Flexible", "1 Meter Length"]
         },
         {
             id: "ACE-CABLE-PD-65W-001",
@@ -423,15 +416,8 @@
                 "https://i.ibb.co/HpGvTdqZ/IMG-20260616-232011.png",
                 "https://i.ibb.co/sp3Cxqx8/IMG-20260616-232054.png"
             ],
-            desc: "65W PD Type C to Type C fast charging cable. Qualcomm Quick Charge 4.0 support. Premium red braided design.",
-            features: [
-                "65W PD Fast Charging",
-                "Quick Charge 4.0",
-                "Type C to Type C",
-                "iPhone/Android Compatible",
-                "High Speed Data Transfer",
-                "Red Braided Design"
-            ]
+            desc: "65W PD Type C to Type C fast charging cable.",
+            features: ["65W PD Fast Charging", "Quick Charge 4.0", "Type C to Type C", "iPhone/Android Compatible", "High Speed Data Transfer", "Red Braided Design"]
         },
         {
             id: "ACE-CABLE-V8-001",
@@ -443,15 +429,8 @@
                 "https://i.ibb.co/d4DqZDG1/IMG-20260616-231336.png",
                 "https://i.ibb.co/JFqqGMHX/IMG-20260616-231508.png"
             ],
-            desc: "V8 USB data cable with 30W fast charging. USB-A to V8 connector. Durable and flexible build.",
-            features: [
-                "30W Fast Charging",
-                "USB-A to V8",
-                "High Speed Data",
-                "Durable & Flexible",
-                "Tangle-Free Design",
-                "1 Meter Length"
-            ]
+            desc: "V8 USB data cable with 30W fast charging.",
+            features: ["30W Fast Charging", "USB-A to V8", "High Speed Data", "Durable & Flexible", "Tangle-Free Design", "1 Meter Length"]
         },
         {
             id: "ACE-CABLE-iPhone-001",
@@ -463,118 +442,54 @@
                 "https://i.ibb.co/Ppr5PnR/IMG-20260616-231601.png",
                 "https://i.ibb.co/NgbLt99k/IMG-20260616-231646.png"
             ],
-            desc: "iPhone Lightning USB data cable with 5V-2.5A fast charging. MFi certified. Durable braided design.",
-            features: [
-                "5V-2.5A Fast Charging",
-                "MFi Certified",
-                "iPhone Compatible",
-                "Durable Braided Design",
-                "Tangle-Free",
-                "1 Meter Length"
-            ]
+            desc: "iPhone Lightning USB data cable with fast charging.",
+            features: ["5V-2.5A Fast Charging", "MFi Certified", "iPhone Compatible", "Durable Braided Design", "Tangle-Free", "1 Meter Length"]
         },
-        
-        // ===== UBON J38 ARMY EDITION - ₹999 =====
         {
             id: "UBON-J38-ARMY-001",
             name: "UBON Black J38 Army Edition Truly Wireless Earbuds",
             price: 999,
             oldPrice: 1799,
             category: "earbuds",
-            images: [
-                "https://i.ibb.co/C5n7q1qC/Chat-GPT-Image-Jun-17-2026-08-46-12-PM.png"
-            ],
-            desc: "UBON Black J38 Army Edition Truly Wireless Earbuds - Battle Ready Sound! Unleash powerful sound with the UBON J38 Army Edition TWS Earbuds. Designed in a rugged military camouflage finish, these earbuds combine aggressive style with pro-level audio performance.",
-            features: [
-                "🎵 Big Daddy Bass - Deep, thumping bass for music, movies & gaming",
-                "🔋 36 Hours Playtime - Long-lasting battery for all-day use",
-                "⏳ 360 Hours Standby - Ready whenever you need them",
-                "📶 Bluetooth 5.4 - Ultra-stable connection with low latency",
-                "🎤 Silicone MIC - Crystal clear calling with noise reduction",
-                "📡 10 Meters Wireless Range",
-                "⚡ Type-C Fast Charging - Quick power-ups",
-                "🔋 Battery: 30mAh (Earbuds) + 200mAh (Case)"
-            ]
+            images: ["https://i.ibb.co/C5n7q1qC/Chat-GPT-Image-Jun-17-2026-08-46-12-PM.png"],
+            desc: "UBON Black J38 Army Edition - Battle Ready Sound!",
+            features: ["🎵 Big Daddy Bass", "🔋 36 Hours Playtime", "📶 Bluetooth 5.4", "🎤 Silicone MIC", "⚡ Type-C Fast Charging"]
         },
-        
-        // ===== UBON J31 FREEDOM SERIES - ₹999 =====
         {
             id: "UBON-J31-FREEDOM-001",
             name: "UBON Black J31 Freedom Series Truly Wireless Earbuds",
             price: 999,
             oldPrice: 1799,
             category: "earbuds",
-            images: [
-                "https://i.ibb.co/Mx690MHF/Chat-GPT-Image-Jun-17-2026-08-47-33-PM.png"
-            ],
-            desc: "UBON Black J31 Freedom Series TWS Earbuds – Freedom Ka Naya Style! Experience ultimate freedom with the UBON J31 Freedom Series Earbuds. Featuring a sleek silver finish, premium design, and powerful performance, these earbuds are perfect for daily use, calls, music, and gaming.",
-            features: [
-                "🔋 40 Hours Playtime (at moderate volume)",
-                "⏳ 400 Hours Standby Time – Extremely long battery life",
-                "🎤 Built-in ENC – Environmental Noise Cancellation for clear calls",
-                "🗣️ Voice Assistant Support – Google/Siri ready",
-                "📶 Bluetooth 5.3 – Fast & stable connection",
-                "🎵 Hi-Fi Stereo Sound – Rich, immersive audio experience",
-                "📡 10 Meters Wireless Range",
-                "⚡ Type-C Fast Charging",
-                "🔋 Battery: 30mAh (Earbuds) + 200mAh (Case)",
-                "💨 Lightweight & Comfort Fit – Perfect for long wear"
-            ]
+            images: ["https://i.ibb.co/Mx690MHF/Chat-GPT-Image-Jun-17-2026-08-47-33-PM.png"],
+            desc: "UBON J31 Freedom Series – Freedom Ka Naya Style!",
+            features: ["🔋 40 Hours Playtime", "🎤 Built-in ENC", "📶 Bluetooth 5.3", "🗣️ Voice Assistant Support", "⚡ Type-C Fast Charging"]
         },
-        
-        // ===== UBON HP-705 BEAST HEADPHONES - ₹999 =====
         {
             id: "UBON-HP705-BEAST-001",
             name: "UBON Black HP-705 Beast Wireless Headphones",
             price: 999,
             oldPrice: 1799,
             category: "headphones",
-            images: [
-                "https://i.ibb.co/M5DfSCYG/Jun-17-2026-08-54-58-PM.png"
-            ],
-            desc: "UBON Black HP-705 Beast Wireless Headphones – Born To Be Free! Unleash the beast within with the UBON HP-705 Beast Over-Ear Headphones. Featuring a bold blue finish, powerful bass, and premium comfort, these wireless headphones are designed for those who demand freedom and thumping sound.",
-            features: [
-                "🎵 Big Daddy Bass – Powerful, deep bass for an immersive audio experience",
-                "🔋 30 Hours Playtime (at moderate volume)",
-                "📶 Bluetooth 5.4 – Fast pairing and stable wireless connection",
-                "💨 Ultra Light Weight – Comfortable for long listening sessions",
-                "☁️ Soft Cushion Comfort – Premium ear cushions for all-day wear",
-                "🔄 Foldable Design – Easy to carry and store",
-                "🎤 Built-in Microphone – Clear calling on the go"
-            ]
+            images: ["https://i.ibb.co/M5DfSCYG/Jun-17-2026-08-54-58-PM.png"],
+            desc: "UBON HP-705 Beast – Born To Be Free!",
+            features: ["🎵 Big Daddy Bass", "🔋 30 Hours Playtime", "📶 Bluetooth 5.4", "🔄 Foldable Design", "🎤 Built-in Microphone"]
         },
-        
-        // ===== UBON PB-SX302 POWER BANK - ₹1999 =====
         {
             id: "UBON-PB-SX302-001",
             name: "UBON Premium PB-SX302 – 25W 30000mAh Power Bank",
             price: 1999,
             oldPrice: 3249,
             category: "powerbank",
-            images: [
-                "https://i.ibb.co/LdWWLWC8/Chat-GPT-Image-Jun-17-2026-08-52-23-PM.png"
-            ],
-            desc: "UBON Premium PB-SX302 – 25W 30000mAh Power Bank. True 30000mAh capacity with 25W Super Fast Charging (Power Delivery). LED display shows battery percentage and charging speed. Dual Input (Type-C + Micro USB) and Dual Output (USB + Type-C) for simultaneous charging.",
-            features: [
-                "🔋 True Capacity: 30000mAh (real 30000mAh capacity)",
-                "⚡ 25W Super Fast Charging (Power Delivery)",
-                "📊 LED Display – Battery percentage + charging speed dikhta hai",
-                "🔌 Dual Input: Type-C + Micro USB (V8)",
-                "🔌 Dual Output: USB + Type-C (dono se saath mein charge kar sakte ho)",
-                "⚡ PD + QC Fast Charging support",
-                "🛡️ Multi Protection (Smart Chip) – Overcharge, short-circuit, temperature protection",
-                "✨ Premium Build – Brushed metal finish + leather strap for easy carry"
-            ]
+            images: ["https://i.ibb.co/LdWWLWC8/Chat-GPT-Image-Jun-17-2026-08-52-23-PM.png"],
+            desc: "UBON Premium PB-SX302 - 30000mAh Power Bank",
+            features: ["🔋 30000mAh Capacity", "⚡ 25W Fast Charging", "📊 LED Display", "🔌 Dual Input & Output", "🛡️ Multi Protection"]
         }
     ];
     
     const categoryNames = {
-        'all': 'All',
-        'charger': 'Chargers',
-        'cable': 'Cables',
-        'earbuds': 'Earbuds',
-        'headphones': 'Headphones',
-        'powerbank': 'Power Banks'
+        'all': 'All', 'charger': 'Chargers', 'cable': 'Cables',
+        'earbuds': 'Earbuds', 'headphones': 'Headphones', 'powerbank': 'Power Banks'
     };
     
     let detailCurrentIndex = 0;
@@ -652,22 +567,17 @@
         document.getElementById('detailOldPrice').innerHTML = product.oldPrice ? `₹${product.oldPrice}` : '';
         const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
         document.getElementById('detailDiscount').innerHTML = discount > 0 ? `${discount}% OFF` : '';
-        
         document.getElementById('detailDesc').innerHTML = product.desc;
-        
         let featuresHtml = `<h4>✨ Features:</h4><ul>`;
         product.features.forEach(f => { featuresHtml += `<li><i class="fas fa-check" style="color:#2e7d32;"></i> ${f}</li>`; });
         featuresHtml += `</ul>`;
         document.getElementById('detailFeatures').innerHTML = featuresHtml;
-        
         const thumbContainer = document.getElementById('detailThumbnails');
         thumbContainer.innerHTML = product.images.map((img, idx) => `<img class="detail-thumb ${idx===0?'active':''}" src="${img}" onclick="changeDetailImageTo(${idx})" onerror="this.src='https://via.placeholder.com/55'">`).join('');
-        
         const similarContainer = document.getElementById('similarProducts');
         const similar = products.filter(p => p.id !== productId && p.category === product.category).slice(0,4);
         if(similar.length === 0) { similarContainer.innerHTML = `<p style="color:#999; grid-column:1/-1; text-align:center;">No similar products</p>`; }
         else { similarContainer.innerHTML = similar.map(p => `<div class="similar-card" onclick="openDetailModal('${p.id}')"><img src="${p.images[0]}" onerror="this.src='https://via.placeholder.com/70'"><div class="name">${p.name}</div><div class="price">₹${p.price}</div></div>`).join(''); }
-        
         document.getElementById('detailModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -744,17 +654,14 @@
         const customerName = document.getElementById('orderName')?.value.trim();
         const customerPhone = document.getElementById('orderPhone')?.value.trim();
         const customerAddress = document.getElementById('orderAddress')?.value.trim();
-        
         if(!currentUser){ showToast("Please login first!"); showLoginModal(); return; }
         if(cart.length===0){ showToast("Cart empty!"); return; }
         if(!selectedPayment){ showToast("Select payment method"); return; }
         if(!customerName){ showToast("Please enter your full name"); return; }
         if(!customerPhone || customerPhone.length < 10){ showToast("Please enter valid phone number (10+ digits)"); return; }
         if(!customerAddress){ showToast("Please enter your delivery address"); return; }
-        
         const utr = document.getElementById('utrNumber')?.value.trim();
         if(selectedPayment !== 'cod' && !utr){ showToast("Enter UTR number"); return; }
-        
         showGlobalLoading(true);
         try {
             const orderId = "ORD" + Date.now() + Math.floor(Math.random()*1000);
@@ -762,51 +669,28 @@
             const total = getTotal();
             const paymentNames = { cod:"Cash on Delivery", phonepe:"PhonePe", gpay:"Google Pay", paytm:"Paytm" };
             const otp = generateOTP();
-            
             const orderData = { 
-                orderId, 
-                date: new Date().toISOString(), 
-                type: "product_order", 
-                customerEmail: currentUser.email, 
-                customerName: customerName,
-                customerPhone: customerPhone,
-                customerAddress: customerAddress,
-                items: itemsList, 
-                total: total, 
-                paymentMethod: paymentNames[selectedPayment], 
-                utr: utr || "COD", 
-                status: "Pending", 
-                deliveryOTP: otp 
+                orderId, date: new Date().toISOString(), type: "product_order", 
+                customerEmail: currentUser.email, customerName: customerName,
+                customerPhone: customerPhone, customerAddress: customerAddress,
+                items: itemsList, total: total, paymentMethod: paymentNames[selectedPayment], 
+                utr: utr || "COD", status: "Pending", deliveryOTP: otp 
             };
-            
             await db.collection("orders").add(orderData);
-            
             const templateParams = { 
-                to_email: ADMIN_EMAIL, 
-                customer_name: customerName,
-                customer_phone: customerPhone,
-                customer_address: customerAddress,
-                order_items: itemsList, 
-                order_total: `₹${total}`, 
-                payment_method: paymentNames[selectedPayment], 
-                utr_number: utr || "COD", 
-                order_date: new Date().toLocaleString(), 
-                order_type: "Product Order", 
-                action_type: "NEW ORDER", 
-                delivery_otp: otp 
+                to_email: ADMIN_EMAIL, customer_name: customerName,
+                customer_phone: customerPhone, customer_address: customerAddress,
+                order_items: itemsList, order_total: `₹${total}`, 
+                payment_method: paymentNames[selectedPayment], utr_number: utr || "COD", 
+                order_date: new Date().toLocaleString(), order_type: "Product Order", 
+                action_type: "NEW ORDER", delivery_otp: otp 
             };
             await emailjs.send("service_gbou2dl", "template_lp2zf4b", templateParams);
-            
             showToast("✅ Order placed! Delivery OTP: " + otp);
-            cart = []; 
-            saveCart(); 
-            closeModal(); 
-            updateCartCount();
-            
+            cart = []; saveCart(); closeModal(); updateCartCount();
             document.getElementById('orderName').value = '';
             document.getElementById('orderPhone').value = '';
             document.getElementById('orderAddress').value = '';
-            
         } catch(e){ showToast("Error: " + e.message); }
         finally { showGlobalLoading(false); }
     }
@@ -898,7 +782,7 @@
     
     function closeCancelReasonModal() { document.getElementById('cancelReasonModal').style.display = 'none'; pendingCancelOrderId = null; pendingCancelRepairId = null; }
     
-    // ==================== ORDER HISTORY ====================
+    // ==================== ORDER HISTORY WITH PRODUCT IMAGES ====================
     async function showOrderHistory() {
         if(!currentUser){ showToast("Login first"); return; }
         showGlobalLoading(true);
@@ -927,25 +811,80 @@
                         if(item.cancelReason) cancelInfo += `<div style="font-size:10px; color:#999;">Reason: ${item.cancelReason}</div>`;
                     }
                     
-                    html += `<div class="order-item">
-                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
-                            <strong>🛒 ${item.orderId} <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span></strong>
-                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
+                    // ===== PARSE ORDER ITEMS WITH IMAGES =====
+                    let itemsHtml = '';
+                    if (item.items) {
+                        if (typeof item.items === 'string') {
+                            const itemLines = item.items.split('\n').filter(line => line.trim());
+                            if (itemLines.length > 0) {
+                                itemsHtml = `<div style="background:#f8fafc; padding:10px 12px; border-radius:8px; margin:8px 0; border:1px solid #e2e8f0;">`;
+                                itemLines.forEach(line => {
+                                    let cleanLine = line.replace(/^-\s*/, '').trim();
+                                    if (cleanLine) {
+                                        let priceMatch = cleanLine.match(/₹(\d+)/);
+                                        let priceDisplay = priceMatch ? `₹${priceMatch[1]}` : '';
+                                        let nameDisplay = cleanLine.replace(/₹\d+(\s*x\s*\d+)?/, '').trim();
+                                        let qtyMatch = cleanLine.match(/x\s*(\d+)/);
+                                        let qtyDisplay = qtyMatch ? `x ${qtyMatch[1]}` : '';
+                                        
+                                        // ===== FIND PRODUCT IMAGE =====
+                                        let productImage = '';
+                                        for (let p of products) {
+                                            if (nameDisplay.toLowerCase().includes(p.name.toLowerCase().substring(0, 15)) || 
+                                                p.name.toLowerCase().includes(nameDisplay.toLowerCase().substring(0, 15))) {
+                                                if (p.images && p.images.length > 0) {
+                                                    productImage = p.images[0];
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (!productImage) {
+                                            productImage = 'https://via.placeholder.com/40/2e7d32/ffffff?text=DS';
+                                        }
+                                        
+                                        itemsHtml += `<div style="display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid #e2e8f0;">
+                                            <img src="${productImage}" style="width:40px; height:40px; object-fit:contain; border-radius:6px; background:white; border:1px solid #e2e8f0;" onerror="this.src='https://via.placeholder.com/40/2e7d32/ffffff?text=DS'">
+                                            <div style="flex:1;">
+                                                <div style="font-size:13px; font-weight:500; color:#1e293b;">${nameDisplay}</div>
+                                                <div style="font-size:11px; color:#94a3b8;">${qtyDisplay}</div>
+                                            </div>
+                                            <div style="font-size:14px; font-weight:600; color:#2e7d32;">${priceDisplay}</div>
+                                        </div>`;
+                                    }
+                                });
+                                itemsHtml += `</div>`;
+                            } else {
+                                itemsHtml = `<div style="color:#64748b; font-size:13px; margin:4px 0;">${item.items}</div>`;
+                            }
+                        } else {
+                            itemsHtml = `<div style="color:#64748b; font-size:13px; margin:4px 0;">${item.items}</div>`;
+                        }
+                    } else {
+                        itemsHtml = `<div style="color:#94a3b8; font-size:13px; margin:4px 0;">No items</div>`;
+                    }
+                    
+                    html += `<div class="order-history-card" style="border-left-color: ${item.status === 'Pending' ? '#f59e0b' : item.status === 'Shipped' ? '#3b82f6' : item.status === 'Completed' ? '#22c55e' : '#ef4444'};">
+                        <div class="order-header">
+                            <div>
+                                <span class="order-id">🛒 ${item.orderId}</span>
+                                <span class="otp-badge" style="background:#2e7d32; color:white; padding:2px 8px; border-radius:15px; font-size:10px; font-weight:bold; margin-left:6px;">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span>
+                            </div>
+                            <span class="order-status ${statusClass}" style="padding:3px 12px; border-radius:20px; font-size:11px; font-weight:600;">${item.status || 'Pending'}</span>
                         </div>
-                        <div style="font-size:12px; color:#555; margin:4px 0;">
-                            <strong>👤 ${item.customerName}</strong> | 📞 ${item.customerPhone || 'N/A'}
-                        </div>
-                        <div style="font-size:11px; color:#888; margin:4px 0;">
-                            📍 ${item.customerAddress || 'Address not provided'}
+                        <div class="customer-info"><strong>👤 ${item.customerName}</strong> | 📞 ${item.customerPhone || 'N/A'}</div>
+                        <div class="customer-address">📍 ${item.customerAddress || 'Address not provided'}</div>
+                        <div class="items-container">
+                            <div class="items-title">📦 Order Items:</div>
+                            ${itemsHtml}
                         </div>
                         ${cancelInfo}
-                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
-                        <div style="font-size:12px; margin:8px 0;">${item.items?.replace(/\n/g,'<br>') || ''}</div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                            <span><strong>Total: ₹${item.total}</strong></span>
-                            <span>💳 ${item.paymentMethod}</span>
+                        <div style="font-size:12px; color:#94a3b8; margin-top:4px;">${new Date(item.date).toLocaleString()}</div>
+                        <div class="order-footer">
+                            <span class="order-total">Total: ₹${item.total}</span>
+                            <span class="order-payment">💳 ${item.paymentMethod}</span>
                         </div>
-                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
+                        ${(item.status === 'Pending' || item.status === 'Shipped') && item.status !== 'Cancelled' ? 
+                            `<button class="cancel-btn" onclick="openCancelModal('${item.docId}', 'order')"><i class="fas fa-times-circle"></i> Cancel Order</button>` : ''}
                     </div>`;
                 } else {
                     let statusClass = 'status-pending';
@@ -960,23 +899,23 @@
                         if(item.cancelReason) cancelInfo += `<div style="font-size:10px; color:#999;">Reason: ${item.cancelReason}</div>`;
                     }
                     
-                    html += `<div class="repair-item">
-                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;">
-                            <strong>🔧 ${item.repairId} <span class="otp-badge">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span></strong>
-                            <span class="order-status ${statusClass}">${item.status || 'Pending'}</span>
+                    html += `<div class="order-history-card" style="border-left-color: #f59e0b;">
+                        <div class="order-header">
+                            <div>
+                                <span class="order-id">🔧 ${item.repairId}</span>
+                                <span class="otp-badge" style="background:#2e7d32; color:white; padding:2px 8px; border-radius:15px; font-size:10px; font-weight:bold; margin-left:6px;">🔑 OTP: ${item.deliveryOTP || 'N/A'}</span>
+                            </div>
+                            <span class="order-status ${statusClass}" style="padding:3px 12px; border-radius:20px; font-size:11px; font-weight:600;">${item.status || 'Pending'}</span>
                         </div>
-                        <div style="font-size:12px; color:#555; margin:4px 0;">
-                            <strong>👤 ${item.customerName}</strong> | 📞 ${item.customerPhone || 'N/A'}
-                        </div>
-                        <div style="font-size:11px; color:#888; margin:4px 0;">
-                            📍 ${item.customerAddress || 'Address not provided'}
-                        </div>
+                        <div class="customer-info"><strong>👤 ${item.customerName}</strong> | 📞 ${item.customerPhone || 'N/A'}</div>
+                        <div class="customer-address">📍 ${item.customerAddress || 'Address not provided'}</div>
                         ${cancelInfo}
-                        <div style="font-size:12px;">${new Date(item.date).toLocaleString()}</div>
+                        <div style="font-size:12px; color:#94a3b8; margin-top:4px;">${new Date(item.date).toLocaleString()}</div>
                         <div style="font-size:13px; margin:5px 0;"><strong>Device:</strong> ${item.deviceType} - ${item.deviceBrand} ${item.deviceModel}</div>
                         <div style="font-size:13px;"><strong>Issue:</strong> ${item.deviceFaults}</div>
                         <div style="margin-top:8px;"><strong>Contact:</strong> ${item.customerPhone}</div>
-                        ${(item.status === 'Pending') && item.status !== 'Cancelled' ? `<button class="cancel-order-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}
+                        ${(item.status === 'Pending') && item.status !== 'Cancelled' ? 
+                            `<button class="cancel-btn" onclick="openCancelModal('${item.docId}', 'repair')"><i class="fas fa-times-circle"></i> Cancel Repair</button>` : ''}
                     </div>`;
                 }
             });
